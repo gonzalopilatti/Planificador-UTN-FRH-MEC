@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Planificador Académico — Ingeniería Mecánica · UTN Haedo</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#00455C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Planificador">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --marca:#00455C;                 /* azul institucional: fondos sólidos, igual en ambos temas */
+  --acento:#00455C;                /* bordes y detalles interactivos */
+  --petrol:#00455C; --petrol-osc:#00344a; --texto:#454545; --gris:#7D9FAB;
+  --link:#157FEB; --fondo:#f4f7f9; --blanco:#fff; --borde:#dde6ea;
+  --hover:#eef6f9; --suave:#eef2f5; --linea:#edf2f5; --track:#e2eaee; --muted:#5c7482;
+  --verde-txt:#4d7a10;
+  --cyan:#00D2F2; --ambar:#FFAB00; --verde:#8DCC3D; --rojo:#FF2644; --magenta:#B047B3;
+  --sombra:0 1px 3px rgba(0,69,92,.10),0 4px 14px rgba(0,69,92,.06);
+}
+html[data-tema="oscuro"]{
+  /* En oscuro los títulos y nombres de materia van en gris muy claro: el celeste
+     institucional se reserva para bordes y acentos, donde no compite con el texto. */
+  --petrol:#eaf2f6; --acento:#8ecde6; --petrol-osc:#00557a; --texto:#dde7ec; --gris:#8aa9b6;
+  --link:#6fb4ff; --fondo:#0e1a20; --blanco:#16262e; --borde:#294550;
+  --hover:#1e3540; --suave:#1d3039; --linea:#223a45; --track:#223a45; --muted:#9db6c1;
+  --verde-txt:#a8d95e;
+  --sombra:0 1px 3px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.28);
+}
+html[data-tema="oscuro"] .est-sin{background:#22333c;color:#a9c0cc;border-color:#3a4f5a}
+html[data-tema="oscuro"] .est-cursando{background:#0b3a47;color:#7fe1f7}
+html[data-tema="oscuro"] .est-regular{background:#3d3111;color:#ffd071}
+html[data-tema="oscuro"] .est-aprobada{background:#283a12;color:#b6e26a}
+html[data-tema="oscuro"] .est-desaprobada{background:#421a22;color:#ff97a8}
+html[data-tema="oscuro"] .chip-cursable{background:#0b3a47;color:#7fe1f7}
+html[data-tema="oscuro"] .chip-rendible{background:#331a40;color:#dfa9f5}
+html[data-tema="oscuro"] .chip-bloq{background:#22333c;color:#8fa5b1}
+html[data-tema="oscuro"] .chip-compartida{background:#3d3111;color:#ffd071}
+html[data-tema="oscuro"] .aviso{background:#33290d;border-color:#5a4715;color:#f0cd7f}
+html[data-tema="oscuro"] .res-choques .item{background:#3d1620;border-color:#6b2534;color:#ff9fae}
+html[data-tema="oscuro"] .ok-choques{background:#22350f;border-color:#3d5c1a;color:#b6e26a}
+html[data-tema="oscuro"] .mesa .cd{background:#0b3a47;color:#7fe1f7}
+html[data-tema="oscuro"] .mesa .cd.prox{background:#3d3111;color:#ffd071}
+html[data-tema="oscuro"] .btn.peligro:hover{background:#3d1620}
+html[data-tema="oscuro"] .nav-int button{color:#a9c9d6}
+/* los bordes de interacción usan el celeste, no el casi-blanco del texto */
+html[data-tema="oscuro"] .btn:hover,
+html[data-tema="oscuro"] .btn-mini:hover,
+html[data-tema="oscuro"] .card:hover,
+html[data-tema="oscuro"] .com-op:hover,
+html[data-tema="oscuro"] .com-op.elegida{border-color:var(--acento)}
+html[data-tema="oscuro"] .btn-mini:hover{color:var(--acento)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Public Sans','Segoe UI',system-ui,-apple-system,sans-serif;color:var(--texto);background:var(--fondo);font-size:15px;line-height:1.45}
+button{font-family:inherit;cursor:pointer}
+/* ---------- header ---------- */
+header{background:var(--blanco);box-shadow:var(--sombra);position:sticky;top:0;z-index:50}
+.head-int{max-width:1280px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.logo-marca{display:flex;align-items:center;flex:none}
+.logo-marca svg{height:34px;width:auto}
+.logo-marca img{display:none;height:46px;width:auto}
+html[data-tema="oscuro"] .logo-marca svg{display:none}
+html[data-tema="oscuro"] .logo-marca img{display:block}
+.head-tit{margin-right:auto}
+.head-tit h1{font-size:17px;font-weight:800;color:var(--petrol);line-height:1.15}
+.head-tit small{color:var(--gris);font-weight:600;font-size:12px}
+.head-acc{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--borde);background:var(--blanco);color:var(--petrol);font-weight:600;font-size:13px;padding:7px 12px;border-radius:8px;transition:.15s}
+.btn:hover{border-color:var(--petrol);background:var(--hover)}
+.btn.primario{background:var(--marca);border-color:var(--marca);color:#fff}
+.btn.primario:hover{background:var(--petrol-osc)}
+.btn.peligro:hover{border-color:var(--rojo);color:var(--rojo);background:#fff2f4}
+.franja{height:5px;display:flex}
+.franja i{flex:1}
+.franja i:nth-child(1){background:linear-gradient(90deg,transparent,var(--cyan))}
+.franja i:nth-child(2){background:linear-gradient(90deg,transparent,var(--ambar))}
+.franja i:nth-child(3){background:linear-gradient(90deg,transparent,var(--verde))}
+.franja i:nth-child(4){background:linear-gradient(90deg,transparent,var(--rojo))}
+.franja i:nth-child(5){background:linear-gradient(90deg,transparent,var(--magenta))}
+nav{background:var(--marca)}
+.nav-int{max-width:1280px;margin:0 auto;padding:0 10px;display:flex;overflow-x:auto}
+.nav-int button{background:none;border:none;color:#bcd6e0;font-weight:700;font-size:14px;padding:12px 18px;border-bottom:3px solid transparent;white-space:nowrap}
+.nav-int button:hover{color:#fff}
+.nav-int button.activa{color:#fff;border-bottom-color:var(--ambar)}
+main{max-width:1280px;margin:0 auto;padding:20px 18px 60px}
+h2{color:var(--petrol);font-size:20px;font-weight:800;margin:6px 0 14px}
+h3{color:var(--petrol);font-size:15px;font-weight:700}
+/* ---------- estados ---------- */
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;border:1.5px solid transparent}
+.est-sin{background:#eef2f5;color:#61798a;border-color:#d5dfe6}
+.est-cursando{background:#e0f9ff;color:#0080a0;border-color:var(--cyan)}
+.est-regular{background:#fff4dc;color:#9a6a00;border-color:var(--ambar)}
+.est-aprobada{background:#eef8dc;color:var(--verde-txt);border-color:var(--verde)}
+.est-desaprobada{background:#ffe8ec;color:#c00020;border-color:var(--rojo)}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:6px}
+.chip-cursable{background:#e0f9ff;color:#007c9c}
+.chip-rendible{background:#f3e5ff;color:#8a2fae}
+.chip-bloq{background:#f0f3f5;color:#8fa5b1}
+.chip-compartida{background:#fff4dc;color:#9a6a00}
+/* ---------- materias ---------- */
+.filtros{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.filtros input[type=search]{flex:1;min-width:200px;padding:8px 12px;border:1px solid var(--borde);border-radius:8px;font-family:inherit;font-size:14px}
+.seg{display:flex;border:1px solid var(--borde);border-radius:8px;overflow:hidden;background:var(--blanco)}
+.seg button{border:none;background:none;padding:8px 13px;font-size:13px;font-weight:600;color:var(--gris)}
+.seg button.activa{background:var(--marca);color:#fff}
+.nivel-cab{display:flex;align-items:center;gap:12px;margin:22px 0 10px}
+.nivel-cab .barra{flex:1;height:7px;background:var(--track);border-radius:99px;overflow:hidden}
+.nivel-cab .barra i{display:block;height:100%;background:var(--verde);border-radius:99px}
+.nivel-cab small{color:var(--gris);font-weight:700;font-size:12px;white-space:nowrap}
+.btn-mini{border:1px solid var(--borde);background:var(--blanco);color:var(--gris);font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:6px}
+.btn-mini:hover{color:var(--petrol);border-color:var(--petrol)}
+.grid-mat{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:10px}
+.card{background:var(--blanco);border:1px solid var(--borde);border-radius:10px;padding:12px 14px;box-shadow:var(--sombra);cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:8px}
+.card:hover{border-color:var(--petrol);transform:translateY(-1px)}
+.card .tit{display:flex;gap:8px;align-items:baseline}
+.card .orden{font-size:11px;font-weight:800;color:var(--gris);background:var(--suave);border-radius:5px;padding:1px 6px;flex:none}
+.card .nom{font-weight:700;font-size:13.5px;color:var(--petrol)}
+.card .fila-chips{display:flex;gap:5px;flex-wrap:wrap}
+.card.bloqueada{opacity:.75;background:var(--hover)}
+/* ---------- modal ---------- */
+.velo{position:fixed;inset:0;background:rgba(0,40,55,.45);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:30px 14px;overflow:auto}
+.velo.abierto{display:flex}
+.modal{background:var(--blanco);border-radius:14px;max-width:640px;width:100%;padding:22px;box-shadow:0 10px 50px rgba(0,0,0,.3)}
+.modal h3{font-size:18px;margin-bottom:2px}
+.modal .sub{color:var(--gris);font-weight:600;font-size:12.5px;margin-bottom:14px}
+.modal section{margin:13px 0}
+.modal section>b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--gris);margin-bottom:6px}
+.lista-req{display:flex;flex-wrap:wrap;gap:5px}
+.estados-btns{display:flex;gap:6px;flex-wrap:wrap}
+.estados-btns .pill{cursor:pointer;font-size:12.5px;padding:6px 12px;opacity:.55}
+.estados-btns .pill:hover{opacity:.85}
+.estados-btns .pill.activo{opacity:1;outline:2px solid currentColor}
+.cerrar{float:right;border:none;background:var(--suave);color:var(--gris);width:30px;height:30px;border-radius:8px;font-size:15px;font-weight:800}
+.aviso{background:#fff4dc;border:1px solid #f2d692;color:#7a5500;font-size:12.5px;border-radius:8px;padding:8px 11px}
+.inp-form{width:100%;padding:7px 10px;border:1px solid var(--borde);border-radius:7px;font-family:inherit;font-size:14px;background:var(--blanco);color:var(--texto)}
+.bloque-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
+.bloque-row select,.bloque-row input{padding:6px 8px;border:1px solid var(--borde);border-radius:7px;font-family:inherit;font-size:13px}
+.bloque-row .quita-b{border:none;background:var(--suave);color:var(--rojo);width:28px;height:28px;border-radius:7px;font-weight:800;flex:none}
+.ext-item{display:flex;align-items:center;gap:8px;padding:9px 13px;border-bottom:1px solid var(--linea);font-size:13px}
+.ext-item .nom{font-weight:700;color:var(--petrol);margin-right:auto}
+.ext-item .det{color:var(--muted);font-size:12px;width:100%}
+/* ---------- grilla ---------- */
+.layout-grilla{display:grid;grid-template-columns:315px 1fr;gap:16px;align-items:start}
+@media(max-width:920px){.layout-grilla{grid-template-columns:1fr}}
+.panel{background:var(--blanco);border:1px solid var(--borde);border-radius:10px;box-shadow:var(--sombra)}
+.panel .cab{padding:11px 14px;border-bottom:1px solid var(--borde);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.panel .cab h3{margin-right:auto}
+.lista-cursables{max-height:72vh;overflow:auto}
+.mat-item{border-bottom:1px solid var(--linea);padding:9px 13px}
+.mat-item>.fila{display:flex;align-items:center;gap:8px;cursor:pointer}
+.mat-item .nom{font-weight:700;font-size:13px;color:var(--petrol);margin-right:auto}
+.mat-item .coms{margin-top:7px;display:flex;flex-direction:column;gap:5px}
+.com-op{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;padding:6px 8px;border:1px solid var(--borde);border-radius:7px;cursor:pointer}
+.com-op:hover{border-color:var(--petrol)}
+.com-op.elegida{border-color:var(--petrol);background:var(--hover)}
+.com-op input{margin-top:2px}
+.com-op .det{color:var(--muted)}
+.punto{width:10px;height:10px;border-radius:3px;flex:none}
+.grilla-scroll{overflow-x:auto}
+.grilla{position:relative;display:grid;min-width:760px;grid-template-columns:52px repeat(6,1fr);--minuto:0.75px}
+.g-col-cab{position:sticky;top:0;background:var(--marca);color:#fff;font-weight:700;font-size:12.5px;text-align:center;padding:7px 0;z-index:5}
+.g-hora{font-size:10.5px;color:var(--gris);text-align:right;padding-right:6px;border-top:1px dashed var(--linea);font-weight:600}
+.g-celda{border-top:1px dashed var(--linea);border-left:1px solid var(--linea);position:relative}
+.bloque{position:absolute;left:2px;right:2px;z-index:2;border-radius:6px;padding:3px 6px;font-size:10.5px;line-height:1.25;color:#fff;font-weight:700;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.bloque small{display:block;font-weight:600;opacity:.9;font-size:9.5px}
+.bloque.choque{outline:3px solid var(--rojo);outline-offset:-1px;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.14) 0 6px,transparent 6px 12px)}
+.res-choques{margin-top:12px}
+.res-choques .item{background:#ffe8ec;border:1px solid #ffb9c4;color:#a00018;font-size:13px;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-weight:600}
+.ok-choques{background:#eef8dc;border:1px solid #cfe8a2;color:var(--verde-txt);font-size:13px;border-radius:8px;padding:8px 12px;font-weight:700}
+/* ---------- simulador ---------- */
+.sim-anios{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;align-items:start}
+.sim-anio .cab b{font-size:16px;color:var(--petrol)}
+.sim-lista{padding:8px 12px;max-height:430px;overflow:auto}
+.sim-op{display:flex;gap:8px;align-items:flex-start;padding:5px 4px;font-size:13px;border-radius:6px}
+.sim-op:hover{background:var(--hover)}
+.sim-op input{margin-top:3px}
+.sim-op .err{color:var(--rojo);font-size:11.5px;font-weight:600;display:block}
+.sim-op.invalida .nom-sim{color:var(--rojo)}
+.sim-res{margin-top:16px;background:var(--blanco);border:1px solid var(--borde);border-radius:10px;padding:14px 16px;box-shadow:var(--sombra)}
+/* ---------- avance ---------- */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px}
+.tile{background:var(--blanco);border:1px solid var(--borde);border-radius:10px;padding:14px;box-shadow:var(--sombra)}
+.tile b{display:block;font-size:26px;color:var(--petrol);font-weight:800}
+.tile span{font-size:12px;color:var(--gris);font-weight:700}
+.tile .mini-borde{height:4px;border-radius:99px;margin-top:8px}
+.fila-lista{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--linea);font-size:13.5px}
+.fila-lista .nom{font-weight:700;color:var(--petrol);margin-right:auto}
+/* ---------- notas ---------- */
+.nota-input{width:70px;padding:6px 8px;border:1px solid var(--borde);border-radius:7px;font-family:inherit;font-size:14px}
+/* ---------- mesas ---------- */
+.mesa{border-bottom:1px solid var(--linea);padding:11px 14px}
+.mesa .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mesa .top b{color:var(--petrol);font-size:14px}
+.mesa .cd{font-size:12px;font-weight:700;background:#e0f9ff;color:#007c9c;border-radius:99px;padding:2px 10px}
+.mesa .cd.prox{background:#fff4dc;color:#9a6a00}
+.mesa .hab{margin-top:6px;font-size:13px;color:var(--muted)}
+.mesa .hab b{color:var(--verde-txt)}
+.mesa .insc{margin-top:5px;font-size:12.5px;font-weight:600;color:var(--muted)}
+/* ---------- banner de inscripción ---------- */
+.banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-radius:10px;padding:11px 15px;margin-bottom:16px;
+  background:#fff4dc;border:1px solid #f2d692;color:#7a5500;box-shadow:var(--sombra)}
+.banner.urgente{background:#ffe8ec;border-color:#ffb9c4;color:#a00018}
+.banner b{font-size:14px}
+.banner .txt{margin-right:auto;font-size:13.5px;line-height:1.5}
+.banner button{border:none;background:rgba(0,0,0,.07);color:inherit;font-weight:800;width:26px;height:26px;border-radius:7px;flex:none}
+html[data-tema="oscuro"] .banner{background:#33290d;border-color:#5a4715;color:#f0cd7f}
+html[data-tema="oscuro"] .banner.urgente{background:#3d1620;border-color:#6b2534;color:#ff9fae}
+html[data-tema="oscuro"] .banner button{background:rgba(255,255,255,.1)}
+/* ---------- agenda de exámenes ---------- */
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;margin-left:6px;
+  border-radius:99px;background:var(--ambar);color:#4a3300;font-size:11px;font-weight:800}
+.burbujas{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:12px}
+.burbuja{background:var(--blanco);border:1px solid var(--borde);border-left:5px solid var(--cyan);border-radius:12px;
+  padding:12px 14px;box-shadow:var(--sombra);display:flex;flex-direction:column;gap:7px}
+.burbuja.pronto{border-left-color:var(--ambar)}
+.burbuja.urgente{border-left-color:var(--rojo)}
+.burbuja.pasada{opacity:.72;border-left-color:var(--track)}
+.burbuja .cab-b{display:flex;align-items:flex-start;gap:8px}
+.burbuja .mat{font-weight:800;font-size:13.5px;color:var(--petrol);line-height:1.25;margin-right:auto}
+.burbuja .cuenta{font-size:20px;font-weight:800;color:var(--petrol);line-height:1;white-space:nowrap}
+.burbuja .cuenta small{display:block;font-size:10.5px;font-weight:700;color:var(--gris);text-align:right;margin-top:2px}
+.burbuja.urgente .cuenta{color:var(--rojo)}
+.burbuja .meta{font-size:12px;color:var(--muted);font-weight:600}
+.burbuja .nota-b{font-size:12.5px;color:var(--texto);background:var(--suave);border-radius:8px;padding:6px 9px;white-space:pre-wrap}
+.burbuja .acc{display:flex;gap:6px;margin-top:auto;padding-top:2px}
+.vacio{padding:22px;text-align:center;color:var(--gris);font-weight:600;background:var(--blanco);border:1px dashed var(--borde);border-radius:12px}
+/* ---------- grafo ---------- */
+#mapaCont svg{display:block}
+.gnode{cursor:pointer}
+.gnode rect{stroke-width:1.5px;transition:.12s}
+.gnode text{font-size:10.5px;font-weight:700;pointer-events:none}
+.gnode .gorden{font-size:8.5px;font-weight:800}
+.gedge{fill:none;stroke:var(--track);stroke-width:1.3px}
+.gedge.apr{stroke-dasharray:3 3}
+svg.atenuado .gnode{opacity:.28}
+svg.atenuado .gedge{opacity:.12}
+svg.atenuado .gnode.hl,svg.atenuado .gedge.hl{opacity:1}
+.gedge.hl{stroke:var(--petrol);stroke-width:2.2px}
+.leyenda-it{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--muted)}
+.leyenda-it i{width:13px;height:13px;border-radius:4px;display:inline-block;border:1.5px solid}
+#mapaCont text.gcab{fill:var(--petrol)}
+footer{margin-top:40px;text-align:center;color:var(--gris);font-size:11.5px;line-height:1.7}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--marca);color:#fff;font-weight:600;font-size:13.5px;padding:10px 18px;border-radius:9px;box-shadow:0 4px 20px rgba(0,0,0,.3);opacity:0;transition:.3s;z-index:200;pointer-events:none}
+.toast.ver{opacity:1}
+@media print{header,nav,.filtros,.head-acc{display:none}}
+</style>
+<script>
+/* Tema: se aplica antes de pintar para evitar el parpadeo blanco al abrir en oscuro. */
+(function(){ try{
+  var t=localStorage.getItem("planificador-tema");
+  if(!t) t = (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) ? "oscuro" : "claro";
+  document.documentElement.setAttribute("data-tema", t);
+}catch(e){} })();
+</script>
+</head>
+<body>
+<header>
+  <div class="head-int">
+    <span class="logo-marca"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="Capa_1" x="0px" y="0px" viewBox="0 0 290 40" style="enable-background:new 0 0 290 40;" xml:space="preserve"><style type="text/css">	.st0{fill:#00455C;}	.st1{fill-rule:evenodd;clip-rule:evenodd;fill:#00455C;}	.st2{fill:url(#Trazado_30_00000072277668126478722590000007888153359429391268_);}	.st3{fill:url(#Trazado_32_00000029013915790525938010000007850373960325277857_);}	.st4{fill:url(#Trazado_33_00000018923182367020712540000017511336486731460493_);}	.st5{fill:url(#Trazado_34_00000123442632486406811070000000229198897312083870_);}	.st6{fill:url(#Trazado_35_00000127032476553234146610000013266771675461917098_);}</style><g id="Capa_2_00000088836521541084463470000005822922978686671012_" transform="translate(-15.581 -18.5)">	<g id="Capa_1-2">		<path id="Trazado_20" class="st0" d="M25.9,49.6c-1.4-0.3-2.8-0.9-3.9-1.8c-1-0.7-1.9-1.7-2.4-2.8c-0.6-1.2-0.9-2.6-0.8-3.9V27.5   h5.3v13.4c0,0.7,0.1,1.5,0.5,2.1c0.4,0.6,0.9,1.1,1.5,1.5c0.7,0.4,1.5,0.7,2.3,0.9c2,0.4,4.2,0.4,6.2,0c0.8-0.1,1.6-0.4,2.3-0.9   c0.6-0.4,1.1-0.9,1.5-1.5c0.3-0.7,0.5-1.4,0.5-2.1V27.5h5.2v13.6c0,1.3-0.3,2.7-0.8,3.9c-0.6,1.1-1.4,2.1-2.4,2.9   c-1.2,0.8-2.5,1.4-3.9,1.8c-1.8,0.4-3.6,0.6-5.4,0.6C29.7,50.2,27.8,49.9,25.9,49.6z"></path>		<path id="Trazado_21" class="st0" d="M80.6,27.5l14.2,15.3V27.5h5.1v22.3h-5.2L79.8,33.8v15.9h-5.1V27.5H80.6z"></path>		<path id="Trazado_22" class="st0" d="M46.8,32v-4.5h25V32H62v17.8h-5.4V32H46.8z"></path>		<path id="Trazado_23" class="st1" d="M146.4,35.3h-11.2c6.7-2.1,11.3-8.4,11.2-15.4v-0.1h-5.9c0,4.1-2.6,7.7-6.4,9.1v-9.1h-6.4V29   c-3.8-1.4-6.3-5.1-6.3-9.1h-5.9V20c-0.1,7,4.5,13.3,11.2,15.4h-11.2v6.4h11.2c-6.7,2.1-11.2,8.3-11.2,15.3v0.1h5.9   c0-4,2.5-7.7,6.3-9.1v9.1h6.4v-9.1c3.8,1.5,6.3,5,6.4,9.1h5.9v-0.1c0.1-7-4.5-13.3-11.2-15.3h11.2V35.3z"></path>		<path id="Trazado_24" class="st0" d="M271.4,34.8c-0.3-1-0.7-1.9-1.2-2.8c-0.5-0.8-1.1-1.5-1.9-2c-0.8-0.6-1.6-1.1-2.5-1.5   c-1-0.4-2-0.6-3-0.8c-1.1-0.2-2.2-0.3-3.3-0.3h-12.8v18h5.3V31.9h7.6c1.1,0,2.2,0.1,3.3,0.5c0.8,0.3,1.6,0.8,2.2,1.4   c0.6,0.6,1,1.3,1.2,2.1c0.3,0.9,0.4,1.8,0.4,2.7c0,0.9-0.1,1.9-0.4,2.8c-0.2,0.8-0.6,1.6-1.2,2.2c-0.6,0.6-1.4,1.1-2.2,1.4   c-1,0.4-2.1,0.5-3.2,0.5h-3.4l3.5,4.3c1,0,2.1-0.1,3.1-0.3c1-0.2,2-0.5,2.9-0.9c0.9-0.4,1.7-0.9,2.5-1.5c0.8-0.6,1.4-1.4,2-2.2   c0.6-0.9,1-1.9,1.3-2.9c0.3-1.2,0.5-2.4,0.4-3.6C271.9,37.2,271.7,36,271.4,34.8z"></path>		<rect id="Rect&#xE1;ngulo_7" x="161.9" y="27.5" class="st0" width="5.3" height="8.5"></rect>		<rect id="Rect&#xE1;ngulo_8" x="161.9" y="40.4" class="st0" width="5.3" height="9.3"></rect>		<path id="Trazado_25" class="st0" d="M189.5,49.8h5.3l2.3-4.6h-5.2L189.5,49.8z"></path>		<path id="Trazado_26" class="st0" d="M206.9,27.4H201l-7.1,13.9h5.2l4.7-8.9l4.6,8.9l2,3.9l2.4,4.6h5.7L206.9,27.4z"></path>		<path id="Trazado_27" class="st0" d="M226.4,36.2V32h16.2v-4.5h-21.5v8.8H226.4z"></path>		<path id="Trazado_28" class="st0" d="M226.4,45.3v-4.9h-5.3v9.3h22v-4.4H226.4z"></path>		<path id="Trazado_29" class="st0" d="M301.7,35.1c-0.3-1-0.8-2-1.4-2.9c-0.6-0.9-1.3-1.6-2.2-2.2c-0.9-0.6-1.8-1.2-2.8-1.6   c-1.1-0.4-2.2-0.7-3.3-0.9c-1.2-0.2-2.4-0.3-3.6-0.3h-3.7l3.7,4.5c1.3,0,2.5,0.1,3.7,0.5c1,0.3,1.9,0.8,2.7,1.4   c1.5,1.3,2.4,3.1,2.3,5.1c0,1-0.2,2.1-0.6,3c-0.4,0.9-1,1.6-1.7,2.2c-0.8,0.7-1.7,1.2-2.7,1.5c-2.4,0.7-5,0.7-7.4,0   c-1-0.3-1.9-0.8-2.7-1.5c-0.7-0.6-1.3-1.4-1.7-2.3c-0.4-0.9-0.6-2-0.6-3c0-1,0.2-2,0.6-2.9c0.4-0.9,0.9-1.6,1.7-2.2   c0.8-0.6,1.7-1.1,2.7-1.4c1.2-0.3,2.5-0.5,3.7-0.5h-11.6c-0.1,0.2-0.3,0.3-0.4,0.5c-1.3,1.9-2,4.2-1.9,6.5c0,1.2,0.2,2.4,0.5,3.6   c0.3,1,0.8,2,1.4,2.9c0.6,0.9,1.3,1.6,2.2,2.2c0.9,0.6,1.8,1.2,2.8,1.6c1.1,0.4,2.2,0.7,3.3,0.9c2.4,0.4,4.9,0.4,7.3,0   c1.1-0.2,2.2-0.5,3.3-0.9c1-0.4,2-0.9,2.8-1.6c1.7-1.3,3-3.1,3.7-5.1c0.3-1.2,0.5-2.4,0.5-3.6C302.3,37.4,302.1,36.2,301.7,35.1z"></path>					<linearGradient id="Trazado_30_00000138543909352342117770000009300581115928585098_" gradientUnits="userSpaceOnUse" x1="-501.1052" y1="342.4611" x2="-500.1212" y2="342.4611" gradientTransform="matrix(26.9 0 0 -4.5 13638.1475 1579.275)">			<stop offset="0" style="stop-color:#00D2F2;stop-opacity:0"></stop>			<stop offset="6.000000e-02" style="stop-color:#00D2F2;stop-opacity:0.161"></stop>			<stop offset="0.16" style="stop-color:#00D2F2;stop-opacity:0.38"></stop>			<stop offset="0.26" style="stop-color:#00D2F2;stop-opacity:0.569"></stop>			<stop offset="0.36" style="stop-color:#00D2F2;stop-opacity:0.729"></stop>			<stop offset="0.46" style="stop-color:#00D2F2;stop-opacity:0.851"></stop>			<stop offset="0.56" style="stop-color:#00D2F2;stop-opacity:0.929"></stop>			<stop offset="0.66" style="stop-color:#00D2F2;stop-opacity:0.98"></stop>			<stop offset="0.75" style="stop-color:#00D2F2"></stop>		</linearGradient>		<path id="Trazado_30" style="fill:url(#Trazado_30_00000138543909352342117770000009300581115928585098_);" d="M185.3,40.4h-26.9   v-4.5h23.2L185.3,40.4z"></path>		<path id="Trazado_31" class="st0" d="M181.6,27.5v8.5l3.7,4.5h-3.7v9.3h5.3V27.5H181.6z"></path>					<linearGradient id="Trazado_32_00000062894119334585174990000015307868655156510908_" gradientUnits="userSpaceOnUse" x1="-498.2008" y1="330.0166" x2="-497.2158" y2="330.0166" gradientTransform="matrix(23.5 0 0 -3.9 11894.6357 1330.264)">			<stop offset="0" style="stop-color:#FFAB00;stop-opacity:0"></stop>			<stop offset="8.000000e-02" style="stop-color:#FFAB00;stop-opacity:0.2"></stop>			<stop offset="0.18" style="stop-color:#FFAB00;stop-opacity:0.412"></stop>			<stop offset="0.28" style="stop-color:#FFAB00;stop-opacity:0.588"></stop>			<stop offset="0.37" style="stop-color:#FFAB00;stop-opacity:0.741"></stop>			<stop offset="0.47" style="stop-color:#FFAB00;stop-opacity:0.851"></stop>			<stop offset="0.57" style="stop-color:#FFAB00;stop-opacity:0.929"></stop>			<stop offset="0.66" style="stop-color:#FFAB00;stop-opacity:0.98"></stop>			<stop offset="0.75" style="stop-color:#FFAB00"></stop>		</linearGradient>		<path id="Trazado_32" style="fill:url(#Trazado_32_00000062894119334585174990000015307868655156510908_);" d="M210.4,45.2h-23.5   v-3.9h21.5L210.4,45.2z"></path>					<linearGradient id="Trazado_33_00000162320096912745935120000011551232346160052907_" gradientUnits="userSpaceOnUse" x1="-500.5678" y1="336.6833" x2="-499.5828" y2="336.6833" gradientTransform="matrix(26.2 0 0 -4.2 13328.6162 1452.4187)">			<stop offset="0" style="stop-color:#8DCC3D;stop-opacity:0"></stop>			<stop offset="0.11" style="stop-color:#8DCC3D;stop-opacity:0.271"></stop>			<stop offset="0.22" style="stop-color:#8DCC3D;stop-opacity:0.49"></stop>			<stop offset="0.33" style="stop-color:#8DCC3D;stop-opacity:0.671"></stop>			<stop offset="0.44" style="stop-color:#8DCC3D;stop-opacity:0.82"></stop>			<stop offset="0.54" style="stop-color:#8DCC3D;stop-opacity:0.922"></stop>			<stop offset="0.65" style="stop-color:#8DCC3D;stop-opacity:0.98"></stop>			<stop offset="0.75" style="stop-color:#8DCC3D"></stop>		</linearGradient>		<path id="Trazado_33" style="fill:url(#Trazado_33_00000162320096912745935120000011551232346160052907_);" d="M239.9,40.4h-26.2   v-4.2h22.7L239.9,40.4z"></path>					<linearGradient id="Trazado_34_00000094587511448925849330000011137416078259868321_" gradientUnits="userSpaceOnUse" x1="-486.7856" y1="338.6989" x2="-485.8006" y2="338.6989" gradientTransform="matrix(15.7 0 0 -4.3 7886.5415 1504.0063)">			<stop offset="0" style="stop-color:#FF2644;stop-opacity:0"></stop>			<stop offset="8.000000e-02" style="stop-color:#FF2644;stop-opacity:0.2"></stop>			<stop offset="0.18" style="stop-color:#FF2644;stop-opacity:0.412"></stop>			<stop offset="0.28" style="stop-color:#FF2644;stop-opacity:0.588"></stop>			<stop offset="0.37" style="stop-color:#FF2644;stop-opacity:0.741"></stop>			<stop offset="0.47" style="stop-color:#FF2644;stop-opacity:0.851"></stop>			<stop offset="0.57" style="stop-color:#FF2644;stop-opacity:0.929"></stop>			<stop offset="0.66" style="stop-color:#FF2644;stop-opacity:0.98"></stop>			<stop offset="0.75" style="stop-color:#FF2644"></stop>		</linearGradient>		<path id="Trazado_34" style="fill:url(#Trazado_34_00000094587511448925849330000011137416078259868321_);" d="M259.7,49.8H244   v-4.3h12.1L259.7,49.8z"></path>					<linearGradient id="Trazado_35_00000070116971638507424640000014247128502082839471_" gradientUnits="userSpaceOnUse" x1="-491.0079" y1="342.4611" x2="-490.0279" y2="342.4611" gradientTransform="matrix(17.9 0 0 -4.5 9059.5322 1570.475)">			<stop offset="0" style="stop-color:#B047B3;stop-opacity:0"></stop>			<stop offset="7.000000e-02" style="stop-color:#B047B3;stop-opacity:0.169"></stop>			<stop offset="0.18" style="stop-color:#B047B3;stop-opacity:0.42"></stop>			<stop offset="0.3" style="stop-color:#B047B3;stop-opacity:0.631"></stop>			<stop offset="0.42" style="stop-color:#B047B3;stop-opacity:0.788"></stop>			<stop offset="0.53" style="stop-color:#B047B3;stop-opacity:0.91"></stop>			<stop offset="0.64" style="stop-color:#B047B3;stop-opacity:0.98"></stop>			<stop offset="0.75" style="stop-color:#B047B3"></stop>		</linearGradient>		<path id="Trazado_35" style="fill:url(#Trazado_35_00000070116971638507424640000014247128502082839471_);" d="M288.3,31.6h-17.9   v-4.5h14.2L288.3,31.6z"></path>	</g></g></svg><img src="data:image/png;base64,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" alt="UTN Haedo"></span>
+    <div class="head-tit">
+      <h1>Planificador Académico — Ingeniería Mecánica</h1>
+      <small>UTN Facultad Regional Haedo · Plan 2023 (Ord. 1901/1902) · Horarios 2027</small>
+    </div>
+    <div class="head-acc">
+      <button class="btn" id="btnTema" title="Cambiar entre tema claro y oscuro">🌙</button>
+      <button class="btn" id="btnExportar" title="Descarga tu estado como archivo JSON">⬇ Exportar</button>
+      <button class="btn" id="btnImportar" title="Carga un estado exportado previamente">⬆ Importar</button>
+      <input type="file" id="inpImportar" accept=".json" hidden>
+      <button class="btn peligro" id="btnReiniciar">Reiniciar</button>
+    </div>
+  </div>
+  <div class="franja"><i></i><i></i><i></i><i></i><i></i></div>
+  <nav><div class="nav-int">
+    <button data-vista="materias" class="activa">Materias</button>
+    <button data-vista="grilla">Armar horario</button>
+    <button data-vista="agenda">Agenda<span id="badgeAgenda" class="badge" hidden></span></button>
+    <button data-vista="mapa">Mapa de correlativas</button>
+    <button data-vista="simulador">Simulador de carrera</button>
+    <button data-vista="avance">Mi avance</button>
+  </div></nav>
+</header>
+<main>
+  <div id="bannerInsc"></div>
+  <div id="vista-materias">
+    <div class="filtros">
+      <input type="search" id="buscador" placeholder="Buscar materia…">
+      <div class="seg" id="segFiltro">
+        <button data-f="todas" class="activa">Todas</button>
+        <button data-f="cursables">Puedo cursar</button>
+        <button data-f="rendibles">Puedo rendir</button>
+        <button data-f="pendientes">Pendientes</button>
+      </div>
+      <button class="btn primario" id="btnAutogestion">📋 Importar desde autogestión</button>
+    </div>
+    <div id="contMaterias"></div>
+  </div>
+
+  <div id="vista-grilla" hidden>
+    <h2>Armar horario semanal</h2>
+    <div style="margin-bottom:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <button class="btn primario" id="btnOptimizar">✨ Armar horario automáticamente</button>
+      <button class="btn" id="btnExterna">➕ Agregar materia de otra regional</button>
+      <button class="btn" id="btnActualizarHorarios">🔄 Actualizar horarios</button>
+      <small id="horariosInfo" style="color:var(--gris);font-weight:600"></small>
+    </div>
+    <div class="layout-grilla">
+      <div>
+        <div class="panel">
+          <div class="cab"><h3>Materias que podés cursar</h3></div>
+          <div class="lista-cursables" id="listaCursables"></div>
+        </div>
+        <div class="panel" id="panelExternas" style="margin-top:14px" hidden>
+          <div class="cab"><h3>Materias de otra regional</h3></div>
+          <div id="listaExternas"></div>
+        </div>
+      </div>
+      <div>
+        <div class="panel">
+          <div class="cab">
+            <h3>Semana tipo</h3>
+            <span id="cargaSemanal" style="font-size:12.5px;font-weight:700;color:var(--gris)"></span>
+            <button class="btn" id="btnPng">🖼 Imagen</button>
+            <button class="btn" id="btnIcs">📅 Calendario (.ics)</button>
+          </div>
+          <div class="grilla-scroll"><div class="grilla" id="laGrilla"></div></div>
+        </div>
+        <div class="res-choques" id="resChoques"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="vista-agenda" hidden>
+    <h2>Agenda de exámenes</h2>
+    <p style="margin-bottom:12px;color:var(--muted);max-width:860px">Anotá tus parciales, recuperatorios y entregas. Cada uno te muestra cuántos días faltan
+      y podés dejar una aclaración (qué unidades entran, qué llevar, dónde es).</p>
+    <div style="margin-bottom:14px"><button class="btn primario" id="btnExamen">➕ Agregar examen</button></div>
+    <div id="burbujas"></div>
+    <div id="examenesPasados"></div>
+  </div>
+
+  <div id="vista-mapa" hidden>
+    <h2>Mapa de correlativas</h2>
+    <p style="margin-bottom:10px;color:var(--muted);max-width:860px">Cada materia coloreada por tu estado. Las líneas van de una materia a las que la requieren.
+      Pasá el mouse por una materia para resaltar todo lo que necesitás antes; hacé clic para ver el detalle y cambiar su estado.</p>
+    <div id="mapaLeyenda" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"></div>
+    <div class="panel" style="overflow:auto"><div id="mapaCont" style="padding:8px"></div></div>
+  </div>
+
+  <div id="vista-simulador" hidden>
+    <h2>Simulador de carrera</h2>
+    <p style="margin-bottom:12px;color:var(--muted);max-width:820px">Asigná materias pendientes a los próximos años. El simulador valida las correlatividades en cadena
+      (asume que aprobás todo lo que asignás a años anteriores) y estima tu año de egreso. No valida horarios futuros, porque todavía no existen.</p>
+    <label style="display:inline-flex;gap:7px;align-items:center;margin-bottom:14px;font-weight:600;font-size:13.5px">
+      <input type="checkbox" id="chkAsumir" checked> Asumir que apruebo las materias que estoy cursando en 2027
+    </label>
+    <div class="sim-anios" id="simAnios"></div>
+    <div style="margin-top:12px"><button class="btn primario" id="btnAgregarAnio">+ Agregar año</button></div>
+    <div class="sim-res" id="simRes"></div>
+  </div>
+
+  <div id="vista-avance" hidden>
+    <h2>Mi avance</h2>
+    <div class="tiles" id="tilesAvance"></div>
+    <div class="panel" style="margin-bottom:16px">
+      <div class="cab"><h3>Qué te conviene hacer ahora</h3>
+        <small style="color:var(--gris);font-weight:600">ordenado por cuántas materias te destraba</small></div>
+      <div id="listaRecom"></div>
+    </div>
+    <div class="panel" style="margin-bottom:16px">
+      <div class="cab"><h3>Próximas mesas de finales</h3></div>
+      <div id="listaMesas"></div>
+    </div>
+    <div class="panel" style="margin-bottom:16px">
+      <div class="cab"><h3>Finales que ya podés rendir</h3></div>
+      <div id="listaRendibles"></div>
+    </div>
+  </div>
+</main>
+<footer>
+  Datos: Ordenanzas UTN 1901 y 1902 (plan 2023) + horarios oficiales FRH (horarios.frh.utn.edu.ar).<br>
+  Herramienta no oficial de ayuda a la planificación: confirmá siempre inscripciones y correlatividades en Autogestión.
+</footer>
+<div class="velo" id="velo"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ================= DATOS (generados por construir_app.py) ================= */
+const CATALOGO = {"carrera": "Ingeniería Mecánica - UTN FRH - Plan 2023 (Ord. 1901/1902)", "materias": [{"o": 1, "nombre": "Análisis Matemático I", "nivel": 1, "hs": 5}, {"o": 2, "nombre": "Química General", "nivel": 1, "hs": 5}, {"o": 3, "nombre": "Álgebra y Geometría Analítica", "nivel": 1, "hs": 5}, {"o": 4, "nombre": "Física I", "nivel": 1, "hs": 5}, {"o": 5, "nombre": "Ingeniería y Sociedad", "nivel": 1, "hs": 2}, {"o": 6, "nombre": "Ingeniería Mecánica I (Int)", "nivel": 1, "hs": 2}, {"o": 7, "nombre": "Sistemas de Representación", "nivel": 1, "hs": 3}, {"o": 8, "nombre": "Fundamentos de Informática", "nivel": 1, "hs": 2}, {"o": 9, "nombre": "Materiales No Metálicos", "nivel": 2, "hs": 3}, {"o": 10, "nombre": "Estabilidad I", "nivel": 2, "hs": 4}, {"o": 11, "nombre": "Materiales Metálicos", "nivel": 2, "hs": 5}, {"o": 12, "nombre": "Análisis Matemático II", "nivel": 2, "hs": 5}, {"o": 13, "nombre": "Física II", "nivel": 2, "hs": 5}, {"o": 14, "nombre": "Ingeniería Ambiental y Seguridad Industrial", "nivel": 2, "hs": 3}, {"o": 15, "nombre": "Ingeniería Mecánica II (Int)", "nivel": 2, "hs": 2}, {"o": 16, "nombre": "Inglés I", "nivel": 2, "hs": 2}, {"o": 17, "nombre": "Termodinámica", "nivel": 3, "hs": 5}, {"o": 18, "nombre": "Mecánica Racional", "nivel": 3, "hs": 5}, {"o": 19, "nombre": "Estabilidad II", "nivel": 3, "hs": 4}, {"o": 20, "nombre": "Mediciones y Ensayos", "nivel": 3, "hs": 4}, {"o": 21, "nombre": "Diseño Mecánico", "nivel": 3, "hs": 3}, {"o": 22, "nombre": "Cálculo Avanzado", "nivel": 3, "hs": 3}, {"o": 23, "nombre": "Ingeniería Mecánica III (Int)", "nivel": 3, "hs": 2}, {"o": 24, "nombre": "Probabilidad y Estadística", "nivel": 3, "hs": 3}, {"o": 25, "nombre": "Inglés II", "nivel": 3, "hs": 2}, {"o": 26, "nombre": "Economía", "nivel": 4, "hs": 3}, {"o": 27, "nombre": "Elementos de Máquinas (Int)", "nivel": 4, "hs": 5}, {"o": 28, "nombre": "Tecnología del Calor", "nivel": 4, "hs": 3}, {"o": 29, "nombre": "Metrología e Ingeniería de Calidad", "nivel": 4, "hs": 4}, {"o": 30, "nombre": "Mecánica de los Fluidos", "nivel": 4, "hs": 4}, {"o": 31, "nombre": "Electrotecnia y Máquinas Eléctricas", "nivel": 4, "hs": 4}, {"o": 32, "nombre": "Electrónica y Sistemas de Control", "nivel": 4, "hs": 5}, {"o": 33, "nombre": "Estabilidad III", "nivel": 4, "hs": 3}, {"o": 34, "nombre": "Tecnología de Fabricación", "nivel": 5, "hs": 5}, {"o": 35, "nombre": "Máquinas Alternativas y Turbomáquinas", "nivel": 5, "hs": 4}, {"o": 36, "nombre": "Instalaciones Industriales", "nivel": 5, "hs": 5}, {"o": 37, "nombre": "Organización Industrial", "nivel": 5, "hs": 3}, {"o": 38, "nombre": "Legislación", "nivel": 5, "hs": 2}, {"o": 39, "nombre": "Mantenimiento", "nivel": 5, "hs": 2}, {"o": 40, "nombre": "Proyecto Final (Int)", "nivel": 5, "hs": 5}, {"o": 101, "nombre": "Introducción a la Energía Nuclear (Elec.)", "nivel": 4, "hs": 4, "electiva": true}, {"o": 102, "nombre": "Valuación de Activos para Empresas Industriales (Elec.)", "nivel": 4, "hs": 4, "electiva": true}, {"o": 103, "nombre": "Diseño y Servicio de Componentes a Presión (Elec.)", "nivel": 4, "hs": 5, "electiva": true}, {"o": 104, "nombre": "Introducción a la Inteligencia Artificial (Elec.)", "nivel": 4, "hs": 4, "electiva": true}, {"o": 105, "nombre": "Circuitos Oleohidráulicos y Neumáticos (Elec.)", "nivel": 4, "hs": 3, "electiva": true, "alias": ["Circuitos Hidráulicos y Neumáticos"]}, {"o": 106, "nombre": "Automatización y Control (Elec.)", "nivel": 5, "hs": 3, "electiva": true}, {"o": 107, "nombre": "Servomecanismos y Robótica (Elec.)", "nivel": 5, "hs": 3, "electiva": true}, {"o": 108, "nombre": "Introducción al Desgaste Mecánico (Elec.)", "nivel": 5, "hs": 4, "electiva": true}, {"o": 109, "nombre": "Tecnología de la Soldadura e Integridad Estructural (Elec.)", "nivel": 5, "hs": 5, "electiva": true}, {"o": 110, "nombre": "Introducción a las Energías Renovables (Elec.)", "nivel": 5, "hs": 2, "electiva": true}], "correlativas": {"9": {"c": [2, 4], "a": []}, "10": {"c": [1, 3, 4], "a": []}, "11": {"c": [2, 4], "a": []}, "12": {"c": [1, 3], "a": []}, "13": {"c": [1, 4], "a": []}, "14": {"c": [2, 4], "a": []}, "15": {"c": [4, 6], "a": []}, "17": {"c": [12, 13], "a": [1, 3, 4]}, "18": {"c": [10, 12], "a": [1, 3, 4]}, "19": {"c": [10, 12], "a": [1, 3, 4]}, "20": {"c": [10, 11, 13], "a": [1, 4]}, "21": {"c": [9, 10, 11], "a": [4, 6, 7, 8]}, "22": {"c": [12], "a": [1, 3, 8]}, "23": {"c": [9, 11, 15], "a": [1, 2, 4, 6]}, "24": {"c": [1, 3], "a": []}, "25": {"c": [], "a": [16]}, "26": {"c": [15], "a": [5]}, "27": {"c": [9, 11, 18, 19, 23], "a": [2, 10, 12]}, "28": {"c": [17], "a": [12, 13]}, "29": {"c": [20, 24], "a": [3, 11, 13]}, "30": {"c": [17], "a": [12, 13]}, "31": {"c": [12, 13], "a": [1, 3, 4]}, "32": {"c": [12, 13, 22], "a": [1, 3, 4]}, "33": {"c": [19], "a": [1, 3, 4, 10]}, "34": {"c": [27, 29], "a": [9, 10, 11, 21]}, "35": {"c": [28], "a": [13, 17]}, "36": {"c": [20, 28, 30, 31, 32], "a": [10, 14, 17]}, "37": {"c": [26], "a": [15]}, "38": {"c": [15], "a": [5]}, "39": {"c": [20, 26, 27], "a": [11, 13, 18, 19]}, "40": {"c": [27, 29, 31, 32], "a": [18, 19, 20, 21]}, "101": {"c": [], "a": [17, 28]}, "102": {"c": [34, 27], "a": []}, "103": {"c": [11, 19], "a": [2, 10, 12]}, "105": {"c": [23], "a": [13]}, "106": {"c": [31], "a": [13]}, "107": {"c": [30, 31, 32], "a": []}, "108": {"c": [11, 20], "a": []}, "109": {"c": [11, 20], "a": [2, 13, 19, 12]}, "110": {"c": [], "a": []}}, "mesas": [{"nombre": "Febrero–Marzo 2026", "desde": "2026-02-18", "hasta": "2026-03-10", "llamados": 3, "inscDesde": "2026-02-09", "inscHasta": "2026-03-06"}, {"nombre": "Mayo 2026", "desde": "2026-05-04", "hasta": "2026-05-09", "llamados": 1, "inscDesde": "2026-04-20", "inscHasta": "2026-04-25"}, {"nombre": "Julio–Agosto 2026", "desde": "2026-07-27", "hasta": "2026-08-08", "llamados": 2, "inscDesde": "2026-07-20", "inscHasta": "2026-08-05"}, {"nombre": "Septiembre 2026", "desde": "2026-09-14", "hasta": "2026-09-19", "llamados": 1, "inscDesde": "2026-08-31", "inscHasta": "2026-09-05"}, {"nombre": "Noviembre–Diciembre 2026", "desde": "2026-11-30", "hasta": "2026-12-22", "llamados": 3, "inscDesde": "2026-11-23", "inscHasta": "2026-12-16"}, {"nombre": "Febrero–Marzo 2027", "desde": "2027-02-16", "hasta": "2027-03-10", "llamados": 3, "inscDesde": "2027-02-09", "inscHasta": "2027-03-06"}], "reglasEspeciales": {"40": "Para rendir Proyecto Final se requieren aprobadas TODAS las asignaturas previas del plan.", "101": "Correlativas según el programa analítico de la electiva (Res. CD, plan 94 modificado). Verificá en el Departamento antes de inscribirte.", "102": "Correlativas según Res. CD 112/2024 (plan 94 modificado, vigencia 2024-2027). Verificá en el Departamento antes de inscribirte.", "103": "Correlativas según Res. CD 137/2021 (programa del plan 94). Verificá en el Departamento antes de inscribirte.", "104": "Todavía no cargamos sus correlativas: el programa analítico que tenemos corresponde a «Fundamentos de la Inteligencia Artificial» de Ingeniería Aeronáutica, que es otra asignatura.", "105": "Correlativas según Res. CD 137/2021 (programa del plan 94). El encabezado de ese programa dice «Ingeniería Electrónica», pero la resolución la aprueba como electiva de Mecánica.", "106": "Correlativas según Res. CD 137/2021 (programa del plan 94). Verificá en el Departamento antes de inscribirte.", "107": "Correlativas según Res. CD 137/2021 (programa del plan 94). Verificá en el Departamento antes de inscribirte.", "108": "Correlativas según Res. CD 112/2024, que renovó la materia como «Introducción al Desgaste Mecánico» (vigencia 2024-2027) y reemplazó las correlativas del programa 2021.", "109": "Correlativas según Res. CD 137/2021 (plan 94). Ojo: ese programa lista Estabilidad II como cursada y también como aprobada; acá se toma el criterio más exigente (aprobada).", "110": "Res. CD 112/2024 (vigencia 2024-2027): el programa analítico no declara pre-requisitos.", "pps": "La Práctica Profesional Supervisada exige los mismos requisitos que la inscripción a Proyecto Final.", "electivas": "Se deben cubrir 10 hs cátedra semanales de electivas (240 hs reloj); las cuatrimestrales computan la mitad."}};
+const COMISIONES_RAW = {"fuente": "https://horarios.frh.utn.edu.ar/", "comisiones": [{"curso": "1M12", "materia": "Análisis Matemático I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["ALZUGARAY, Ariel Osvaldo"], "bloques": [{"dia": 4, "inicio": 465, "fin": 705, "aula": "107"}]}, {"curso": "1M7", "materia": "Análisis Matemático I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["MARTINEZ, Norma Beatriz", "ZACCO, Silvia Beatriz"], "bloques": [{"dia": 4, "inicio": 465, "fin": 705, "aula": "117"}]}, {"curso": "1M8", "materia": "Análisis Matemático I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["SCORZO, Roxana"], "bloques": [{"dia": 1, "inicio": 1110, "fin": 1350, "aula": "204"}]}, {"curso": "H", "materia": "Análisis Matemático I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["CANELO, Guillermo Eduardo"], "bloques": [{"dia": 2, "inicio": 465, "fin": 705, "aula": "312"}]}, {"curso": "I", "materia": "Análisis Matemático I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["CATALANO, Angel Fabian", "TOLABA, Gladys Maribel"], "bloques": [{"dia": 2, "inicio": 1110, "fin": 1350, "aula": "215"}]}, {"curso": "J", "materia": "Análisis Matemático I", "plan": "2023", "dictado": "1", "compartida": false, "modalidad": "presencial", "docentes": ["BODEMAN, Gladys Clara", "BERNASCONI, Maria Teresa"], "bloques": [{"dia": 2, "inicio": 1110, "fin": 1350, "aula": "301"}, {"dia": 4, "inicio": 1110, "fin": 1350, "aula": "301"}]}, {"curso": "K", "materia": "Análisis Matemático I", "plan": "2023", "dictado": "2", "compartida": false, "modalidad": "presencial", "docentes": ["BODEMAN, Gladys Clara", "PEREYRA, Javier", "BERNASCONI, Maria Teresa"], "bloques": [{"dia": 2, "inicio": 1110, "fin": 1350, "aula": "301"}, {"dia": 4, "inicio": 1110, "fin": 1350, "aula": "301"}]}, {"curso": "L", "materia": "Análisis Matemático I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["D'AMICO, Beatríz del Carmen"], "bloques": [{"dia": 5, "inicio": 465, "fin": 705, "aula": "312"}]}, {"curso": "M", "materia": "Análisis Matemático I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["MOYA, Antonio Manuel", "LANATA, Leonardo Javier"], "bloques": [{"dia": 5, "inicio": 1110, "fin": 1350, "aula": "301"}]}, {"curso": "N", "materia": "Análisis Matemático I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["POLO, Fabian Roberto"], "bloques": [{"dia": 1, "inicio": 1110, "fin": 1350, "aula": "303"}]}, {"curso": "2M5", "materia": "Análisis Matemático II", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["CAVALLARO, Francisco"], "bloques": [{"dia": 4, "inicio": 1110, "fin": 1350, "aula": "215"}]}, {"curso": "EM3", "materia": "Automatización y Control (Elec.)", "plan": "94", "dictado": "A", "compartida": true, "modalidad": "presencial", "docentes": ["SZERMAN, Javier"], "bloques": [{"dia": 1, "inicio": 1065, "fin": 1200, "aula": "Lab. Electrotec."}]}, {"curso": "EM2", "materia": "Circuitos Oleohidráulicos y Neumáticos (Elec.)", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["LETA, Miguel Angel Luis", "MOGLIANI, Nicolas"], "bloques": [{"dia": 6, "inicio": 525, "fin": 675, "aula": "Lab. Fluidos"}]}, {"curso": "3M3", "materia": "Cálculo Avanzado", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["VILELLA, Damian Ariel"], "bloques": [{"dia": 2, "inicio": 1260, "fin": 1395, "aula": "107"}]}, {"curso": "3M3", "materia": "Diseño Mecánico", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["FERNANDEZ, Javier Gustavo", "GONZALEZ, Pablo Martin"], "bloques": [{"dia": 2, "inicio": 1065, "fin": 1200, "aula": "107"}]}, {"curso": "EM1", "materia": "Diseño y Servicio de Componentes a Presión (Elec.)", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["ELVIRA, Gustavo", "TUREL, Alejandro Mario"], "bloques": [{"dia": 6, "inicio": 525, "fin": 765, "aula": "201"}]}, {"curso": "4M3", "materia": "Economía", "plan": "94", "dictado": "A", "compartida": true, "modalidad": "presencial", "docentes": ["ROIZMAN, Nestor Isaac"], "bloques": [{"dia": 2, "inicio": 1020, "fin": 1185, "aula": "117"}]}, {"curso": "4M33", "materia": "Economía", "plan": "94", "dictado": "A", "compartida": true, "modalidad": "presencial", "docentes": ["ROIZMAN, Nestor Isaac"], "bloques": [{"dia": 2, "inicio": 1020, "fin": 1185, "aula": "117"}]}, {"curso": "3M3", "materia": "Electrotecnia y Máquinas Eléctricas", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["RAFFAELE, Pascual Miguel", "MASSOLO, Juan Jose"], "bloques": [{"dia": 3, "inicio": 1065, "fin": 1245, "aula": "107"}]}, {"curso": "4M3", "materia": "Electrónica y Sistemas de Control", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["RZEPA, José Antonio", "MARIN, Alberto Sebastian"], "bloques": [{"dia": 3, "inicio": 1110, "fin": 1305, "aula": "117"}]}, {"curso": "4M3", "materia": "Elementos de Máquinas", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["BARONE, Marcelo Lucas", "CONTINI, Jorge Fernando"], "bloques": [{"dia": 1, "inicio": 1110, "fin": 1350, "aula": "117"}]}, {"curso": "2M10", "materia": "Estabilidad I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["CARBONE, Fabián Carmelo", "CHIACCHIO, Christian Miguel"], "bloques": [{"dia": 1, "inicio": 1110, "fin": 1305, "aula": "115"}]}, {"curso": "2M5", "materia": "Estabilidad I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["ROSSI, Mauricio Héctor"], "bloques": [{"dia": 1, "inicio": 1200, "fin": 1395, "aula": "215"}]}, {"curso": "3M3", "materia": "Estabilidad II", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["PERGOLA, Fabian Gerardo", "ROCCHINO, Alberto Vicente"], "bloques": [{"dia": 1, "inicio": 1110, "fin": 1305, "aula": "107"}]}, {"curso": "4M3", "materia": "Estabilidad III", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["PERGOLA, Fabian Gerardo", "ROCCHINO, Alberto Vicente"], "bloques": [{"dia": 5, "inicio": 1065, "fin": 1200, "aula": "117"}]}, {"curso": "1M12", "materia": "Fundamentos de Informática", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["PEREZ BERRO, Cristina", "ZAVALA, Laura Marcela"], "bloques": [{"dia": 2, "inicio": 555, "fin": 660, "aula": "107"}]}, {"curso": "1M7", "materia": "Fundamentos de Informática", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["PEREZ BERRO, Cristina", "ZAVALA, Ruben Alejandro"], "bloques": [{"dia": 2, "inicio": 660, "fin": 750, "aula": "117"}]}, {"curso": "1M8", "materia": "Fundamentos de Informática", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["PLA, Juan Pablo"], "bloques": [{"dia": 2, "inicio": 1200, "fin": 1305, "aula": "204"}]}, {"curso": "1M12", "materia": "Física I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["ESPIÑEIRA, Pablo Ariel", "MARIN, Alberto Sebastian"], "bloques": [{"dia": 1, "inicio": 465, "fin": 705, "aula": "107"}]}, {"curso": "1M7", "materia": "Física I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["COMPANYS, María Laura"], "bloques": [{"dia": 1, "inicio": 465, "fin": 705, "aula": "117"}]}, {"curso": "1M8", "materia": "Física I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["OCAMPO, Diego José"], "bloques": [{"dia": 5, "inicio": 1110, "fin": 1350, "aula": "204"}]}, {"curso": "O", "materia": "Física I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["GONZALEZ SELIGRA, Paula"], "bloques": [{"dia": 4, "inicio": 465, "fin": 705, "aula": "304"}]}, {"curso": "P", "materia": "Física I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["ESPIÑEIRA, Pablo Ariel"], "bloques": [{"dia": 5, "inicio": 465, "fin": 705, "aula": "304"}]}, {"curso": "Q", "materia": "Física I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["AIELLO, Matias"], "bloques": [{"dia": 4, "inicio": 1110, "fin": 1350, "aula": "303"}]}, {"curso": "R", "materia": "Física I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["ANCE, Luis Marcelo"], "bloques": [{"dia": 3, "inicio": 1110, "fin": 1350, "aula": "305"}]}, {"curso": "S", "materia": "Física I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["AIELLO, Matias"], "bloques": [{"dia": 1, "inicio": 1110, "fin": 1350, "aula": "201"}]}, {"curso": "2M5", "materia": "Física II", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["LASORSA, Carlos Alberto", "PINEDA RAMOS, Pedro"], "bloques": [{"dia": 3, "inicio": 1110, "fin": 1350, "aula": "201"}]}, {"curso": "2M10", "materia": "Ingeniería Ambiental y Seguridad Industrial", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["MAZZEI, Edgardo Marcelo"], "bloques": [{"dia": 3, "inicio": 1110, "fin": 1245, "aula": "312"}]}, {"curso": "2M5", "materia": "Ingeniería Ambiental y Seguridad Industrial", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["MAZZEI, Edgardo Marcelo"], "bloques": [{"dia": 1, "inicio": 1065, "fin": 1200, "aula": "215"}]}, {"curso": "1M12", "materia": "Ingeniería Mecánica I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["ZAMBERLAN, Adrian Emilio"], "bloques": [{"dia": 2, "inicio": 465, "fin": 555, "aula": "107"}]}, {"curso": "1M7", "materia": "Ingeniería Mecánica I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["ZAVALA, Ruben Alejandro"], "bloques": [{"dia": 2, "inicio": 465, "fin": 555, "aula": "117"}]}, {"curso": "1M8", "materia": "Ingeniería Mecánica I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["DI TROLIO, Adrian Hector"], "bloques": [{"dia": 2, "inicio": 1110, "fin": 1200, "aula": "204"}]}, {"curso": "2M5", "materia": "Ingeniería Mecánica II", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["FERRE, Néstor A.", "GAGLIARDI, Ariel Jorge"], "bloques": [{"dia": 2, "inicio": 1260, "fin": 1350, "aula": "201"}]}, {"curso": "3M3", "materia": "Ingeniería Mecánica III", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["GAGLIARDI, Ariel Jorge", "DI TROLIO, Adrian Hector"], "bloques": [{"dia": 5, "inicio": 1110, "fin": 1200, "aula": "107"}]}, {"curso": "1M12", "materia": "Ingeniería y Sociedad", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["GONZALEZ, Maria Julia"], "bloques": [{"dia": 2, "inicio": 660, "fin": 750, "aula": "218"}]}, {"curso": "1M7", "materia": "Ingeniería y Sociedad", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["TILLI GENERO, Patricia"], "bloques": [{"dia": 2, "inicio": 555, "fin": 645, "aula": "117"}]}, {"curso": "1M8", "materia": "Ingeniería y Sociedad", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["GIMENEZ, Santiago Javier"], "bloques": [{"dia": 2, "inicio": 1305, "fin": 1395, "aula": "204"}]}, {"curso": "IN1-M1", "materia": "Inglés I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["LUDMAN, Alejandra"], "bloques": [{"dia": 4, "inicio": 930, "fin": 1020, "aula": "304"}]}, {"curso": "IN1-M2", "materia": "Inglés I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["VALLINA, Virginia"], "bloques": [{"dia": 1, "inicio": 1020, "fin": 1110, "aula": "309"}]}, {"curso": "IN1-M3", "materia": "Inglés I", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["LUDMAN, Alejandra"], "bloques": [{"dia": 1, "inicio": 1020, "fin": 1110, "aula": "308"}]}, {"curso": "IN2-M1", "materia": "Inglés II", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["ROTCHEN, Nancy Edith"], "bloques": [{"dia": 6, "inicio": 720, "fin": 810, "aula": "320"}]}, {"curso": "5MNP", "materia": "Instalaciones Industriales", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["ONOFRI, Esteban Andres", "HORDIJ JIMENEZ, Gabriel"], "bloques": [{"dia": 4, "inicio": 1110, "fin": 1350, "aula": "115"}]}, {"curso": "EM1", "materia": "Introducción a la Energía Nuclear (Elec.)", "plan": "2023", "dictado": "2", "compartida": false, "modalidad": "virtual", "docentes": ["RABINSTEIN, Mariano"], "bloques": [{"dia": 1, "inicio": 1110, "fin": 1305, "aula": "Virtual"}]}, {"curso": "EM2", "materia": "Introducción a la Inteligencia Artificial (Elec.)", "plan": "2023", "dictado": "2", "compartida": false, "modalidad": "virtual", "docentes": ["KAMLOFSKY, Jorge"], "bloques": [{"dia": 2, "inicio": 1110, "fin": 1305, "aula": "Virtual"}]}, {"curso": "EM3", "materia": "Introducción al Desgaste Mecánico (Elec.)", "plan": "94", "dictado": "1", "compartida": true, "modalidad": "presencial", "docentes": ["ZANIN, Maximiliano"], "bloques": [{"dia": 6, "inicio": 480, "fin": 675, "aula": "301"}]}, {"curso": "5M3", "materia": "Legislación", "plan": "94", "dictado": "A", "compartida": true, "modalidad": "presencial", "docentes": ["LOUTEIRO, Enrique Miguel"], "bloques": [{"dia": 3, "inicio": 1260, "fin": 1395, "aula": "115"}]}, {"curso": "5MNP", "materia": "Mantenimiento", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["PISTARELLI, Alejandro Jorge", "CACERES, Sebastian Ariel"], "bloques": [{"dia": 5, "inicio": 1065, "fin": 1155, "aula": "115"}]}, {"curso": "2M10", "materia": "Materiales Metálicos", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["WOLOJ, Sergio A."], "bloques": [{"dia": 5, "inicio": 1110, "fin": 1350, "aula": "305"}]}, {"curso": "2M5", "materia": "Materiales Metálicos", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["ALVAREZ VILLAR, Horacio Nelson", "FAVA, Javier Oscar"], "bloques": [{"dia": 5, "inicio": 1110, "fin": 1350, "aula": "101"}]}, {"curso": "2M10", "materia": "Materiales No Metálicos", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["ZAVALA, Ruben Alejandro", "CHIARAVALLOTI, Alejandro Pablo"], "bloques": [{"dia": 2, "inicio": 1260, "fin": 1395, "aula": "308"}]}, {"curso": "2M12", "materia": "Materiales No Metálicos", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["ZAVALA, Ruben Alejandro", "CHIARAVALLOTI, Alejandro Pablo"], "bloques": [{"dia": 3, "inicio": 960, "fin": 1095, "aula": "115"}]}, {"curso": "2M5", "materia": "Materiales No Metálicos", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["ZAVALA, Ruben Alejandro", "CHIARAVALLOTI, Alejandro Pablo"], "bloques": [{"dia": 2, "inicio": 1110, "fin": 1245, "aula": "308"}]}, {"curso": "3M3", "materia": "Mecánica Racional", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["BAÑOS, Pablo Ezequiel"], "bloques": [{"dia": 6, "inicio": 480, "fin": 720, "aula": "107"}]}, {"curso": "4M3", "materia": "Mecánica de los Fluídos", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["CASTELLO, Nahuel Matias", "MERONIUC, Matias"], "bloques": [{"dia": 4, "inicio": 1200, "fin": 1395, "aula": "117"}]}, {"curso": "3M3", "materia": "Mediciones y Ensayos", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["CAMBIASSO, Francisco Adrian", "GARCIA, Gonzalo Sebastian"], "bloques": [{"dia": 5, "inicio": 1200, "fin": 1395, "aula": "107"}]}, {"curso": "4M3", "materia": "Metrología e Ingeniería de Calidad", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["VILLARIO, Luis Antonio", "SIROLLI, Agustin"], "bloques": [{"dia": 5, "inicio": 1200, "fin": 1395, "aula": "117"}]}, {"curso": "5MNP", "materia": "Máquinas Alternativas y Turbomáquinas", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["PETRUSELLI, Santiago Gabriel", "PEREZ, Pablo César"], "bloques": [{"dia": 5, "inicio": 1155, "fin": 1350, "aula": "115"}]}, {"curso": "5MNP", "materia": "Organización Industrial", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["KOLAROVIC, Jorge Daniel", "ONOFRI, Esteban Andres"], "bloques": [{"dia": 3, "inicio": 1110, "fin": 1245, "aula": "115"}]}, {"curso": "3M3", "materia": "Probabilidad y Estadística", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["GIL, Javier Luis"], "bloques": [{"dia": 3, "inicio": 1260, "fin": 1395, "aula": "107"}]}, {"curso": "5MNP", "materia": "Proyecto Final", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["GARCIA, Gonzalo Sebastian", "CONTINI, Jorge Fernando"], "bloques": [{"dia": 2, "inicio": 1110, "fin": 1350, "aula": "115"}]}, {"curso": "1M12", "materia": "Química General", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["QUAGLIANO AMADO, Javier Oscar"], "bloques": [{"dia": 3, "inicio": 465, "fin": 705, "aula": "107"}]}, {"curso": "1M7", "materia": "Química General", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["MORGADA, María Eugenia"], "bloques": [{"dia": 3, "inicio": 465, "fin": 705, "aula": "117"}]}, {"curso": "1M8", "materia": "Química General", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["QUAGLIANO AMADO, Javier Oscar"], "bloques": [{"dia": 3, "inicio": 1110, "fin": 1350, "aula": "204"}]}, {"curso": "T", "materia": "Química General", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["PERILLO, Patricia María"], "bloques": [{"dia": 4, "inicio": 465, "fin": 705, "aula": "309"}]}, {"curso": "U", "materia": "Química General", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["MORAIS, Marisa"], "bloques": [{"dia": 3, "inicio": 1110, "fin": 1350, "aula": "303"}]}, {"curso": "V", "materia": "Química General", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["MORAIS, Marisa"], "bloques": [{"dia": 1, "inicio": 1110, "fin": 1350, "aula": "305"}]}, {"curso": "W", "materia": "Química General", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["Buitrago emanuel, Emiliano Francisco"], "bloques": [{"dia": 4, "inicio": 1110, "fin": 1350, "aula": "201"}]}, {"curso": "X", "materia": "Química General", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["RUGGIRELLO, Gabriel Raul"], "bloques": [{"dia": 5, "inicio": 1110, "fin": 1350, "aula": "215"}]}, {"curso": "EM3", "materia": "Servomecanismos y Robótica (Elec.)", "plan": "94", "dictado": "A", "compartida": true, "modalidad": "presencial", "docentes": ["TRENCHI, Alejandro", "INGRAO, Jose Dario"], "bloques": [{"dia": 1, "inicio": 1200, "fin": 1350, "aula": "Lab. Aut. Y Ctrol."}]}, {"curso": "1M12", "materia": "Sistemas de Representación", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["VARRENTI, Carlos Gaston"], "bloques": [{"dia": 6, "inicio": 480, "fin": 615, "aula": "312"}]}, {"curso": "1M7", "materia": "Sistemas de Representación", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["VARRENTI, Carlos Gaston"], "bloques": [{"dia": 6, "inicio": 630, "fin": 765, "aula": "312"}]}, {"curso": "1M8", "materia": "Sistemas de Representación", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["LOPEZ, Emiliano Ezequiel"], "bloques": [{"dia": 6, "inicio": 630, "fin": 765, "aula": "117"}]}, {"curso": "4M3-R", "materia": "Tecnología de Fabricación", "plan": "94", "dictado": "A", "compartida": true, "modalidad": "presencial", "docentes": ["BRUNETTO, Pedro Carlos", "MARTINEZ KRAHMER, Daniel"], "bloques": [{"dia": 2, "inicio": 1200, "fin": 1395, "aula": "117"}]}, {"curso": "EM4", "materia": "Tecnología de la soldadura e integridad estructural (Elec)", "plan": "94", "dictado": "A", "compartida": true, "modalidad": "presencial", "docentes": ["ASTA, Eduardo Pablo", "CAMBIASSO, Francisco Adrián"], "bloques": [{"dia": 1, "inicio": 1110, "fin": 1350, "aula": "316"}]}, {"curso": "4M3", "materia": "Tecnología del Calor", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["VITA, Patricia Mabel", "MARTINO, Nelson Osmar"], "bloques": [{"dia": 4, "inicio": 1065, "fin": 1200, "aula": "117"}]}, {"curso": "3M3", "materia": "Termodinámica", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["LOPES PATRAO, Gustavo Ariel", "GALASSO, Sebastián Martín"], "bloques": [{"dia": 4, "inicio": 1110, "fin": 1350, "aula": "107"}]}, {"curso": "EM1", "materia": "Valuación de Activos para Empresas Industriales (Elec.)", "plan": "2023", "dictado": "2", "compartida": false, "modalidad": "virtual", "docentes": ["DI PAOLANTONIO, Aldo"], "bloques": [{"dia": 3, "inicio": 1155, "fin": 1350, "aula": "Virtual"}]}, {"curso": "1M12", "materia": "Álgebra y Geometría Analítica", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["REIMER, Claudia"], "bloques": [{"dia": 5, "inicio": 465, "fin": 705, "aula": "107"}]}, {"curso": "1M7", "materia": "Álgebra y Geometría Analítica", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["MUSSO, Mabel Catalina"], "bloques": [{"dia": 5, "inicio": 465, "fin": 705, "aula": "117"}]}, {"curso": "1M8", "materia": "Álgebra y Geometría Analítica", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["KAMLOFSKY, Jorge"], "bloques": [{"dia": 4, "inicio": 1110, "fin": 1350, "aula": "204"}]}, {"curso": "A", "materia": "Álgebra y Geometría Analítica", "plan": "2023", "dictado": "1", "compartida": false, "modalidad": "presencial", "docentes": ["MUSSO, Mabel Catalina", "PEREZ, Cristina María"], "bloques": [{"dia": 2, "inicio": 510, "fin": 750, "aula": "301"}, {"dia": 4, "inicio": 510, "fin": 750, "aula": "313"}]}, {"curso": "B", "materia": "Álgebra y Geometría Analítica", "plan": "2023", "dictado": "2", "compartida": false, "modalidad": "presencial", "docentes": ["PEREZ, María Cristina"], "bloques": [{"dia": 2, "inicio": 510, "fin": 750, "aula": "301"}, {"dia": 4, "inicio": 510, "fin": 750, "aula": "313"}]}, {"curso": "C", "materia": "Álgebra y Geometría Analítica", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["D'AMICO, Beatríz del Carmen"], "bloques": [{"dia": 3, "inicio": 1110, "fin": 1350, "aula": "203"}]}, {"curso": "D", "materia": "Álgebra y Geometría Analítica", "plan": "2023", "dictado": "1", "compartida": false, "modalidad": "presencial", "docentes": ["DE LUCA, Alejandro Guido", "REIMER, Claudia"], "bloques": [{"dia": 2, "inicio": 1110, "fin": 1350, "aula": "305"}, {"dia": 4, "inicio": 1110, "fin": 1350, "aula": "305"}]}, {"curso": "E", "materia": "Álgebra y Geometría Analítica", "plan": "2023", "dictado": "2", "compartida": false, "modalidad": "presencial", "docentes": ["REIMER, Claudia", "DE LUCA, Alejandro Guido"], "bloques": [{"dia": 2, "inicio": 1110, "fin": 1350, "aula": "305"}, {"dia": 4, "inicio": 1110, "fin": 1350, "aula": "305"}]}, {"curso": "F", "materia": "Álgebra y Geometría Analítica", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["TOLABA, Gladys Maribel"], "bloques": [{"dia": 5, "inicio": 1110, "fin": 1350, "aula": "303"}]}, {"curso": "G", "materia": "Álgebra y Geometría Analítica", "plan": "2023", "dictado": "A", "compartida": false, "modalidad": "presencial", "docentes": ["MUSSO, Mabel Catalina", "BENITEZ, Maria Tatiana"], "bloques": [{"dia": 1, "inicio": 1110, "fin": 1350, "aula": "301"}]}]};
+const CICLO = "2027";
+
+/* ================= ÍNDICES ================= */
+const norm = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+  .replace(/\s*\((int|elec)\.?\)\s*/gi," ").replace(/\s+/g," ").trim().toLowerCase();
+const MATERIAS = CATALOGO.materias;
+const porOrden = Object.fromEntries(MATERIAS.map(m=>[m.o,m]));
+const porNombre = Object.fromEntries(MATERIAS.map(m=>[norm(m.nombre),m.o]));
+const CORR = {};
+for (const [o,c] of Object.entries(CATALOGO.correlativas)) CORR[+o]=c;
+function construirComisiones(arr){
+  return arr.map((c,i)=>({...c,id:i,orden:porNombre[norm(c.materia)]})).filter(c=>c.orden!==undefined);
+}
+let COMISIONES = construirComisiones(COMISIONES_RAW.comisiones);
+// Comisiones manuales (materias cursadas en otra regional), definidas por el usuario.
+function manualesComs(){
+  return (ST.manuales||[]).map(m=>({
+    manual:true, mid:m.mid, orden:porNombre[norm(m.materia)], curso:m.regional||"Otra regional",
+    materia:m.materia, plan:"", dictado:"A", compartida:false, modalidad:"presencial",
+    regional:m.regional||"", docentes:m.profesor?[m.profesor]:[], bloques:m.bloques||[]
+  })).filter(c=>c.orden!==undefined);
+}
+const todasComs = () => COMISIONES.concat(manualesComs());
+const comsDe = o => todasComs().filter(c=>c.orden===o);
+const DIAS = ["","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+const hm = m => `${Math.floor(m/60)}:${String(m%60).padStart(2,"0")}`;
+const ESTADOS = {
+  sin:{txt:"Sin cursar",cls:"est-sin"},
+  cursando:{txt:"Cursando",cls:"est-cursando"},
+  regular:{txt:"Regularizada",cls:"est-regular"},
+  aprobada:{txt:"Aprobada",cls:"est-aprobada"},
+  desaprobada:{txt:"Desaprobada",cls:"est-desaprobada"},
+};
+
+/* ================= ESTADO PERSISTIDO ================= */
+const CLAVE="planificador-mecanica-frh-v1";
+let ST = {version:1, estados:{}, notas:{}, aplazos:{}, grilla:{}, sim:{asumir:true, anios:[]}, manuales:[], horarios:null, examenes:[], _mseq:0, _eseq:0};
+function cargar(){ try{ const raw=localStorage.getItem(CLAVE); if(raw){ const d=JSON.parse(raw); if(d&&d.version===1){ ST={...ST,...d};
+  if(!Array.isArray(ST.manuales)) ST.manuales=[]; if(!ST.notas) ST.notas={}; if(!ST.aplazos) ST.aplazos={};
+  if(!Array.isArray(ST.examenes)) ST.examenes=[];
+  if(ST.horarios&&Array.isArray(ST.horarios.comisiones)&&ST.horarios.comisiones.length) COMISIONES=construirComisiones(ST.horarios.comisiones);
+} } }catch(e){} }
+function guardar(){
+  // Invariante: una comisión elegida en la grilla solo tiene sentido mientras la
+  // materia está "cursando". Los caminos masivos (marcar nivel aprobado, importar
+  // autogestión) cambian estados sin pasar por el modal, y dejaban bloques fantasma.
+  for (const o of Object.keys(ST.grilla)) if ((ST.estados[o]||"sin")!=="cursando") delete ST.grilla[o];
+  try{ localStorage.setItem(CLAVE,JSON.stringify(ST)); }catch(e){}
+}
+const est = o => ST.estados[o]||"sin";
+
+/* ================= MOTOR DE CORRELATIVAS ================= */
+const cursadaOk = o => ["regular","aprobada"].includes(est(o));
+const aprobada = o => est(o)==="aprobada";
+function faltanCursar(o){
+  const c = CORR[o]||{c:[],a:[]};
+  return { cur: c.c.filter(x=>!cursadaOk(x)), apr: c.a.filter(x=>!aprobada(x)) };
+}
+function puedeCursar(o){
+  if (!["sin","desaprobada"].includes(est(o))) return false;
+  const f = faltanCursar(o); return !f.cur.length && !f.apr.length;
+}
+function faltanRendir(o){
+  if (o===40) return MATERIAS.filter(m=>!m.electiva&&m.o!==40&&!aprobada(m.o)).map(m=>m.o);
+  const c = CORR[o]||{c:[],a:[]};
+  return [...new Set([...c.c,...c.a])].filter(x=>!aprobada(x));
+}
+const puedeRendir = o => est(o)==="regular" && !faltanRendir(o).length;
+function destraba(o){
+  const dc=[],dr=[];
+  for (const m of MATERIAS){
+    const c=CORR[m.o]; if(!c) continue;
+    if ((c.c.includes(o)||c.a.includes(o)) && !aprobada(m.o)){
+      if (["sin","desaprobada"].includes(est(m.o))) dc.push(m.o);
+      else if (est(m.o)==="regular") dr.push(m.o);
+    }
+  }
+  return {dc,dr};
+}
+const hsElectiva = m => m.hs * (esCuatrimestral(m.o)?0.5:1);
+function esCuatrimestral(o){ const cs=comsDe(o); return cs.length>0 && cs.every(c=>c.dictado==="1"||c.dictado==="2"); }
+const electivasHs = () => MATERIAS.filter(m=>m.electiva&&aprobada(m.o)).reduce((t,m)=>t+hsElectiva(m),0);
+
+/* ================= NAVEGACIÓN ================= */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+let vista="materias";
+$$(".nav-int button").forEach(b=>b.onclick=()=>{ vista=b.dataset.vista;
+  $$(".nav-int button").forEach(x=>x.classList.toggle("activa",x===b));
+  ["materias","grilla","agenda","mapa","simulador","avance"].forEach(v=>$("#vista-"+v).hidden=v!==vista);
+  render(); });
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("ver"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("ver"),2600); }
+
+/* ================= TEMA CLARO / OSCURO ================= */
+const temaActual = () => document.documentElement.getAttribute("data-tema")==="oscuro" ? "oscuro" : "claro";
+function aplicarTema(t){
+  document.documentElement.setAttribute("data-tema",t);
+  try{ localStorage.setItem("planificador-tema",t); }catch(e){}
+  const b=$("#btnTema");
+  b.textContent = t==="oscuro" ? "☀️" : "🌙";
+  b.title = t==="oscuro" ? "Cambiar a tema claro" : "Cambiar a tema oscuro";
+}
+$("#btnTema").onclick=()=>{ aplicarTema(temaActual()==="oscuro"?"claro":"oscuro"); render(); };
+
+/* ================= VISTA MATERIAS ================= */
+let filtro="todas", busq="";
+$("#buscador").oninput = e=>{busq=e.target.value;renderMaterias();};
+$$("#segFiltro button").forEach(b=>b.onclick=()=>{filtro=b.dataset.f;
+  $$("#segFiltro button").forEach(x=>x.classList.toggle("activa",x===b)); renderMaterias();});
+
+function chipEstadoDerivado(m){
+  const e=est(m.o);
+  if (e==="aprobada"||e==="cursando") return "";
+  if (e==="regular")
+    return puedeRendir(m.o) ? `<span class="chip chip-rendible">📝 Podés rendir el final</span>`
+      : `<span class="chip chip-bloq" title="Te falta aprobar: ${nombres(faltanRendir(m.o))}">🔒 Final bloqueado</span>`;
+  if (puedeCursar(m.o)) return `<span class="chip chip-cursable">🔓 Podés cursarla</span>`;
+  const f=faltanCursar(m.o);
+  const det=[f.cur.length?`cursada de: ${nombres(f.cur)}`:"",f.apr.length?`aprobada: ${nombres(f.apr)}`:""].filter(x=>x).join(" · ");
+  return `<span class="chip chip-bloq" title="Falta ${det}">🔒 Bloqueada</span>`;
+}
+const nombres = arr => arr.map(o=>porOrden[o]?.nombre||o).join(", ");
+
+function pasaFiltro(m){
+  if (busq && !norm(m.nombre).includes(norm(busq))) return false;
+  if (filtro==="cursables") return puedeCursar(m.o)||est(m.o)==="cursando";
+  if (filtro==="rendibles") return puedeRendir(m.o);
+  if (filtro==="pendientes") return !aprobada(m.o);
+  return true;
+}
+function renderMaterias(){
+  const cont=$("#contMaterias"); cont.innerHTML="";
+  const grupos=[1,2,3,4,5].map(n=>({tit:`Nivel ${["","I","II","III","IV","V"][n]}`,ms:MATERIAS.filter(m=>!m.electiva&&m.nivel===n)}));
+  grupos.push({tit:"Electivas",ms:MATERIAS.filter(m=>m.electiva),elec:true});
+  for (const g of grupos){
+    const vis=g.ms.filter(pasaFiltro); if(!vis.length) continue;
+    const apr=g.ms.filter(m=>aprobada(m.o)).length;
+    const cab=document.createElement("div"); cab.className="nivel-cab";
+    const extra = g.elec ? `<small>${electivasHs()} / 10 hs electivas</small>`
+      : `<small>${apr}/${g.ms.length} aprobadas</small><button class="btn-mini" data-nivel="${g.tit}">marcar todo aprobado</button>`;
+    cab.innerHTML=`<h3>${g.tit}</h3><div class="barra"><i style="width:${100*apr/g.ms.length}%"></i></div>${extra}`;
+    const btn=cab.querySelector("button");
+    if(btn) btn.onclick=()=>{ if(confirm(`¿Marcar todas las materias de ${g.tit} como aprobadas?`)){
+      g.ms.forEach(m=>ST.estados[m.o]="aprobada"); guardar(); render(); }};
+    cont.appendChild(cab);
+    const grid=document.createElement("div"); grid.className="grid-mat";
+    for (const m of vis){
+      const e=est(m.o);
+      const card=document.createElement("div");
+      card.className="card"+((["sin","desaprobada"].includes(e)&&!puedeCursar(m.o))?" bloqueada":"");
+      card.innerHTML=`<div class="tit"><span class="orden">${m.electiva?"E":m.o}</span><span class="nom">${m.nombre}</span></div>
+        <div class="fila-chips"><span class="pill ${ESTADOS[e].cls}">${ESTADOS[e].txt}</span>${chipEstadoDerivado(m)}</div>`;
+      card.onclick=()=>abrirModal(m.o);
+      grid.appendChild(card);
+    }
+    cont.appendChild(grid);
+  }
+  if(!cont.children.length) cont.innerHTML=`<p style="color:var(--gris);font-weight:600">Ninguna materia coincide con el filtro.</p>`;
+}
+
+/* ================= IMPORTAR DESDE AUTOGESTIÓN =================
+   Lee texto plano pegado del listado de materias. No asume un formato fijo:
+   por cada línea busca el nombre de materia más largo del plan que aparezca,
+   una palabra de estado y, si hay, la nota. Todo se muestra para confirmar
+   antes de tocar nada: el parser propone, el usuario decide. */
+const PRIORIDAD={desaprobada:1, cursando:2, regular:3, aprobada:4};
+/* Busca qué materia del plan nombra la línea. Tolera nombres cortados por el ancho
+   de la columna ("Ingeniería Ambiental y Seguridad Industr") comparando prefijos.
+   Ante empate gana el nombre que quedó más completo, así "Análisis Matemático I"
+   no se lleva puesto a "Análisis Matemático II". */
+function materiaDeLinea(L){
+  let mejor=null, mejorK=0, mejorSobra=99;
+  for (const m of MATERIAS){
+    // se prueban el nombre del plan y los alias (autogestión y los horarios a veces
+    // nombran distinto a la misma materia)
+    for (const bruto of [m.nombre, ...(m.alias||[])]){
+      const n=norm(bruto);
+      if(n.length<6) continue;
+      let k=0;
+      if(L.includes(n)) k=n.length;
+      else {
+        const min=Math.max(16, Math.ceil(n.length*0.6));
+        for(let j=n.length-1;j>=min;j--) if(L.includes(n.slice(0,j))){ k=j; break; }
+      }
+      if(!k) continue;
+      const sobra=n.length-k;
+      if(k>mejorK || (k===mejorK && sobra<mejorSobra)){ mejor=m; mejorK=k; mejorSobra=sobra; }
+    }
+  }
+  return mejor;
+}
+function parsearAutogestion(txt){
+  const lineas=txt.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>3);
+  const det={}, noRec=[]; let sinEstado=0;
+  for (const linea of lineas){
+    const L=norm(linea);
+    let estado=null;
+    if(/\baprob|promo/.test(L)) estado="aprobada";
+    else if(/regular/.test(L)) estado="regular";
+    else if(/\bcursa\b|cursand|en curso/.test(L)) estado="cursando";
+    else if(/desaprob|insuficient|reprob|\blibre\b/.test(L)) estado="desaprobada";
+    const mejor=materiaDeLinea(L);
+    if(!mejor){ if(estado) noRec.push(linea); continue; }
+    /* Nota: la fuente confiable es el número que sigue a "Aprobada". Nunca se toma
+       un número suelto de la fila (la columna de año o "(2.5 hs.)" darían falsos 8). */
+    let nota=null;
+    const mCon=L.match(/aprobad\w*[\s\-:·]*(?:con|nota)?[\s\-:·]*(\d{1,2})(?!\d)/);
+    if(mCon){ const v=+mCon[1]; if(v>=1&&v<=10) nota=v; }
+    let inferido=false;
+    if(!estado && nota==null && /\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/.test(linea)){
+      // fila de examen rendido sin palabra de estado: solo se deduce si hay fecha
+      const sinFechas=linea.replace(/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/g," ");
+      const nums=(sinFechas.match(/\b(10|[4-9])\b/g)||[]).map(Number);
+      if(nums.length){ estado="aprobada"; nota=nums[nums.length-1]; inferido=true; }
+    }
+    if(!estado){ sinEstado++; continue; }          // materia listada sin estado: queda sin cursar
+    // comisión, cuando la fila dice "Cursa en 3M3 Central"
+    let comision=null;
+    const mCom=linea.match(/[Cc]ursa\s+en\s+([A-Za-z0-9\-]+)/);
+    if(mCom){ const cur=mCom[1].toUpperCase();
+      if(comsDe(mejor.o).some(c=>c.curso.toUpperCase()===cur)) comision=cur; }
+    const prev=det[mejor.o];
+    if(!prev || PRIORIDAD[estado]>=PRIORIDAD[prev.estado]){
+      det[mejor.o]={o:mejor.o, estado, nota:(estado==="aprobada"?nota:null), inferido, comision, linea};
+    }
+  }
+  return {detectadas:Object.values(det).sort((a,b)=>a.o-b.o), noRec, sinEstado};
+}
+$("#btnAutogestion").onclick=()=>{
+  $("#modal").innerHTML=`
+    <button class="cerrar" onclick="cerrarModal()">✕</button>
+    <h3>Importar desde autogestión</h3>
+    <div class="sub">Pegá el listado de materias tal como te lo muestra autogestión. La app va a mostrarte lo que entendió para que lo revises antes de aplicar nada.</div>
+    <section><b>Cómo hacerlo</b>
+      <ol style="font-size:13px;margin-left:18px;line-height:1.7">
+        <li>Entrá a tu estado académico en autogestión.</li>
+        <li>Seleccioná el listado con el mouse y copialo (<b>Ctrl+C</b>).</li>
+        <li>Pegalo acá abajo (<b>Ctrl+V</b>). No importa el formato ni el orden.</li>
+      </ol>
+      <small style="color:var(--gris)">Si solo tenés una captura de pantalla, la app no puede leer imágenes: en ese caso cargá las materias a mano desde la lista.</small></section>
+    <textarea id="agInput" class="inp-form" style="height:120px;resize:vertical" placeholder="Ej.:&#10;Análisis Matemático I    Aprobada    8&#10;Química General          Regular&#10;Física I                 Cursando"></textarea>
+    <label style="display:flex;gap:7px;align-items:center;margin-top:10px;font-size:13px;font-weight:600">
+      <input type="checkbox" id="agReemplazar"> Reemplazar todo mi estado actual (si no, se combina con lo que ya tenés)</label>
+    <div id="agError" class="aviso" style="display:none"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn primario" id="agLeer">Leer listado</button>
+      <button class="btn" onclick="cerrarModal()">Cancelar</button>
+    </div>
+    <div id="agRes" style="margin-top:14px"></div>`;
+  $("#agLeer").onclick=()=>{
+    const err=$("#agError"), cont=$("#agRes");
+    const {detectadas,noRec,sinEstado}=parsearAutogestion($("#agInput").value);
+    if(!detectadas.length){
+      err.innerHTML="⚠ No reconocí ninguna materia. Revisá que el texto incluya los nombres como figuran en el plan (por ejemplo «Análisis Matemático I») junto a su estado.";
+      err.style.display="block"; cont.innerHTML=""; return;
+    }
+    err.style.display="none";
+    cont.innerHTML=`<b style="font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--gris)">
+        ${detectadas.length} materia${detectadas.length>1?"s":""} reconocida${detectadas.length>1?"s":""} — destildá lo que no quieras importar</b>
+      <div style="max-height:230px;overflow:auto;border:1px solid var(--borde);border-radius:8px;margin-top:6px">
+        ${detectadas.map(d=>`<label class="sim-op" style="padding:7px 10px">
+          <input type="checkbox" class="agFila" value="${d.o}" data-estado="${d.estado}" data-nota="${d.nota==null?"":d.nota}" data-com="${d.comision||""}" checked>
+          <span><b>${porOrden[d.o].nombre}</b>
+            <span class="pill ${ESTADOS[d.estado].cls}" style="margin-left:6px">${ESTADOS[d.estado].txt}</span>
+            ${d.nota!=null?`<span class="chip chip-cursable">nota ${d.nota}</span>`:""}
+            ${d.comision?`<span class="chip chip-rendible">comisión ${d.comision}</span>`:""}
+            ${d.inferido?`<span class="chip chip-compartida" title="La línea no decía el estado; lo deduje porque tenía nota y fecha. Revisalo.">deducido</span>`:""}
+          </span></label>`).join("")}
+      </div>
+      ${sinEstado?`<div style="font-size:12.5px;color:var(--gris);font-weight:600;margin-top:6px">
+        ℹ ${sinEstado} materia${sinEstado>1?"s":""} del listado no tenían estado: quedan como «sin cursar».</div>`:""}
+      ${noRec.length?`<details style="margin-top:8px"><summary style="font-size:12.5px;font-weight:700;color:var(--gris);cursor:pointer">
+          ${noRec.length} línea${noRec.length>1?"s":""} que no pude interpretar (revisalas y cargalas a mano)</summary>
+        <div style="font-size:12px;color:var(--muted);padding:6px 4px;max-height:120px;overflow:auto">${noRec.map(l=>l.replace(/</g,"&lt;")).join("<br>")}</div></details>`:""}
+      <button class="btn primario" id="agAplicar" style="margin-top:12px">Aplicar a mis materias</button>`;
+    $("#agAplicar").onclick=()=>{
+      const filas=[...document.querySelectorAll(".agFila:checked")];
+      if(!filas.length) return toast("No seleccionaste ninguna materia");
+      if($("#agReemplazar").checked){ ST.estados={}; ST.notas={}; ST.grilla={}; }
+      let conCom=0;
+      filas.forEach(f=>{
+        const o=+f.value; ST.estados[o]=f.dataset.estado;
+        if(f.dataset.nota) ST.notas[o]=+f.dataset.nota; else delete ST.notas[o];
+        if(f.dataset.com){   // la fila decía en qué comisión cursa: se arma la grilla sola
+          const c=comsDe(o).find(x=>x.curso.toUpperCase()===f.dataset.com);
+          if(c){ ST.grilla[o]=claveCom(c); conCom++; }
+        }
+      });
+      guardar(); cerrarModal(); render();
+      toast(`Importadas ${filas.length} materias ✔${conCom?` · ${conCom} ya quedaron en tu horario`:""}`);
+    };
+  };
+  $("#velo").classList.add("abierto");
+};
+
+/* ================= MODAL DETALLE ================= */
+function reqHTML(o,tipo){
+  const e=est(o); const ok = tipo==="a" ? aprobada(o) : cursadaOk(o);
+  return `<span class="pill ${ok?"est-aprobada":ESTADOS[e].cls}" title="${ESTADOS[e].txt}">${ok?"✔":"✘"} ${porOrden[o].nombre}</span>`;
+}
+function abrirModal(o){
+  const m=porOrden[o], c=CORR[o]||{c:[],a:[]}, e=est(o);
+  const d=destraba(o);
+  const coms=comsDe(o);
+  const esp = CATALOGO.reglasEspeciales[String(o)];
+  $("#modal").innerHTML=`
+    <button class="cerrar" onclick="cerrarModal()">✕</button>
+    <h3>${m.nombre}</h3>
+    <div class="sub">${m.electiva?"Electiva":"Materia "+m.o+" · Nivel "+["","I","II","III","IV","V"][m.nivel]} · ${m.hs} hs cátedra semanales${esCuatrimestral(o)?" · cuatrimestral":""}</div>
+    <section><b>Mi estado</b><div class="estados-btns">${Object.entries(ESTADOS).map(([k,v])=>
+      `<span class="pill ${v.cls} ${e===k?"activo":""}" data-est="${k}">${v.txt}</span>`).join("")}</div></section>
+    ${e==="aprobada"?`<section><b>Nota y aplazos</b>
+      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+        <label style="font-size:13px;font-weight:600">Nota del final <input class="nota-input" id="mNota" type="number" min="4" max="10" step="1" placeholder="—" value="${ST.notas[o]!=null?ST.notas[o]:''}"></label>
+        <label style="font-size:13px;font-weight:600">Aplazos previos <input class="nota-input" id="mAplazos" type="number" min="0" max="20" step="1" placeholder="0" value="${ST.aplazos[o]?ST.aplazos[o]:''}"></label>
+      </div></section>`:""}
+    ${esp?`<div class="aviso">⚠ ${esp}</div>`:""}
+    <section><b>Para cursar necesitás</b><div class="lista-req">${
+      (c.c.length||c.a.length) ? [
+        ...c.c.map(x=>reqHTML(x,"c")),
+        ...c.a.map(x=>reqHTML(x,"a")+`<small style="align-self:center;color:var(--gris);font-weight:700">(aprobada)</small>`)
+      ].join("") : `<span style="color:var(--gris);font-weight:600">Sin correlativas.</span>`}</div>
+      <small style="color:var(--gris)">Las marcadas “(aprobada)” exigen final aprobado; el resto, al menos cursada regularizada.</small></section>
+    <section><b>Para rendir el final necesitás aprobadas</b><div class="lista-req">${
+      o===40 ? `<span class="aviso" style="display:block">Todas las asignaturas previas del plan.</span>`
+      : (c.c.length||c.a.length) ? [...new Set([...c.c,...c.a])].map(x=>reqHTML(x,"a")).join("")
+      : `<span style="color:var(--gris);font-weight:600">Sin correlativas.</span>`}</div></section>
+    ${(d.dc.length||d.dr.length)?`<section><b>Aprobarla destraba</b>
+      ${d.dc.length?`<div style="font-size:13px;margin-bottom:4px">📗 Para cursar: <b>${nombres(d.dc)}</b></div>`:""}
+      ${d.dr.length?`<div style="font-size:13px">📝 Para rendir: <b>${nombres(d.dr)}</b></div>`:""}</section>`:""}
+    <section><b>Comisiones ${CICLO}</b>${ coms.length ? coms.map(cc=>`
+      <div style="font-size:13px;padding:4px 0;border-bottom:1px dashed var(--linea)">
+        <b>${cc.curso}</b>${cc.compartida?` <span class="chip chip-compartida" title="No hay comisión propia del plan 2023 este ciclo; es la misma clase que dicta el plan anterior.">compartida plan 94</span>`:""}
+        ${cc.dictado==="1"?`<span class="chip chip-bloq">1.º cuat.</span>`:cc.dictado==="2"?`<span class="chip chip-bloq">2.º cuat.</span>`:""}
+        ${cc.modalidad==="virtual"?`<span class="chip chip-cursable">virtual</span>`:""}
+        — ${cc.bloques.map(b=>`${DIAS[b.dia]} ${hm(b.inicio)}–${hm(b.fin)}${b.aula&&b.aula!=="Virtual"?` (Aula ${b.aula})`:""}`).join(" · ")}
+        ${cc.docentes.length?`<small style="display:block;color:var(--gris)">${cc.docentes.join(" · ")}</small>`:""}
+      </div>`).join("") : `<span style="color:var(--gris);font-weight:600">Sin comisiones publicadas este ciclo.</span>`}</section>`;
+  $$("#modal [data-est]").forEach(p=>p.onclick=()=>{
+    const nuevo=p.dataset.est;
+    if (["sin","desaprobada"].includes(est(o)) && (nuevo==="cursando") && !puedeCursar(o) && !m.electiva){
+      if(!confirm("Según las correlativas todavía no podrías cursarla. ¿Marcarla igual?")) return;
+    }
+    if (nuevo==="sin") delete ST.estados[o]; else ST.estados[o]=nuevo;
+    if (!["cursando"].includes(nuevo)) delete ST.grilla[o];
+    if (nuevo!=="aprobada") delete ST.notas[o];   // la nota solo aplica a materias aprobadas
+    guardar(); abrirModal(o); render();
+  });
+  const inNota=$("#mNota"); if(inNota) inNota.onchange=()=>{
+    const v=parseInt(inNota.value,10);
+    if(inNota.value===""||isNaN(v)) delete ST.notas[o];
+    else ST.notas[o]=Math.max(4,Math.min(10,v));
+    guardar(); render();
+  };
+  const inApl=$("#mAplazos"); if(inApl) inApl.onchange=()=>{
+    const v=parseInt(inApl.value,10);
+    if(inApl.value===""||isNaN(v)||v<=0) delete ST.aplazos[o];
+    else ST.aplazos[o]=Math.min(20,v);
+    guardar(); render();
+  };
+  $("#velo").classList.add("abierto");
+}
+function cerrarModal(){ $("#velo").classList.remove("abierto"); }
+$("#velo").onclick=e=>{ if(e.target.id==="velo") cerrarModal(); };
+
+/* ================= VISTA GRILLA ================= */
+function materiasParaGrilla(){
+  return MATERIAS.filter(m=>comsDe(m.o).length && (puedeCursar(m.o)||est(m.o)==="cursando"));
+}
+function renderGrillaLista(){
+  const cont=$("#listaCursables"); cont.innerHTML="";
+  const ms=materiasParaGrilla();
+  if(!ms.length){ cont.innerHTML=`<p style="padding:14px;color:var(--gris);font-weight:600">No hay materias cursables según tu estado actual. Marcá tus materias en la pestaña «Materias».</p>`; return; }
+  for (const m of ms){
+    const el=document.createElement("div"); el.className="mat-item";
+    const elegida=ST.grilla[m.o];
+    el.innerHTML=`<div class="fila"><span class="punto" style="background:${colorMateria(m.o)}"></span>
+      <span class="nom">${m.nombre}</span>${elegida?`<button class="btn-mini" data-quitar>quitar</button>`:""}</div>
+      <div class="coms">${comsDe(m.o).map(c=>`
+        <label class="com-op ${elegida===claveCom(c)?"elegida":""}">
+          <input type="radio" name="com-${m.o}" ${elegida===claveCom(c)?"checked":""} data-com="${claveCom(c)}" data-o="${m.o}">
+          <span><b>${c.curso}</b>${c.manual?" <span class='chip chip-rendible'>otra regional</span>":""}${c.compartida?" <span class='chip chip-compartida'>plan 94</span>":""}${c.dictado==="1"?" <span class='chip chip-bloq'>1.ºC</span>":c.dictado==="2"?" <span class='chip chip-bloq'>2.ºC</span>":""}${c.modalidad==="virtual"?" <span class='chip chip-cursable'>virtual</span>":""}<br>
+          <span class="det">${c.bloques.map(b=>`${DIAS[b.dia].slice(0,3)} ${hm(b.inicio)}–${hm(b.fin)}`).join(" · ")}</span></span>
+        </label>`).join("")}</div>`;
+    el.querySelectorAll("input[type=radio]").forEach(r=>r.onchange=()=>{
+      ST.grilla[+r.dataset.o]=r.dataset.com;
+      if (est(+r.dataset.o)!=="cursando"){ ST.estados[+r.dataset.o]="cursando"; toast(`${m.nombre} marcada como «Cursando»`); }
+      guardar(); render();
+    });
+    const q=el.querySelector("[data-quitar]");
+    if(q) q.onclick=()=>{ delete ST.grilla[m.o]; guardar(); render(); };
+    cont.appendChild(el);
+  }
+}
+const claveCom = c => c.manual ? "M"+c.mid : c.curso+"|"+norm(c.materia);
+function comisionesElegidas(){
+  const out=[], all=todasComs();
+  for (const [o,k] of Object.entries(ST.grilla)){
+    const c=all.find(c=>c.orden===+o && claveCom(c)===k);
+    if (c) out.push(c);
+  }
+  return out;
+}
+const PALETA=["#00455C","#B047B3","#e07b00","#0d8a6a","#157FEB","#c22f4d","#6a45c9","#4a7a12","#a06a00","#008aa8","#8a2fae","#375e79"];
+const colorMateria = o => PALETA[(MATERIAS.findIndex(m=>m.o===o))%PALETA.length];
+
+const G_INI=7*60+30, G_FIN=23*60+30; // 7:30 a 23:30 (rango base)
+/* El rango real se estira si alguna comisión (típicamente de otra regional) queda
+   fuera del horario habitual de Haedo; si no, un bloque de las 7:00 no se dibujaba. */
+function rangoGrilla(coms){
+  let ini=G_INI, fin=G_FIN;
+  for (const c of coms) for (const b of c.bloques){
+    ini=Math.min(ini, Math.floor(b.inicio/60)*60);
+    fin=Math.max(fin, Math.ceil(b.fin/60)*60);
+  }
+  return {ini, fin};
+}
+function detectarChoques(coms){
+  const ch=[];
+  for (let i=0;i<coms.length;i++) for (let j=i+1;j<coms.length;j++)
+    for (const a of coms[i].bloques) for (const b of coms[j].bloques)
+      if (a.dia===b.dia && a.inicio<b.fin && b.inicio<a.fin)
+        ch.push({a:coms[i],b:coms[j],dia:a.dia,ba:a,bb:b});
+  return ch;
+}
+function renderGrilla(){
+  renderGrillaLista();
+  renderExternas();
+  infoHorarios();
+  const coms=comisionesElegidas();
+  const choques=detectarChoques(coms);
+  const enChoque=new Set(); choques.forEach(c=>{enChoque.add(claveCom(c.a)+c.ba.dia+c.ba.inicio);enChoque.add(claveCom(c.b)+c.bb.dia+c.bb.inicio);});
+  const {ini:GI,fin:GF}=rangoGrilla(coms);
+  const g=$("#laGrilla"); g.innerHTML="";
+  g.insertAdjacentHTML("beforeend",`<div class="g-col-cab">Hora</div>`+[1,2,3,4,5,6].map(d=>`<div class="g-col-cab">${DIAS[d]}</div>`).join(""));
+  for (let t=GI;t<GF;t+=60){
+    g.insertAdjacentHTML("beforeend",`<div class="g-hora" style="height:45px">${hm(t)}</div>`+[1,2,3,4,5,6].map(d=>`<div class="g-celda" data-d="${d}" data-t="${t}"></div>`).join(""));
+  }
+  for (const c of coms) for (const b of c.bloques){
+    const celda=g.querySelector(`.g-celda[data-d="${b.dia}"][data-t="${Math.floor((b.inicio-GI)/60)*60+GI}"]`);
+    if(!celda) continue;
+    const off=(b.inicio-GI)%60, dur=b.fin-b.inicio;
+    const div=document.createElement("div");
+    div.className="bloque"+(enChoque.has(claveCom(c)+b.dia+b.inicio)?" choque":"");
+    div.style.top=(off*0.75)+"px"; div.style.height=(dur*0.75-2)+"px";
+    div.style.background=colorMateria(c.orden);
+    const lugar = c.manual ? (c.regional||"otra regional")+(b.aula?" "+b.aula:"") : (b.aula&&b.aula!=="Virtual"?b.aula:c.modalidad==="virtual"?"virtual":"");
+    div.title=`${porOrden[c.orden].nombre} (${c.curso}) ${hm(b.inicio)}–${hm(b.fin)}${b.aula?" · Aula "+b.aula:""}`;
+    div.innerHTML=`${porOrden[c.orden].nombre}<small>${hm(b.inicio)}–${hm(b.fin)}${lugar?" · "+lugar:""}</small>`;
+    celda.appendChild(div);
+  }
+  const hs=coms.reduce((t,c)=>t+porOrden[c.orden].hs,0);
+  $("#cargaSemanal").textContent=coms.length?`${coms.length} materias · ${hs} hs cátedra/semana`:"";
+  const rc=$("#resChoques");
+  rc.innerHTML = !coms.length ? "" : choques.length
+    ? choques.map(c=>`<div class="item">⚠ ${porOrden[c.a.orden].nombre} (${c.a.curso}) se superpone con ${porOrden[c.b.orden].nombre} (${c.b.curso}) el ${DIAS[c.dia].toLowerCase()} ${hm(Math.max(c.ba.inicio,c.bb.inicio))}–${hm(Math.min(c.ba.fin,c.bb.fin))}</div>`).join("")
+    : `<div class="ok-choques">✔ Sin superposiciones de horario.</div>`;
+}
+
+/* ---- materias de otra regional (comisiones manuales) ---- */
+function renderExternas(){
+  const panel=$("#panelExternas"), cont=$("#listaExternas");
+  const ms=ST.manuales||[]; panel.hidden=ms.length===0;
+  cont.innerHTML=ms.map(m=>{
+    const o=porNombre[norm(m.materia)];
+    const enGrilla = o!==undefined && ST.grilla[o]==="M"+m.mid;
+    return `<div class="ext-item">
+      <span class="punto" style="background:${o!==undefined?colorMateria(o):'#7D9FAB'}"></span>
+      <span class="nom">${escAttr(m.materia)}</span>
+      <span class="chip chip-rendible">${escAttr(m.regional)||"—"}</span>
+      ${enGrilla?`<span class="chip chip-cursable">en la grilla</span>`:`<button class="btn-mini" data-usar="${m.mid}">usar</button>`}
+      <button class="btn-mini" data-edit="${m.mid}">editar</button>
+      <button class="btn-mini" data-del="${m.mid}">eliminar</button>
+      <span class="det">${m.profesor?escAttr(m.profesor)+" · ":""}${(m.bloques||[]).map(b=>`${DIAS[b.dia].slice(0,3)} ${hm(b.inicio)}–${hm(b.fin)}${b.aula?" ("+escAttr(b.aula)+")":""}`).join(" · ")}</span>
+    </div>`;
+  }).join("");
+  cont.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>abrirModalManual(+b.dataset.edit));
+  cont.querySelectorAll("[data-usar]").forEach(b=>b.onclick=()=>{
+    const m=ST.manuales.find(x=>x.mid===+b.dataset.usar), o=porNombre[norm(m.materia)];
+    // "usar" significa "la estoy cursando en esa regional": el estado acompaña siempre.
+    if(o!==undefined){ ST.grilla[o]="M"+m.mid; ST.estados[o]="cursando"; guardar(); render(); }
+  });
+  cont.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{
+    const mid=+b.dataset.del, m=ST.manuales.find(x=>x.mid===mid), o=m?porNombre[norm(m.materia)]:undefined;
+    if(o!==undefined && ST.grilla[o]==="M"+mid) delete ST.grilla[o];
+    ST.manuales=ST.manuales.filter(x=>x.mid!==mid); guardar(); render();
+  });
+}
+const escAttr = s => String(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+const minToTime = m => `${String(Math.floor(m/60)).padStart(2,"0")}:${String(m%60).padStart(2,"0")}`;
+const timeToMin = t => { const [h,mm]=(t||"").split(":").map(Number); return (h||0)*60+(mm||0); };
+let _formBloques=[];
+function renderBloquesForm(){
+  const cont=$("#mBloques"); if(!cont) return;
+  cont.innerHTML=_formBloques.map((b,i)=>`<div class="bloque-row">
+    <select data-i="${i}" data-k="dia">${[1,2,3,4,5,6].map(d=>`<option value="${d}" ${b.dia===d?"selected":""}>${DIAS[d]}</option>`).join("")}</select>
+    <input type="time" data-i="${i}" data-k="inicio" value="${minToTime(b.inicio)}">
+    <input type="time" data-i="${i}" data-k="fin" value="${minToTime(b.fin)}">
+    <input type="text" data-i="${i}" data-k="aula" placeholder="Aula" value="${escAttr(b.aula)}" style="width:78px">
+    ${_formBloques.length>1?`<button class="quita-b" data-rm="${i}">✕</button>`:""}
+  </div>`).join("");
+  cont.querySelectorAll("select,input").forEach(el=>el.onchange=()=>{
+    const i=+el.dataset.i,k=el.dataset.k;
+    _formBloques[i][k]=(k==="dia")?+el.value:(k==="aula")?el.value:timeToMin(el.value);
+  });
+  cont.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{ _formBloques.splice(+b.dataset.rm,1); renderBloquesForm(); });
+}
+function abrirModalManual(mid){
+  const edit=(ST.manuales||[]).find(m=>m.mid===mid);
+  _formBloques = edit ? edit.bloques.map(b=>({...b})) : [{dia:4,inicio:18*60+30,fin:22*60+30,aula:""}];
+  const opts=MATERIAS.slice().sort((a,b)=>a.nombre.localeCompare(b.nombre,"es"))
+    .map(m=>`<option value="${m.o}" ${edit&&porNombre[norm(edit.materia)]===m.o?"selected":""}>${m.nombre}</option>`).join("");
+  $("#modal").innerHTML=`
+    <button class="cerrar" onclick="cerrarModal()">✕</button>
+    <h3>${edit?"Editar":"Agregar"} materia de otra regional</h3>
+    <div class="sub">Se suma a tu horario semanal y participa en la detección de superposiciones. Elegí la materia equivalente de FRH para que cuente en tu avance.</div>
+    <section><b>Materia (equivalente en FRH)</b><select id="mMateria" class="inp-form">${opts}</select></section>
+    <section style="display:flex;gap:10px;flex-wrap:wrap">
+      <div style="flex:1;min-width:150px"><b>Regional</b><input id="mReg" class="inp-form" placeholder="FRBA, FRA, FRGP…" value="${edit?escAttr(edit.regional):""}"></div>
+      <div style="flex:1;min-width:150px"><b>Profesor (opcional)</b><input id="mProf" class="inp-form" value="${edit?escAttr(edit.profesor||""):""}"></div>
+    </section>
+    <section><b>Días y horarios</b><div id="mBloques"></div>
+      <button class="btn-mini" id="mAddBloque" style="margin-top:4px">+ agregar otro día</button></section>
+    <div id="mError" class="aviso" style="display:none"></div>
+    <div style="display:flex;gap:8px;margin-top:16px;align-items:center">
+      <button class="btn primario" id="mGuardar">Guardar</button>
+      <button class="btn" onclick="cerrarModal()">Cancelar</button>
+      ${edit?`<button class="btn peligro" id="mEliminar" style="margin-left:auto">Eliminar</button>`:""}
+    </div>`;
+  renderBloquesForm();
+  $("#mAddBloque").onclick=()=>{ _formBloques.push({dia:4,inicio:18*60+30,fin:22*60+30,aula:""}); renderBloquesForm(); };
+  const bEl=$("#mEliminar");
+  if(bEl) bEl.onclick=()=>{
+    const o=porNombre[norm(edit.materia)];
+    if(o!==undefined && ST.grilla[o]==="M"+mid) delete ST.grilla[o];
+    ST.manuales=ST.manuales.filter(x=>x.mid!==mid); guardar(); cerrarModal(); render();
+  };
+  $("#mGuardar").onclick=()=>{
+    const err=$("#mError"), fallar=t=>{err.textContent="⚠ "+t; err.style.display="block";};
+    const o=+$("#mMateria").value, materia=porOrden[o].nombre, regional=$("#mReg").value.trim();
+    if(!regional) return fallar("Indicá la regional (por ejemplo, FRBA).");
+    if(!_formBloques.length) return fallar("Agregá al menos un día.");
+    for(const b of _formBloques) if(!(b.fin>b.inicio)) return fallar("En cada día, la hora de fin debe ser posterior a la de inicio.");
+    const profesor=$("#mProf").value.trim();
+    const bloques=_formBloques.map(b=>({dia:b.dia,inicio:b.inicio,fin:b.fin,aula:(b.aula||"").trim()}));
+    if(edit){
+      const oldO=porNombre[norm(edit.materia)], wasSel=ST.grilla[oldO]==="M"+mid;
+      if(wasSel && oldO!==o) delete ST.grilla[oldO];
+      Object.assign(edit,{materia,regional,profesor,bloques});
+      if(wasSel) ST.grilla[o]="M"+mid;
+    } else {
+      ST._mseq=(ST._mseq||0)+1;
+      (ST.manuales=ST.manuales||[]).push({mid:ST._mseq,materia,regional,profesor,bloques});
+      ST.grilla[o]="M"+ST._mseq;
+    }
+    if(ST.grilla[o]==="M"+(edit?mid:ST._mseq)) ST.estados[o]="cursando";
+    guardar(); cerrarModal(); render();
+    toast(edit?"Materia externa actualizada":"Materia de otra regional agregada");
+  };
+  $("#velo").classList.add("abierto");
+}
+$("#btnExterna").onclick=()=>abrirModalManual();
+
+/* ---- optimizador de horario ----
+   Busca combinaciones de comisiones sin superposiciones, priorizando cursar la mayor
+   cantidad de materias posible. Recorrido con poda: si lo que queda por probar no puede
+   superar la mejor cantidad encontrada, corta esa rama. */
+function turnoDe(c){
+  const ini=Math.min(...c.bloques.map(b=>b.inicio));
+  return ini < 13*60 ? "M" : ini >= 17*60 ? "N" : "T";
+}
+function comPasaFiltro(c,op){
+  if (op.turnos.size && !op.turnos.has(turnoDe(c))) return false;
+  if (op.diasLibres.size && c.bloques.some(b=>op.diasLibres.has(b.dia))) return false;
+  return true;
+}
+function chocanComs(a,b){
+  for (const x of a.bloques) for (const y of b.bloques)
+    if (x.dia===y.dia && x.inicio<y.fin && y.inicio<x.fin) return true;
+  return false;
+}
+function puntuarCombo(combo){
+  const porDia={}; const dias=new Set();
+  combo.forEach(c=>c.bloques.forEach(b=>{ dias.add(b.dia); (porDia[b.dia]=porDia[b.dia]||[]).push(b); }));
+  let huecos=0;
+  for (const d in porDia){ const bs=porDia[d].slice().sort((a,b)=>a.inicio-b.inicio);
+    for (let i=1;i<bs.length;i++) huecos+=Math.max(0,bs[i].inicio-bs[i-1].fin); }
+  return {cant:combo.length, dias:dias.size, huecos, hs:combo.reduce((t,c)=>t+porOrden[c.orden].hs,0)};
+}
+function optimizarHorario(ordenes, op){
+  const listas=ordenes.map(o=>({o, coms:comsDe(o).filter(c=>comPasaFiltro(c,op))}))
+                      .sort((a,b)=>a.coms.length-b.coms.length);
+  const res=[]; const sel=[]; let mejorCant=0, nodos=0; const TOPE=400000;
+  function dfs(i,hs){
+    if (nodos++>TOPE) return;
+    if (sel.length + (listas.length-i) < mejorCant) return;          // poda
+    if (i===listas.length){
+      if (sel.length && sel.length>=mejorCant){
+        mejorCant=sel.length;
+        res.push({combo:sel.slice(), ...puntuarCombo(sel)});
+        if (res.length>600) res.splice(0,200);
+      }
+      return;
+    }
+    for (const c of listas[i].coms){
+      const h=porOrden[c.orden].hs;
+      if (op.maxHs && hs+h>op.maxHs) continue;
+      if (sel.some(x=>chocanComs(x,c))) continue;
+      sel.push(c); dfs(i+1,hs+h); sel.pop();
+    }
+    dfs(i+1,hs);                                                      // saltear esta materia
+  }
+  dfs(0,0);
+  res.sort((a,b)=>b.cant-a.cant || a.dias-b.dias || a.huecos-b.huecos);
+  const vistos=new Set(), out=[];
+  for (const r of res){
+    const k=r.combo.map(c=>claveCom(c)).sort().join("~");
+    if (vistos.has(k)) continue; vistos.add(k); out.push(r);
+    if (out.length>=8) break;
+  }
+  return {opciones:out, truncado:nodos>TOPE};
+}
+$("#btnOptimizar").onclick=()=>{
+  const cursables=materiasParaGrilla();
+  if(!cursables.length) return toast("Primero marcá tus materias para que la app sepa qué podés cursar");
+  const dias=[1,2,3,4,5,6];
+  $("#modal").innerHTML=`
+    <button class="cerrar" onclick="cerrarModal()">✕</button>
+    <h3>Armar horario automáticamente</h3>
+    <div class="sub">La app prueba todas las combinaciones de comisiones y te propone las que no tienen superposiciones, priorizando cursar la mayor cantidad de materias.</div>
+    <section><b>Materias a considerar</b>
+      <div style="max-height:170px;overflow:auto;border:1px solid var(--borde);border-radius:8px;padding:6px 10px">
+        ${cursables.map(m=>`<label class="sim-op"><input type="checkbox" class="opMat" value="${m.o}" checked>
+          <span>${m.nombre} <small style="color:var(--gris)">· ${comsDe(m.o).length} comisión${comsDe(m.o).length>1?"es":""}</small></span></label>`).join("")}
+      </div></section>
+    <section style="display:flex;gap:16px;flex-wrap:wrap">
+      <div><b>Turnos</b><div style="display:flex;gap:10px">
+        ${[["M","Mañana"],["T","Tarde"],["N","Noche"]].map(([k,t])=>`<label style="font-size:13px;font-weight:600"><input type="checkbox" class="opTurno" value="${k}"> ${t}</label>`).join("")}
+      </div><small style="color:var(--gris)">Sin marcar = todos</small></div>
+      <div><b>Días que querés libres</b><div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${dias.map(d=>`<label style="font-size:13px;font-weight:600"><input type="checkbox" class="opDia" value="${d}"> ${DIAS[d].slice(0,3)}</label>`).join("")}
+      </div></div>
+      <div><b>Tope de horas</b><br><input id="opMaxHs" class="nota-input" type="number" min="4" max="40" placeholder="sin tope" style="width:100px"></div>
+    </section>
+    <div id="optError" class="aviso" style="display:none"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn primario" id="optBuscar">Buscar combinaciones</button>
+      <button class="btn" onclick="cerrarModal()">Cancelar</button>
+    </div>
+    <div id="optRes" style="margin-top:14px"></div>`;
+  $("#optBuscar").onclick=()=>{
+    const err=$("#optError");
+    const ordenes=[...document.querySelectorAll(".opMat:checked")].map(i=>+i.value);
+    if(!ordenes.length){ err.textContent="⚠ Elegí al menos una materia."; err.style.display="block"; return; }
+    if(ordenes.length>20){ err.textContent="⚠ Elegí como máximo 20 materias para que la búsqueda sea rápida."; err.style.display="block"; return; }
+    err.style.display="none";
+    const op={ turnos:new Set([...document.querySelectorAll(".opTurno:checked")].map(i=>i.value)),
+               diasLibres:new Set([...document.querySelectorAll(".opDia:checked")].map(i=>+i.value)),
+               maxHs:parseInt($("#opMaxHs").value,10)||0 };
+    const {opciones}=optimizarHorario(ordenes,op);
+    const cont=$("#optRes");
+    if(!opciones.length){ cont.innerHTML=`<div class="aviso">Con esos filtros no encontré ninguna combinación. Probá liberar días, turnos o subir el tope de horas.</div>`; return; }
+    const maxCant=opciones[0].cant;
+    cont.innerHTML=`<b style="font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--gris)">
+      ${opciones.length} opción${opciones.length>1?"es":""} sin superposiciones · hasta ${maxCant} materia${maxCant>1?"s":""}</b>`
+      + opciones.map((op2,i)=>`<div class="mesa">
+        <div class="top"><b>Opción ${i+1}</b>
+          <span class="cd">${op2.cant} materias · ${op2.hs} hs</span>
+          <span class="chip chip-bloq">${op2.dias} día${op2.dias>1?"s":""} en la facu</span>
+          ${op2.huecos?`<span class="chip chip-bloq">${Math.round(op2.huecos/60*10)/10} h libres entre clases</span>`:`<span class="chip chip-cursable">sin ventanas</span>`}
+          <button class="btn-mini" data-aplicar="${i}" style="margin-left:auto">aplicar</button></div>
+        <div class="hab">${op2.combo.map(c=>`${porOrden[c.orden].nombre} <small>(${c.curso}: ${c.bloques.map(b=>DIAS[b.dia].slice(0,3)+" "+hm(b.inicio)).join(", ")})</small>`).join(" · ")}</div>
+      </div>`).join("");
+    cont.querySelectorAll("[data-aplicar]").forEach(b=>b.onclick=()=>{
+      const el=opciones[+b.dataset.aplicar];
+      ordenes.forEach(o=>{ if(ST.grilla[o]) delete ST.grilla[o]; });   // limpia lo previo de esas materias
+      el.combo.forEach(c=>{ ST.grilla[c.orden]=claveCom(c);
+        if(["sin","desaprobada"].includes(est(c.orden))) ST.estados[c.orden]="cursando"; });
+      guardar(); cerrarModal(); render();
+      toast(`Horario aplicado: ${el.cant} materias, ${el.hs} hs semanales`);
+    });
+  };
+  $("#velo").classList.add("abierto");
+};
+
+/* ---- actualizar horarios pegando el código de la web FRH ---- */
+function parsearHorariosFRH(html){
+  const BASICAS=new Set(["analisis matematico i","fisica i","quimica general","algebra y geometria analitica"]);
+  const nm=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s*\(int\.?\)\s*/gi," ").replace(/\s+/g," ").trim().toLowerCase();
+  const DN={lunes:1,martes:2,miercoles:3,jueves:4,viernes:5,sabado:6};
+  const hh=h=>{const m=(h||"").match(/(\d{1,2}):(\d{2})/);return m?(+m[1])*60+(+m[2]):null;};
+  const tags=html.match(/<div class="materia-bloque[^"]*"[^>]*>/g)||[];
+  const bloques=[];
+  for(const tag of tags){
+    const at=n=>{const m=tag.match(new RegExp(n+'="(.*?)"'));return m?m[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&nbsp;/g,' '):"";};
+    let c; try{ c=JSON.parse(at("data-comision")); }catch(e){ continue; }
+    const carrera=at("data-carrera-nombre"), curso=(c["Curso"]||"").trim(), materia=(c["Nombre Materia"]||"").replace(/\s+/g," ").trim();
+    const esMec=carrera==="Mecánica", esIng=/^(IN|I)[12]-M/.test(curso), esBas=BASICAS.has(nm(materia))&&/^[A-Z]{1,2}(-R)?$/.test(curso);
+    if(!(esMec||esIng||esBas)) continue;
+    bloques.push({curso, plan:(c["Plan"]||"").trim(), materia, dictado:(c["Tipo Dictado"]||"").trim(),
+      dia:(c["Día"]||c["Dia"]||"").trim(), inicio:hh(c["H. Comienzo"]), fin:hh(c["H. Fin"]),
+      aula:(c["Aula"]||"").trim(), modalidad:at("data-modalidad")||"presencial",
+      docentes:["Titular","Adjunto","Asociado","Jtp"].map(k=>(c[k]||"").trim()).filter(x=>x)});
+  }
+  const mat2023=new Set(bloques.filter(b=>b.plan==="2023").map(b=>nm(b.materia)));
+  const cubSinR=new Set([...mat2023, ...bloques.filter(b=>(b.plan==="94"||b.plan==="95")&&!b.curso.endsWith("-R")).map(b=>nm(b.materia))]);
+  const sel=[];
+  for(const b of bloques){
+    if(b.plan==="2023"){ b.compartida=false; sel.push(b); }
+    else if((b.plan==="94"||b.plan==="95")&&!mat2023.has(nm(b.materia))){
+      if(!b.curso.endsWith("-R")||!cubSinR.has(nm(b.materia))){ b.compartida=true; sel.push(b); }
+    }
+  }
+  const g={};
+  for(const b of sel){
+    const clave=b.curso+"|"+nm(b.materia);
+    const gr=g[clave]||(g[clave]={curso:b.curso,materia:b.materia,plan:b.plan,dictado:b.dictado,compartida:b.compartida,modalidad:b.modalidad,docentes:[...b.docentes],bloques:[]});
+    const dia=DN[nm(b.dia)];
+    if(dia&&b.inicio!=null&&b.fin!=null){ const bl={dia,inicio:b.inicio,fin:b.fin,aula:b.aula};
+      if(!gr.bloques.some(x=>x.dia===bl.dia&&x.inicio===bl.inicio&&x.fin===bl.fin)) gr.bloques.push(bl); }
+    for(const d of b.docentes) if(!gr.docentes.includes(d)) gr.docentes.push(d);
+  }
+  const out=Object.values(g).filter(x=>x.bloques.length);
+  out.forEach(x=>x.bloques.sort((a,b)=>a.dia-b.dia||a.inicio-b.inicio));
+  return out;
+}
+function infoHorarios(){
+  const el=$("#horariosInfo"); if(!el) return;
+  el.textContent = ST.horarios&&ST.horarios.actualizado
+    ? `Horarios actualizados por vos el ${new Date(ST.horarios.actualizado).toLocaleDateString("es-AR")}`
+    : `Horarios oficiales ciclo ${CICLO}`;
+}
+$("#btnActualizarHorarios").onclick=()=>{
+  $("#modal").innerHTML=`
+    <button class="cerrar" onclick="cerrarModal()">✕</button>
+    <h3>Actualizar horarios desde la web de la FRH</h3>
+    <div class="sub">Sirve para cargar los horarios de un nuevo ciclo lectivo sin depender de una actualización de la app.</div>
+    <section><b>Pasos</b>
+      <ol style="font-size:13px;margin-left:18px;line-height:1.7">
+        <li>Abrí <b>horarios.frh.utn.edu.ar</b> en otra pestaña.</li>
+        <li>Mostrá el código fuente: <b>Ctrl+U</b> (o clic derecho → “Ver código fuente”).</li>
+        <li>Seleccioná todo (<b>Ctrl+A</b>), copiá (<b>Ctrl+C</b>) y pegalo acá abajo.</li>
+      </ol></section>
+    <textarea id="haInput" class="inp-form" style="height:130px;resize:vertical" placeholder="Pegá acá el código fuente de la página…"></textarea>
+    <div id="haError" class="aviso" style="display:none"></div>
+    <div style="display:flex;gap:8px;margin-top:14px;align-items:center">
+      <button class="btn primario" id="haProcesar">Procesar</button>
+      <button class="btn" onclick="cerrarModal()">Cancelar</button>
+      ${ST.horarios?`<button class="btn peligro" id="haReset" style="margin-left:auto">Volver a los oficiales</button>`:""}
+    </div>`;
+  const rb=$("#haReset");
+  if(rb) rb.onclick=()=>{ ST.horarios=null; COMISIONES=construirComisiones(COMISIONES_RAW.comisiones); guardar(); cerrarModal(); render(); toast("Horarios restaurados a los oficiales del ciclo "+CICLO); };
+  $("#haProcesar").onclick=()=>{
+    const err=$("#haError"), txt=$("#haInput").value;
+    let nuevas; try{ nuevas=parsearHorariosFRH(txt); }catch(e){ nuevas=[]; }
+    if(!nuevas.length){ err.textContent="⚠ No encontré comisiones de Mecánica. Asegurate de pegar el código fuente completo (Ctrl+U → Ctrl+A) de horarios.frh.utn.edu.ar."; err.style.display="block"; return; }
+    const cubiertas=new Set(nuevas.map(c=>porNombre[norm(c.materia)]).filter(o=>o!==undefined));
+    ST.horarios={actualizado:new Date().toISOString(), comisiones:nuevas};
+    COMISIONES=construirComisiones(nuevas);
+    guardar(); cerrarModal(); render();
+    toast(`Horarios actualizados: ${nuevas.length} comisiones para ${cubiertas.size} materias`);
+  };
+  $("#velo").classList.add("abierto");
+};
+
+/* ---- exportar imagen ---- */
+$("#btnPng").onclick=()=>{
+  const coms=comisionesElegidas();
+  if(!coms.length) return toast("Elegí al menos una comisión");
+  const W=1500,H=1000,ML=90,MT=110; const cw=(W-ML-30)/6;
+  const {ini:GI,fin:GF}=rangoGrilla(coms);
+  const esc=(H-MT-40)/(GF-GI);
+  const cv=document.createElement("canvas"); cv.width=W; cv.height=H;
+  const x=cv.getContext("2d");
+  x.fillStyle="#fff"; x.fillRect(0,0,W,H);
+  x.fillStyle="#00455C"; x.font="bold 30px sans-serif";
+  x.fillText("Horario semanal — Ingeniería Mecánica UTN Haedo · "+CICLO,30,45);
+  x.font="600 16px sans-serif"; x.fillStyle="#7D9FAB";
+  x.fillText("Generado con el Planificador Académico",30,72);
+  for(let d=1;d<=6;d++){ x.fillStyle="#00455C"; x.fillRect(ML+(d-1)*cw,MT-34,cw-4,28);
+    x.fillStyle="#fff"; x.font="bold 15px sans-serif"; x.textAlign="center";
+    x.fillText(DIAS[d],ML+(d-1)*cw+cw/2,MT-14); x.textAlign="left"; }
+  x.strokeStyle="#dde6ea"; x.fillStyle="#7D9FAB"; x.font="600 12px sans-serif";
+  for(let t=GI;t<=GF;t+=60){ const y=MT+(t-GI)*esc;
+    x.beginPath(); x.moveTo(ML,y); x.lineTo(W-30,y); x.stroke(); x.fillText(hm(t),30,y+4); }
+  const choques=detectarChoques(coms);
+  const enCh=new Set(); choques.forEach(c=>{enCh.add(claveCom(c.a)+c.ba.dia+c.ba.inicio);enCh.add(claveCom(c.b)+c.bb.dia+c.bb.inicio);});
+  for (const c of coms) for (const b of c.bloques){
+    const px=ML+(b.dia-1)*cw+2, py=MT+(b.inicio-GI)*esc, ph=(b.fin-b.inicio)*esc-2;
+    x.fillStyle=colorMateria(c.orden); x.fillRect(px,py,cw-8,ph);
+    if (enCh.has(claveCom(c)+b.dia+b.inicio)){ x.strokeStyle="#FF2644"; x.lineWidth=4; x.strokeRect(px+2,py+2,cw-12,ph-4); x.lineWidth=1; }
+    x.fillStyle="#fff"; x.font="bold 13px sans-serif";
+    envolver(x,porOrden[c.orden].nombre,px+8,py+18,cw-22,15);
+    x.font="600 11.5px sans-serif";
+    x.fillText(`${hm(b.inicio)}–${hm(b.fin)}${b.aula&&b.aula!=="Virtual"?" · Aula "+b.aula:""}`,px+8,py+ph-8);
+  }
+  const a=document.createElement("a"); a.download=`horario-${CICLO}.png`; a.href=cv.toDataURL("image/png"); a.click();
+};
+function envolver(x,txt,px,py,maxw,lh){
+  const palabras=txt.split(" "); let linea="",y=py;
+  for (const p of palabras){ const t=linea?linea+" "+p:p;
+    if (x.measureText(t).width>maxw && linea){ x.fillText(linea,px,y); linea=p; y+=lh; } else linea=t; }
+  x.fillText(linea,px,y);
+}
+/* ---- exportar .ics ---- */
+$("#btnIcs").onclick=()=>{
+  const coms=comisionesElegidas();
+  if(!coms.length) return toast("Elegí al menos una comisión");
+  const hoy=new Date(); const pad=n=>String(n).padStart(2,"0");
+  let ics="BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//PlanificadorUTN//ES\r\n";
+  for (const c of coms) for (const b of c.bloques){
+    const d=new Date(hoy); const delta=(b.dia-((d.getDay()+6)%7+1)+7)%7; d.setDate(d.getDate()+delta);
+    const f=`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`;
+    const t=m=>`${pad(Math.floor(m/60))}${pad(m%60)}00`;
+    ics+="BEGIN:VEVENT\r\n"
+      +`UID:${c.curso}-${c.orden}-${b.dia}-${b.inicio}@planificador-utn\r\n`
+      +`DTSTART:${f}T${t(b.inicio)}\r\nDTEND:${f}T${t(b.fin)}\r\n`
+      +"RRULE:FREQ=WEEKLY;COUNT=18\r\n"
+      +`SUMMARY:${porOrden[c.orden].nombre} (${c.curso})\r\n`
+      +`LOCATION:${c.manual?(c.regional||"Otra regional")+(b.aula?" · Aula "+b.aula:""):c.modalidad==="virtual"?"Virtual":"UTN Haedo"+(b.aula?" · Aula "+b.aula:"")}\r\n`
+      +"END:VEVENT\r\n";
+  }
+  ics+="END:VCALENDAR\r\n";
+  const a=document.createElement("a"); a.download=`horario-${CICLO}.ics`;
+  a.href="data:text/calendar;charset=utf-8,"+encodeURIComponent(ics); a.click();
+};
+
+/* ================= SIMULADOR ================= */
+function anioBase(){ return +CICLO.split("·")[0]||new Date().getFullYear(); }
+function estadosSim(){
+  const e={...ST.estados};
+  if (ST.sim.asumir) for (const o of Object.keys(e)) if (e[o]==="cursando") e[o]="aprobada";
+  return e;
+}
+function validarSim(){
+  const base=estadosSim();
+  const resultado=[]; const apr=new Set(MATERIAS.filter(m=>base[m.o]==="aprobada").map(m=>m.o));
+  const reg=new Set(MATERIAS.filter(m=>base[m.o]==="regular").map(m=>m.o));
+  for (const anio of ST.sim.anios){
+    const errs={};
+    for (const o of anio.mats){
+      const c=CORR[o]||{c:[],a:[]}; const faltas=[];
+      for (const x of c.c) if (!apr.has(x)&&!reg.has(x)) faltas.push(porOrden[x].nombre+" (cursada)");
+      for (const x of c.a) if (!apr.has(x)) faltas.push(porOrden[x].nombre+" (aprobada)");
+      if (faltas.length) errs[o]=faltas;
+    }
+    resultado.push(errs);
+    anio.mats.forEach(o=>{apr.add(o); reg.delete(o);});
+  }
+  return {resultado, apr};
+}
+function renderSim(){
+  $("#chkAsumir").checked=ST.sim.asumir!==false;
+  const cont=$("#simAnios"); cont.innerHTML="";
+  if(!Array.isArray(ST.sim.anios)) ST.sim.anios=[];
+  if(!ST.sim.anios.length) ST.sim.anios=[{mats:[]}];
+  // Si una materia planificada ya se aprobó en la realidad, sale del plan: si no,
+  // quedaba oculta (el listado no la muestra) pero seguía sumando en el contador.
+  ST.sim.anios.forEach(a=>a.mats=a.mats.filter(o=>!aprobada(o)));
+  const {resultado,apr}=validarSim();
+  const base=estadosSim();
+  const asignadas=new Set(ST.sim.anios.flatMap(a=>a.mats));
+  ST.sim.anios.forEach((anio,ix)=>{
+    const y=anioBase()+ix+1;
+    const el=document.createElement("div"); el.className="panel sim-anio";
+    const pendientes=MATERIAS.filter(m=>base[m.o]!=="aprobada" && (!asignadas.has(m.o)||anio.mats.includes(m.o)));
+    const hs=anio.mats.reduce((t,o)=>t+porOrden[o].hs,0);
+    el.innerHTML=`<div class="cab"><b>${y}</b><span style="margin-left:auto;font-size:12px;color:var(--gris);font-weight:700">${anio.mats.length} materias · ${hs} hs/sem</span>
+      <button class="btn-mini" data-x>✕</button></div><div class="sim-lista"></div>`;
+    el.querySelector("[data-x]").onclick=()=>{ ST.sim.anios.splice(ix,1); guardar(); renderSim(); };
+    const lista=el.querySelector(".sim-lista");
+    for (const m of pendientes){
+      const sel=anio.mats.includes(m.o);
+      const errores=sel?resultado[ix][m.o]:null;
+      const op=document.createElement("label");
+      op.className="sim-op"+(errores?" invalida":"");
+      op.innerHTML=`<input type="checkbox" ${sel?"checked":""}>
+        <span><span class="nom-sim">${m.electiva?"⭐ ":""}${m.nombre}</span>
+        ${errores?`<span class="err">Falta: ${errores.join(", ")}</span>`:""}</span>`;
+      op.querySelector("input").onchange=ev=>{
+        if (ev.target.checked) anio.mats.push(m.o);
+        else anio.mats=anio.mats.filter(x=>x!==m.o);
+        ST.sim.anios[ix]=anio; guardar(); renderSim();
+      };
+      lista.appendChild(op);
+    }
+    cont.appendChild(el);
+  });
+  // resumen
+  const errsTot=resultado.reduce((t,e)=>t+Object.keys(e).length,0);
+  const oblig=MATERIAS.filter(m=>!m.electiva);
+  const aprFinal=oblig.filter(m=>apr.has(m.o)).length;
+  const hsElec=MATERIAS.filter(m=>m.electiva&&apr.has(m.o)).reduce((t,m)=>t+hsElectiva(m),0);
+  const faltanMat=oblig.length-aprFinal, faltanElec=Math.max(0,10-hsElec);
+  let msg;
+  if (errsTot) msg=`<b style="color:var(--rojo)">⚠ Hay ${errsTot} materia(s) asignadas sin cumplir correlativas.</b> Revisá las marcadas en rojo.`;
+  else if (!faltanMat && !faltanElec){
+    const ultimo=anioBase()+ST.sim.anios.length;
+    msg=`<b style="color:var(--verde-txt)">🎓 Con este plan terminás de cursar y aprobar todo en ${ultimo}.</b><br>
+    <small>Restan Proyecto Final rendido (exige todo aprobado) y la Práctica Profesional Supervisada para el título.</small>`;
+  } else msg=`Con lo asignado te quedarían <b>${faltanMat} obligatorias</b>${faltanElec?` y <b>${faltanElec} hs de electivas</b>`:""} sin aprobar. Agregá años o materias.`;
+  $("#simRes").innerHTML=msg;
+}
+$("#btnAgregarAnio").onclick=()=>{ ST.sim.anios.push({mats:[]}); guardar(); renderSim(); };
+$("#chkAsumir").onchange=e=>{ ST.sim.asumir=e.target.checked; guardar(); renderSim(); };
+
+/* ================= AVANCE ================= */
+function renderAvance(){
+  const oblig=MATERIAS.filter(m=>!m.electiva);
+  const nAprob=oblig.filter(m=>aprobada(m.o)).length;
+  const nReg=oblig.filter(m=>est(m.o)==="regular").length;
+  const nCur=MATERIAS.filter(m=>est(m.o)==="cursando").length;
+  const hsTot=oblig.reduce((t,m)=>t+m.hs,0);
+  const hsAprob=oblig.filter(m=>aprobada(m.o)).reduce((t,m)=>t+m.hs,0);
+  const rendibles=oblig.filter(m=>puedeRendir(m.o));
+  const conNota=MATERIAS.filter(m=>aprobada(m.o)&&ST.notas[m.o]!=null);
+  const sumN=conNota.reduce((t,m)=>t+ST.notas[m.o],0);
+  const prom=conNota.length?sumN/conNota.length:null;
+  const totApl=MATERIAS.reduce((t,m)=>t+(ST.aplazos[m.o]||0),0);
+  const promCA=(conNota.length+totApl)?(sumN+2*totApl)/(conNota.length+totApl):null;
+  const promTxt = prom==null ? "—" : prom.toFixed(2);
+  const promSub = prom==null ? "cargá notas en cada materia"
+    : `sobre ${conNota.length} final${conNota.length>1?"es":""}${totApl?` · c/aplazos ${promCA.toFixed(2)}`:""}`;
+  $("#tilesAvance").innerHTML=`
+    <div class="tile"><b>${nAprob}/${oblig.length}</b><span>obligatorias aprobadas</span><div class="mini-borde" style="background:linear-gradient(90deg,var(--verde) ${100*nAprob/oblig.length}%,var(--track) 0)"></div></div>
+    <div class="tile"><b>${Math.round(100*hsAprob/hsTot)}%</b><span>de la carga horaria</span><div class="mini-borde" style="background:linear-gradient(90deg,var(--acento) ${100*hsAprob/hsTot}%,var(--track) 0)"></div></div>
+    <div class="tile" title="Promedio de las notas de finales aprobados${totApl?". «c/aplazos» cuenta cada aplazo como un 2.":""}"><b>${promTxt}</b><span>promedio · ${promSub}</span><div class="mini-borde" style="background:var(--verde)"></div></div>
+    <div class="tile"><b>${nReg}</b><span>finales pendientes</span><div class="mini-borde" style="background:var(--ambar)"></div></div>
+    <div class="tile"><b>${nCur}</b><span>cursando ahora</span><div class="mini-borde" style="background:var(--cyan)"></div></div>
+    <div class="tile"><b>${electivasHs()}/10</b><span>hs de electivas</span><div class="mini-borde" style="background:linear-gradient(90deg,var(--magenta) ${100*electivasHs()/10}%,var(--track) 0)"></div></div>`;
+  renderMesas();
+  $("#listaRendibles").innerHTML = rendibles.length
+    ? rendibles.map(m=>{const d=destraba(m.o);return `<div class="fila-lista"><span class="nom">${m.nombre}</span>
+        ${d.dc.length+d.dr.length?`<span class="chip chip-cursable">destraba ${d.dc.length+d.dr.length}</span>`:""}
+        <span class="pill est-regular">Regularizada</span></div>`;}).join("")
+    : `<p style="padding:13px;color:var(--gris);font-weight:600">No tenés finales habilitados ahora mismo.</p>`;
+  renderRecom();
+}
+
+/* ================= RECOMENDADOR ================= */
+/* Versiones "puras" de las reglas: evalúan sobre un mapa de estados hipotético. */
+const estadoEn = (o,E) => E[o]||"sin";
+function cursableCon(o,E){
+  if(!["sin","desaprobada"].includes(estadoEn(o,E))) return false;
+  const c=CORR[o]||{c:[],a:[]};
+  return c.c.every(x=>["regular","aprobada"].includes(estadoEn(x,E))) && c.a.every(x=>estadoEn(x,E)==="aprobada");
+}
+function rendibleCon(o,E){
+  if(estadoEn(o,E)!=="regular") return false;
+  if(o===40) return MATERIAS.every(m=>m.electiva||m.o===40||estadoEn(m.o,E)==="aprobada");
+  const c=CORR[o]||{c:[],a:[]};
+  return [...new Set([...c.c,...c.a])].every(x=>estadoEn(x,E)==="aprobada");
+}
+/* Todas las materias que dependen de `o`, directa o indirectamente, y siguen pendientes. */
+function descendientes(o,acc){
+  acc=acc||new Set();
+  for(const m of MATERIAS){
+    const c=CORR[m.o]; if(!c) continue;
+    if((c.c.includes(o)||c.a.includes(o)) && !acc.has(m.o)){ acc.add(m.o); descendientes(m.o,acc); }
+  }
+  return acc;
+}
+function impactoDe(o){
+  const E={...ST.estados};
+  const antesC=new Set(MATERIAS.filter(m=>cursableCon(m.o,E)).map(m=>m.o));
+  const antesR=new Set(MATERIAS.filter(m=>rendibleCon(m.o,E)).map(m=>m.o));
+  E[o]="aprobada";
+  const abreC=MATERIAS.filter(m=>m.o!==o&&cursableCon(m.o,E)&&!antesC.has(m.o)).map(m=>m.o);
+  const abreR=MATERIAS.filter(m=>m.o!==o&&rendibleCon(m.o,E)&&!antesR.has(m.o)).map(m=>m.o);
+  const cascada=[...descendientes(o)].filter(x=>!aprobada(x)).length;
+  return {abreC,abreR,cascada};
+}
+function renderRecom(){
+  const cont=$("#listaRecom"); if(!cont) return;
+  const cand=[];
+  for (const m of MATERIAS){
+    if (aprobada(m.o)) continue;
+    const e=est(m.o);
+    let accion=null;
+    if (e==="regular" && puedeRendir(m.o)) accion="rendir";
+    else if (e==="cursando") accion="terminar";
+    else if (puedeCursar(m.o)) accion="cursar";
+    if (!accion) continue;
+    const imp=impactoDe(m.o);
+    cand.push({m,accion,...imp,peso:(imp.abreC.length+imp.abreR.length)*100+imp.cascada});
+  }
+  if (!cand.length){
+    const falta=MATERIAS.filter(m=>!aprobada(m.o)).length;
+    cont.innerHTML=`<p style="padding:13px;color:var(--gris);font-weight:600">${falta
+      ? "No hay acciones disponibles: cargá tus materias aprobadas y regularizadas para ver recomendaciones."
+      : "🎓 ¡Tenés todo aprobado!"}</p>`;
+    return;
+  }
+  cand.sort((a,b)=>b.peso-a.peso || a.m.nivel-b.m.nivel || a.m.o-b.m.o);
+  const ETQ={rendir:{txt:"Rendir el final",cls:"chip-rendible"},
+             cursar:{txt:"Cursarla",cls:"chip-cursable"},
+             terminar:{txt:"Aprobarla (la estás cursando)",cls:"chip-cursable"}};
+  cont.innerHTML=cand.slice(0,8).map((c,i)=>{
+    const abre=[];
+    if (c.abreC.length) abre.push(`habilita a cursar <b>${nombres(c.abreC)}</b>`);
+    if (c.abreR.length) abre.push(`habilita a rendir <b>${nombres(c.abreR)}</b>`);
+    const det = abre.length ? abre.join(" · ")
+      : c.cascada ? `no destraba nada de inmediato, pero está antes de ${c.cascada} materia${c.cascada>1?"s":""} del plan`
+      : "no es correlativa de ninguna otra materia";
+    return `<div class="mesa" ${i===0?'style="background:var(--hover)"':''}>
+      <div class="top">
+        ${i===0?'<span class="chip chip-cursable">★ prioridad</span>':`<span class="chip chip-bloq">${i+1}</span>`}
+        <b style="cursor:pointer" data-abrir="${c.m.o}">${c.m.nombre}</b>
+        <span class="chip ${ETQ[c.accion].cls}">${ETQ[c.accion].txt}</span>
+        ${(c.abreC.length+c.abreR.length)?`<span class="cd">destraba ${c.abreC.length+c.abreR.length}</span>`:""}
+      </div>
+      <div class="hab">${det}</div></div>`;
+  }).join("");
+  cont.querySelectorAll("[data-abrir]").forEach(b=>b.onclick=()=>abrirModal(+b.dataset.abrir));
+}
+/* Mesas con sus ventanas de inscripción, calculadas contra la fecha de hoy. */
+function mesasConEstado(){
+  const hoy=new Date(); hoy.setHours(0,0,0,0);
+  const dd=(a,b)=>Math.round((a-b)/86400000);
+  return (CATALOGO.mesas||[]).map(x=>{
+    const d1=new Date(x.desde+"T00:00"), d2=new Date(x.hasta+"T00:00");
+    const i1=x.inscDesde?new Date(x.inscDesde+"T00:00"):null, i2=x.inscHasta?new Date(x.inscHasta+"T00:00"):null;
+    let insc="sin-datos";
+    if(i1&&i2) insc = hoy<i1 ? "futura" : hoy<=i2 ? "abierta" : "cerrada";
+    return {...x, d1, d2, i1, i2, insc, hoy,
+      diasParaMesa:dd(d1,hoy),
+      diasParaCierre:i2?dd(i2,hoy):null,
+      diasParaApertura:i1?dd(i1,hoy):null};
+  }).sort((a,b)=>a.d1-b.d1);
+}
+const fmtF = d => d.toLocaleDateString("es-AR",{day:"numeric",month:"short"});
+const CLAVE_BANNER="planificador-banner-oculto";
+function renderBanner(){
+  const cont=$("#bannerInsc"); if(!cont) return;
+  cont.innerHTML="";
+  const habil=MATERIAS.filter(m=>puedeRendir(m.o));
+  const m=mesasConEstado().find(x=>x.insc==="abierta") ||
+          mesasConEstado().find(x=>x.insc==="futura"&&x.diasParaApertura<=7);
+  if(!m) return;
+  let oculto=""; try{ oculto=localStorage.getItem(CLAVE_BANNER)||""; }catch(e){}
+  if(oculto===m.nombre+"|"+m.insc) return;
+  const cierra=m.diasParaCierre;
+  const urgente = m.insc==="abierta" && cierra<=3;
+  const cuando = m.insc==="futura"
+    ? `La inscripción abre ${m.diasParaApertura===0?"hoy":m.diasParaApertura===1?"mañana":"en "+m.diasParaApertura+" días"} (${fmtF(m.i1)}).`
+    : `Inscripción abierta: cierra ${cierra===0?"HOY":cierra===1?"mañana":"en "+cierra+" días"} (${fmtF(m.i2)}).`;
+  const detalle = habil.length
+    ? `Tenés <b>${habil.length}</b> final${habil.length>1?"es":""} habilitado${habil.length>1?"s":""}: ${habil.map(x=>x.nombre).join(", ")}.`
+    : `Todavía no tenés finales habilitados según tu estado cargado.`;
+  cont.innerHTML=`<div class="banner ${urgente?"urgente":""}">
+    <b>📌 Mesa ${m.nombre}</b>
+    <span class="txt">${cuando} ${detalle}</span>
+    <button title="Ocultar este aviso" data-cerrar>✕</button></div>`;
+  cont.querySelector("[data-cerrar]").onclick=()=>{
+    try{ localStorage.setItem(CLAVE_BANNER, m.nombre+"|"+m.insc); }catch(e){}
+    cont.innerHTML="";
+  };
+}
+function renderMesas(){
+  const cont=$("#listaMesas"); if(!cont) return;
+  const habil=MATERIAS.filter(m=>puedeRendir(m.o));
+  const prox=mesasConEstado().filter(x=>x.d2>=x.hoy);
+  if(!prox.length){ cont.innerHTML=`<p style="padding:13px;color:var(--gris);font-weight:600">No hay mesas futuras en el calendario cargado.</p>`; return; }
+  cont.innerHTML=prox.slice(0,4).map(x=>{
+    const dias=x.diasParaMesa;
+    const cd = dias<=0?"en curso":dias===1?"mañana":`en ${dias} días`;
+    const insc = x.insc==="abierta"
+        ? `<span class="cd ${x.diasParaCierre<=3?"prox":""}">✅ inscripción abierta · cierra ${x.diasParaCierre===0?"hoy":"en "+x.diasParaCierre+" días"}</span>`
+      : x.insc==="futura"
+        ? `<span class="chip chip-bloq">inscripción del ${fmtF(x.i1)} al ${fmtF(x.i2)}</span>`
+      : x.insc==="cerrada"
+        ? `<span class="chip chip-bloq">inscripción cerrada el ${fmtF(x.i2)}</span>` : "";
+    return `<div class="mesa"><div class="top">
+      <b>${x.nombre}</b>
+      <span style="font-size:12.5px;color:var(--muted)">${fmtF(x.d1)} – ${fmtF(x.d2)} · ${x.llamados} llamado${x.llamados>1?"s":""}</span>
+      <span class="cd ${dias<=14?'prox':''}">${cd}</span></div>
+      <div class="insc">${insc}</div>
+      <div class="hab">${habil.length?`Con tu estado actual podés rendir <b>${habil.length}</b>: ${habil.map(m=>m.nombre).join(", ")}`:"Todavía no tenés finales habilitados (regularizá materias para poder rendir)."}</div>
+    </div>`;
+  }).join("");
+}
+
+/* ================= AGENDA DE EXÁMENES =================
+   Parciales, recuperatorios y entregas con cuenta regresiva. Los que ya pasaron
+   no se borran: bajan a una sección aparte donde podés registrar la nota. */
+const TIPOS_EX={parcial:"Parcial", recuperatorio:"Recuperatorio", tp:"Entrega de TP",
+                coloquio:"Coloquio", final:"Final", otro:"Otro"};
+function diasHasta(f){
+  const hoy=new Date(); hoy.setHours(0,0,0,0);
+  return Math.round((new Date(f+"T00:00")-hoy)/86400000);
+}
+const fmtFecha = f => new Date(f+"T00:00").toLocaleDateString("es-AR",{weekday:"long",day:"numeric",month:"long"});
+function textoCuenta(d){
+  if(d===0) return {n:"HOY", s:""};
+  if(d===1) return {n:"1", s:"día"};
+  if(d>1)   return {n:String(d), s:"días"};
+  if(d===-1)return {n:"ayer", s:""};
+  return {n:String(-d), s:"días atrás"};
+}
+function burbujaHTML(e){
+  const d=diasHasta(e.fecha), c=textoCuenta(d);
+  const cls = d<0 ? "pasada" : d<=2 ? "urgente" : d<=7 ? "pronto" : "";
+  const mat = e.o!=null && porOrden[e.o] ? porOrden[e.o].nombre : (e.materiaLibre||"Sin materia");
+  return `<div class="burbuja ${cls}" data-id="${e.id}">
+    <div class="cab-b">
+      <span class="mat">${mat}</span>
+      <span class="cuenta">${c.n}${c.s?`<small>${c.s}</small>`:""}</span>
+    </div>
+    <div>
+      <span class="chip ${d<0?"chip-bloq":"chip-rendible"}">${TIPOS_EX[e.tipo]||"Examen"}${e.detalle?" · "+escAttr(e.detalle):""}</span>
+      ${e.nota!=null?`<span class="chip chip-cursable">nota ${e.nota}</span>`:""}
+    </div>
+    <div class="meta">📅 ${fmtFecha(e.fecha)}${e.hora?` · ${e.hora} hs`:""}</div>
+    ${e.notas?`<div class="nota-b">${escAttr(e.notas)}</div>`:""}
+    <div class="acc">
+      <button class="btn-mini" data-edit-ex="${e.id}">editar</button>
+      ${d<0?`<button class="btn-mini" data-nota-ex="${e.id}">${e.nota!=null?"cambiar nota":"poner nota"}</button>`:""}
+      <button class="btn-mini" data-del-ex="${e.id}">eliminar</button>
+    </div></div>`;
+}
+function renderAgenda(){
+  const exs=(ST.examenes||[]).filter(e=>e&&typeof e.fecha==="string")
+    .sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const fut=exs.filter(e=>diasHasta(e.fecha)>=0);
+  const pas=exs.filter(e=>diasHasta(e.fecha)<0).reverse();
+  const cont=$("#burbujas");
+  cont.innerHTML = fut.length
+    ? `<div class="burbujas">${fut.map(burbujaHTML).join("")}</div>`
+    : `<div class="vacio">No tenés exámenes anotados. Agregá tu próximo parcial con el botón de arriba.</div>`;
+  $("#examenesPasados").innerHTML = pas.length
+    ? `<h3 style="margin:22px 0 10px">Ya pasaron</h3><div class="burbujas">${pas.map(burbujaHTML).join("")}</div>` : "";
+  $$("#vista-agenda [data-edit-ex]").forEach(b=>b.onclick=()=>abrirModalExamen(+b.dataset.editEx));
+  $$("#vista-agenda [data-del-ex]").forEach(b=>b.onclick=()=>{
+    const e=ST.examenes.find(x=>x.id===+b.dataset.delEx);
+    if(confirm(`¿Eliminar "${TIPOS_EX[e.tipo]}" de ${e.o!=null&&porOrden[e.o]?porOrden[e.o].nombre:"esa materia"}?`)){
+      ST.examenes=ST.examenes.filter(x=>x.id!==e.id); guardar(); render(); }
+  });
+  $$("#vista-agenda [data-nota-ex]").forEach(b=>b.onclick=()=>{
+    const e=ST.examenes.find(x=>x.id===+b.dataset.notaEx);
+    const v=prompt("¿Qué nota te sacaste? (dejalo vacío para borrarla)", e.nota!=null?e.nota:"");
+    if(v===null) return;
+    const n=parseInt(v,10);
+    if(v.trim()==="") delete e.nota; else if(!isNaN(n)&&n>=1&&n<=10) e.nota=n; else return toast("Poné un número del 1 al 10");
+    guardar(); render();
+  });
+  actualizarBadge();
+}
+function actualizarBadge(){
+  const b=$("#badgeAgenda"); if(!b) return;
+  const n=(ST.examenes||[]).filter(e=>{const d=diasHasta(e.fecha); return d>=0&&d<=7;}).length;
+  b.hidden=!n; b.textContent=n;
+}
+function abrirModalExamen(id){
+  const e=(ST.examenes||[]).find(x=>x.id===id);
+  const abc=(a,b)=>a.nombre.localeCompare(b.nombre,"es");
+  const cursando=MATERIAS.filter(m=>est(m.o)==="cursando").sort(abc);
+  const resto=MATERIAS.filter(m=>est(m.o)!=="cursando").sort(abc);
+  const opt=m=>`<option value="${m.o}" ${e&&e.o===m.o?"selected":""}>${m.nombre}</option>`;
+  // fecha local: toISOString() daría el día siguiente después de las 21 hs (usa UTC)
+  const hoy=new Date();
+  const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  $("#modal").innerHTML=`
+    <button class="cerrar" onclick="cerrarModal()">✕</button>
+    <h3>${e?"Editar examen":"Agregar examen"}</h3>
+    <div class="sub">Aparece como burbuja en tu agenda con los días que faltan.</div>
+    <section><b>Materia</b>
+      <select id="exMateria" class="inp-form">
+        ${cursando.length?`<optgroup label="Estás cursando">${cursando.map(opt).join("")}</optgroup>`:""}
+        <optgroup label="${cursando.length?"Otras materias":"Materias"}">${resto.map(opt).join("")}</optgroup>
+      </select></section>
+    <section style="display:flex;gap:10px;flex-wrap:wrap">
+      <div style="flex:1;min-width:150px"><b>Tipo</b>
+        <select id="exTipo" class="inp-form">${Object.entries(TIPOS_EX).map(([k,v])=>
+          `<option value="${k}" ${e&&e.tipo===k?"selected":""}>${v}</option>`).join("")}</select></div>
+      <div style="flex:1;min-width:150px"><b>Detalle (opcional)</b>
+        <input id="exDetalle" class="inp-form" placeholder="1.º parcial, unidad 3…" value="${e?escAttr(e.detalle||""):""}"></div>
+    </section>
+    <section style="display:flex;gap:10px;flex-wrap:wrap">
+      <div style="flex:1;min-width:150px"><b>Fecha</b>
+        <input id="exFecha" class="inp-form" type="date" value="${e?e.fecha:iso(hoy)}"></div>
+      <div style="flex:1;min-width:120px"><b>Hora (opcional)</b>
+        <input id="exHora" class="inp-form" type="time" value="${e?(e.hora||""):""}"></div>
+    </section>
+    <section><b>Aclaraciones</b>
+      <textarea id="exNotas" class="inp-form" style="height:88px;resize:vertical"
+        placeholder="Qué entra, qué llevar, en qué aula…">${e?escAttr(e.notas||""):""}</textarea></section>
+    <div id="exError" class="aviso" style="display:none"></div>
+    <div style="display:flex;gap:8px;margin-top:14px;align-items:center">
+      <button class="btn primario" id="exGuardar">Guardar</button>
+      <button class="btn" onclick="cerrarModal()">Cancelar</button>
+      ${e?`<button class="btn peligro" id="exEliminar" style="margin-left:auto">Eliminar</button>`:""}
+    </div>`;
+  const bEl=$("#exEliminar");
+  if(bEl) bEl.onclick=()=>{ ST.examenes=ST.examenes.filter(x=>x.id!==id); guardar(); cerrarModal(); render(); };
+  $("#exGuardar").onclick=()=>{
+    const err=$("#exError"), fecha=$("#exFecha").value;
+    if(!fecha){ err.textContent="⚠ Elegí la fecha del examen."; err.style.display="block"; return; }
+    const datos={ o:+$("#exMateria").value, tipo:$("#exTipo").value, detalle:$("#exDetalle").value.trim(),
+                  fecha, hora:$("#exHora").value, notas:$("#exNotas").value.trim() };
+    if(e) Object.assign(e,datos);
+    else { ST._eseq=(ST._eseq||0)+1; (ST.examenes=ST.examenes||[]).push({id:ST._eseq, ...datos}); }
+    guardar(); cerrarModal(); vista="agenda";
+    $$(".nav-int button").forEach(x=>x.classList.toggle("activa",x.dataset.vista==="agenda"));
+    ["materias","grilla","agenda","mapa","simulador","avance"].forEach(v=>$("#vista-"+v).hidden=v!=="agenda");
+    render();
+    toast(e?"Examen actualizado":"Examen agregado a tu agenda");
+  };
+  $("#velo").classList.add("abierto");
+}
+$("#btnExamen").onclick=()=>abrirModalExamen();
+
+/* ================= MAPA DE CORRELATIVAS ================= */
+const COL_CLARO={sin:{f:"#eef2f5",s:"#c2ced6",t:"#61798a"},cursando:{f:"#e0f9ff",s:"#00c0e2",t:"#0080a0"},
+  regular:{f:"#fff4dc",s:"#f0b400",t:"#9a6a00"},aprobada:{f:"#eef8dc",s:"#8DCC3D",t:"#4d7a10"},
+  desaprobada:{f:"#ffe8ec",s:"#FF2644",t:"#c00020"}};
+const COL_OSCURO={sin:{f:"#22333c",s:"#445e6b",t:"#a9c0cc"},cursando:{f:"#0b3a47",s:"#00c0e2",t:"#7fe1f7"},
+  regular:{f:"#3d3111",s:"#f0b400",t:"#ffd071"},aprobada:{f:"#283a12",s:"#8DCC3D",t:"#b6e26a"},
+  desaprobada:{f:"#421a22",s:"#FF2644",t:"#ff97a8"}};
+const colEst = k => (temaActual()==="oscuro"?COL_OSCURO:COL_CLARO)[k];
+function ancestros(o,acc){ acc=acc||new Set(); const c=CORR[o]; if(!c) return acc;
+  for(const x of [...c.c,...c.a]) if(!acc.has(x)){ acc.add(x); ancestros(x,acc); } return acc; }
+function renderMapa(){
+  $("#mapaLeyenda").innerHTML=Object.entries({aprobada:"Aprobada",regular:"Regularizada",cursando:"Cursando",sin:"Sin cursar",desaprobada:"Desaprobada"})
+    .map(([k,t])=>`<span class="leyenda-it"><i style="background:${colEst(k).f};border-color:${colEst(k).s}"></i>${t}</span>`).join("")
+    +`<span class="leyenda-it" style="margin-left:8px"><svg width="20" height="10"><line x1="0" y1="5" x2="20" y2="5" stroke="#c8d5db" stroke-width="1.3"/></svg>correlativa de cursada</span>`
+    +`<span class="leyenda-it"><svg width="20" height="10"><line x1="0" y1="5" x2="20" y2="5" stroke="#c8d5db" stroke-width="1.3" stroke-dasharray="3 3"/></svg>debe estar aprobada</span>`;
+  const oblig=MATERIAS.filter(m=>!m.electiva);
+  const COLW=190, NODW=150, NODH=34, GY=44, PADX=20, PADY=16;
+  const porNivel={}; oblig.forEach(m=>(porNivel[m.nivel]=porNivel[m.nivel]||[]).push(m));
+  const pos={}; let maxRows=0;
+  for(let n=1;n<=5;n++){ const col=porNivel[n]||[]; maxRows=Math.max(maxRows,col.length);
+    col.forEach((m,i)=>pos[m.o]={x:PADX+(n-1)*COLW, y:PADY+30+i*GY}); }
+  const W2=PADX*2+4*COLW+NODW, Hh=PADY+40+maxRows*GY;
+  let edges="", nodes="", cabs="";
+  for(let n=1;n<=5;n++) cabs+=`<text class="gcab" x="${PADX+(n-1)*COLW+NODW/2}" y="${PADY+14}" text-anchor="middle" font-size="12" font-weight="800">Nivel ${["","I","II","III","IV","V"][n]}</text>`;
+  for(const m of oblig){ const c=CORR[m.o]; if(!c) continue; const to=pos[m.o];
+    for(const [arr,cls] of [[c.c,"gedge"],[c.a,"gedge apr"]]) for(const x of arr){ const fr=pos[x]; if(!fr||!to) continue;
+      const x1=fr.x+NODW, y1=fr.y+NODH/2, x2=to.x, y2=to.y+NODH/2, mx=(x1+x2)/2;
+      edges+=`<path class="${cls}" data-a="${x}" data-b="${m.o}" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}"/>`; } }
+  for(const m of oblig){ const p=pos[m.o], col=colEst(est(m.o));
+    const nombre=m.nombre.length>22?m.nombre.slice(0,21)+"…":m.nombre;
+    nodes+=`<g class="gnode" data-o="${m.o}" transform="translate(${p.x},${p.y})">
+      <title>${m.nombre} — ${ESTADOS[est(m.o)].txt}</title>
+      <rect width="${NODW}" height="${NODH}" rx="8" fill="${col.f}" stroke="${col.s}"/>
+      <text class="gorden" x="7" y="14" fill="${col.t}">${m.o}</text>
+      <text x="7" y="25" fill="${col.t}">${nombre}</text></g>`; }
+  const svg=`<svg viewBox="0 0 ${W2} ${Hh}" width="${W2}" height="${Hh}" xmlns="http://www.w3.org/2000/svg">
+    ${cabs}${edges}${nodes}</svg>`;
+  const cont=$("#mapaCont"); cont.innerHTML=svg;
+  const S=cont.querySelector("svg");
+  S.querySelectorAll(".gnode").forEach(g=>{
+    const o=+g.dataset.o;
+    g.onclick=()=>abrirModal(o);
+    g.onmouseenter=()=>{
+      const anc=ancestros(o); anc.add(o);
+      S.classList.add("atenuado");
+      S.querySelectorAll(".gnode").forEach(n=>n.classList.toggle("hl",anc.has(+n.dataset.o)));
+      S.querySelectorAll(".gedge").forEach(e=>e.classList.toggle("hl",anc.has(+e.dataset.a)&&anc.has(+e.dataset.b)));
+    };
+    g.onmouseleave=()=>{ S.classList.remove("atenuado"); S.querySelectorAll(".hl").forEach(n=>n.classList.remove("hl")); };
+  });
+}
+
+/* ================= EXPORT / IMPORT / RESET ================= */
+$("#btnExportar").onclick=()=>{
+  const a=document.createElement("a");
+  a.download=`mi-carrera-mecanica-${new Date().toISOString().slice(0,10)}.json`;
+  a.href="data:application/json;charset=utf-8,"+encodeURIComponent(JSON.stringify({...ST,exportado:new Date().toISOString()},null,1));
+  a.click(); toast("Estado exportado. Guardalo donde quieras (Drive, WhatsApp…)");
+};
+$("#btnImportar").onclick=()=>$("#inpImportar").click();
+$("#inpImportar").onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{
+      const d=JSON.parse(r.result);
+      if (d.version!==1||typeof d.estados!=="object"||d.estados===null) throw 0;
+      /* Saneo campo por campo: un export editado a mano o truncado no debe poder
+         romper una vista (agenda ordena por fecha, simulador itera anios, etc.). */
+      const estados={}, notas={}, aplazos={};
+      for (const [o,e] of Object.entries(d.estados||{})) if (porOrden[+o] && ESTADOS[e]) estados[+o]=e;
+      for (const [o,n] of Object.entries(d.notas||{})) if (porOrden[+o] && Number.isInteger(n) && n>=1 && n<=10) notas[+o]=n;
+      for (const [o,n] of Object.entries(d.aplazos||{})) if (porOrden[+o] && Number.isInteger(n) && n>=1 && n<=20) aplazos[+o]=n;
+      const grilla={};
+      for (const [o,k] of Object.entries(d.grilla||{})) if (porOrden[+o] && typeof k==="string") grilla[+o]=k;
+      const sim={ asumir: d.sim?.asumir!==false,
+        anios: Array.isArray(d.sim?.anios) ? d.sim.anios.map(a=>({mats:(Array.isArray(a?.mats)?a.mats:[]).filter(o=>porOrden[o])})) : [] };
+      const manuales=(Array.isArray(d.manuales)?d.manuales:[]).filter(m=>m && Number.isInteger(m.mid) && typeof m.materia==="string"
+        && Array.isArray(m.bloques) && m.bloques.every(b=>b && b.dia>=1 && b.dia<=6 && Number.isInteger(b.inicio) && Number.isInteger(b.fin) && b.fin>b.inicio));
+      const examenes=(Array.isArray(d.examenes)?d.examenes:[]).filter(x=>x && Number.isInteger(x.id)
+        && typeof x.fecha==="string" && /^\d{4}-\d{2}-\d{2}$/.test(x.fecha) && TIPOS_EX[x.tipo]);
+      const horarios=(d.horarios && Array.isArray(d.horarios.comisiones) && d.horarios.comisiones.length) ? d.horarios : null;
+      ST={version:1,estados,notas,aplazos,grilla,sim,manuales,horarios,examenes,
+          _mseq:Math.max(0,d._mseq||0,...manuales.map(m=>m.mid)),
+          _eseq:Math.max(0,d._eseq||0,...examenes.map(x=>x.id))};
+      COMISIONES = (ST.horarios&&Array.isArray(ST.horarios.comisiones)&&ST.horarios.comisiones.length)?construirComisiones(ST.horarios.comisiones):construirComisiones(COMISIONES_RAW.comisiones);
+      guardar(); render(); toast("Estado importado correctamente ✔");
+    }catch(_){ toast("El archivo no parece un export válido"); }
+    e.target.value=""; };
+  r.readAsText(f);
+};
+$("#btnReiniciar").onclick=()=>{
+  if (confirm("¿Borrar TODO tu estado (materias, horario, agenda y simulador)? Esta acción no se puede deshacer.\nTip: exportá antes por las dudas."))
+    { ST={version:1,estados:{},notas:{},aplazos:{},grilla:{},sim:{asumir:true,anios:[]},manuales:[],horarios:null,examenes:[],_mseq:0,_eseq:0}; COMISIONES=construirComisiones(COMISIONES_RAW.comisiones); guardar(); render(); }
+};
+
+/* ================= RENDER GLOBAL ================= */
+function render(){
+  renderBanner();
+  actualizarBadge();
+  if (vista==="materias") renderMaterias();
+  if (vista==="grilla") renderGrilla();
+  if (vista==="agenda") renderAgenda();
+  if (vista==="mapa") renderMapa();
+  if (vista==="simulador") renderSim();
+  if (vista==="avance") renderAvance();
+}
+cargar(); aplicarTema(temaActual()); render();
+if ("serviceWorker" in navigator) {
+  addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
+</body>
+</html>
