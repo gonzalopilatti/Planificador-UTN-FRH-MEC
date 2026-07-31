@@ -2,7 +2,7 @@
    Guarda la app en el dispositivo para que abra sin internet.
    VERSION la reescribe construir_app.py en cada compilación: al cambiar, el
    navegador descarta la caché vieja y todos reciben la versión nueva. */
-const VERSION = "2026.20260731.eba8a254";
+const VERSION = "2026.20260731.f3baf3a0";
 const CACHE = "planificador-" + VERSION;
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 

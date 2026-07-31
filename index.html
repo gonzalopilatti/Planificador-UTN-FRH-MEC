@@ -343,7 +343,7 @@ footer{margin-top:40px;text-align:center;color:var(--gris);font-size:11.5px;line
   <div id="bannerInsc"></div>
   <div id="vista-materias">
     <div class="filtros">
-      <input type="search" id="buscador" placeholder="Buscar materia…">
+      <input type="search" id="buscador" placeholder="Buscar materia…" maxlength="60">
       <div class="seg" id="segFiltro">
         <button data-f="todas" class="activa">Todas</button>
         <button data-f="cursables">Puedo cursar</button>
@@ -439,7 +439,7 @@ footer{margin-top:40px;text-align:center;color:var(--gris);font-size:11.5px;line
 <footer>
   Datos: Ordenanzas UTN 1901 y 1902 (plan 2023) + horarios oficiales FRH (horarios.frh.utn.edu.ar).<br>
   Herramienta no oficial de ayuda a la planificación: confirmá siempre inscripciones y correlatividades en Autogestión.<br>
-  <span style="opacity:.75">Versión 2026.20260731.eba8a254</span>
+  <span style="opacity:.75">Versión 2026.20260731.f3baf3a0</span>
 </footer>
 <div id="pantallaLogin">
   <div class="login-izq">
@@ -470,11 +470,11 @@ footer{margin-top:40px;text-align:center;color:var(--gris);font-size:11.5px;line
 
       <div class="campo">
         <span class="ico">👤</span>
-        <input id="lgMail" type="email" placeholder="Correo electrónico" autocomplete="username">
+        <input id="lgMail" type="email" placeholder="Correo electrónico" autocomplete="username" maxlength="254">
       </div>
       <div class="campo">
         <span class="ico">🔒</span>
-        <input id="lgPass" type="password" placeholder="Contraseña" autocomplete="current-password">
+        <input id="lgPass" type="password" placeholder="Contraseña" autocomplete="current-password" maxlength="128">
         <button class="ojo" id="lgOjo" type="button" title="Mostrar u ocultar la contraseña">👁</button>
       </div>
       <div class="login-fila">
@@ -836,11 +836,11 @@ function abrirModal(o){
       ${d.dr.length?`<div style="font-size:13px">📝 Para rendir: <b>${nombres(d.dr)}</b></div>`:""}</section>`:""}
     <section><b>Comisiones ${CICLO}</b>${ coms.length ? coms.map(cc=>`
       <div style="font-size:13px;padding:4px 0;border-bottom:1px dashed var(--linea)">
-        <b>${cc.curso}</b>${cc.compartida?` <span class="chip chip-compartida" title="No hay comisión propia del plan 2023 este ciclo; es la misma clase que dicta el plan anterior.">compartida plan 94</span>`:""}
+        <b>${escHTML(cc.curso)}</b>${cc.compartida?` <span class="chip chip-compartida" title="No hay comisión propia del plan 2023 este ciclo; es la misma clase que dicta el plan anterior.">compartida plan 94</span>`:""}
         ${cc.dictado==="1"?`<span class="chip chip-bloq">1.º cuat.</span>`:cc.dictado==="2"?`<span class="chip chip-bloq">2.º cuat.</span>`:""}
         ${cc.modalidad==="virtual"?`<span class="chip chip-cursable">virtual</span>`:""}
-        — ${cc.bloques.map(b=>`${DIAS[b.dia]} ${hm(b.inicio)}–${hm(b.fin)}${b.aula&&b.aula!=="Virtual"?` (Aula ${b.aula})`:""}`).join(" · ")}
-        ${cc.docentes.length?`<small style="display:block;color:var(--gris)">${cc.docentes.join(" · ")}</small>`:""}
+        — ${cc.bloques.map(b=>`${DIAS[b.dia]} ${hm(b.inicio)}–${hm(b.fin)}${b.aula&&b.aula!=="Virtual"?` (Aula ${escHTML(b.aula)})`:""}`).join(" · ")}
+        ${cc.docentes.length?`<small style="display:block;color:var(--gris)">${escHTML(cc.docentes.join(" · "))}</small>`:""}
       </div>`).join("") : `<span style="color:var(--gris);font-weight:600">Sin comisiones publicadas este ciclo.</span>`}</section>`;
   $$("#modal [data-est]").forEach(p=>p.onclick=()=>{
     const nuevo=p.dataset.est;
@@ -885,7 +885,7 @@ function renderGrillaLista(){
       <div class="coms">${comsDe(m.o).map(c=>`
         <label class="com-op ${elegida===claveCom(c)?"elegida":""}">
           <input type="radio" name="com-${m.o}" ${elegida===claveCom(c)?"checked":""} data-com="${claveCom(c)}" data-o="${m.o}">
-          <span><b>${c.curso}</b>${c.manual?" <span class='chip chip-rendible'>otra regional</span>":""}${c.compartida?" <span class='chip chip-compartida'>plan 94</span>":""}${c.dictado==="1"?" <span class='chip chip-bloq'>1.ºC</span>":c.dictado==="2"?" <span class='chip chip-bloq'>2.ºC</span>":""}${c.modalidad==="virtual"?" <span class='chip chip-cursable'>virtual</span>":""}<br>
+          <span><b>${escHTML(c.curso)}</b>${c.manual?" <span class='chip chip-rendible'>otra regional</span>":""}${c.compartida?" <span class='chip chip-compartida'>plan 94</span>":""}${c.dictado==="1"?" <span class='chip chip-bloq'>1.ºC</span>":c.dictado==="2"?" <span class='chip chip-bloq'>2.ºC</span>":""}${c.modalidad==="virtual"?" <span class='chip chip-cursable'>virtual</span>":""}<br>
           <span class="det">${c.bloques.map(b=>`${DIAS[b.dia].slice(0,3)} ${hm(b.inicio)}–${hm(b.fin)}`).join(" · ")}</span></span>
         </label>`).join("")}</div>`;
     el.querySelectorAll("input[type=radio]").forEach(r=>r.onchange=()=>{
@@ -952,7 +952,7 @@ function renderGrilla(){
     div.style.background=colorMateria(c.orden);
     const lugar = c.manual ? (c.regional||"otra regional")+(b.aula?" "+b.aula:"") : (b.aula&&b.aula!=="Virtual"?b.aula:c.modalidad==="virtual"?"virtual":"");
     div.title=`${porOrden[c.orden].nombre} (${c.curso}) ${hm(b.inicio)}–${hm(b.fin)}${b.aula?" · Aula "+b.aula:""}`;
-    div.innerHTML=`${porOrden[c.orden].nombre}<small>${hm(b.inicio)}–${hm(b.fin)}${lugar?" · "+lugar:""}</small>`;
+    div.innerHTML=`${escHTML(porOrden[c.orden].nombre)}<small>${hm(b.inicio)}–${hm(b.fin)}${lugar?" · "+escHTML(lugar):""}</small>`;
     celda.appendChild(div);
   }
   const hs=coms.reduce((t,c)=>t+porOrden[c.orden].hs,0);
@@ -972,12 +972,12 @@ function renderExternas(){
     const enGrilla = o!==undefined && ST.grilla[o]==="M"+m.mid;
     return `<div class="ext-item">
       <span class="punto" style="background:${o!==undefined?colorMateria(o):'#7D9FAB'}"></span>
-      <span class="nom">${escAttr(m.materia)}</span>
-      <span class="chip chip-rendible">${escAttr(m.regional)||"—"}</span>
+      <span class="nom">${escHTML(m.materia)}</span>
+      <span class="chip chip-rendible">${escHTML(m.regional)||"—"}</span>
       ${enGrilla?`<span class="chip chip-cursable">en la grilla</span>`:`<button class="btn-mini" data-usar="${m.mid}">usar</button>`}
       <button class="btn-mini" data-edit="${m.mid}">editar</button>
       <button class="btn-mini" data-del="${m.mid}">eliminar</button>
-      <span class="det">${m.profesor?escAttr(m.profesor)+" · ":""}${(m.bloques||[]).map(b=>`${DIAS[b.dia].slice(0,3)} ${hm(b.inicio)}–${hm(b.fin)}${b.aula?" ("+escAttr(b.aula)+")":""}`).join(" · ")}</span>
+      <span class="det">${m.profesor?escHTML(m.profesor)+" · ":""}${(m.bloques||[]).map(b=>`${DIAS[b.dia].slice(0,3)} ${hm(b.inicio)}–${hm(b.fin)}${b.aula?" ("+escHTML(b.aula)+")":""}`).join(" · ")}</span>
     </div>`;
   }).join("");
   cont.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>abrirModalManual(+b.dataset.edit));
@@ -992,7 +992,23 @@ function renderExternas(){
     ST.manuales=ST.manuales.filter(x=>x.mid!==mid); guardar(); render();
   });
 }
-const escAttr = s => String(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+/* ---------------- Defensa contra inyección de código ----------------
+   Dos barreras independientes:
+   1) escHTML: TODO dato que no venga del catálogo se escapa antes de ir al HTML.
+      Es la que realmente impide que un <script> escrito en un campo se ejecute.
+   2) limpiar: recorta y saca caracteres de control al ENTRAR el dato (formularios,
+      archivos importados, texto pegado), para que no se guarde basura ni textos
+      enormes que revienten la pantalla o el documento de la nube. */
+const escHTML = s => String(s==null?"":s)
+  .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+const LARGO = {curso:20, materia:120, aula:40, docente:80, regional:40, profesor:80,
+               detalle:60, notas:600, busqueda:60, correo:254, clave:128};
+function limpiar(s, max, multilinea){
+  const control = multilinea ? /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g
+                             : /[\u0000-\u001F\u007F]/g;
+  return String(s==null?"":s).replace(control,"").trim().slice(0, max || LARGO.materia);
+}
 const minToTime = m => `${String(Math.floor(m/60)).padStart(2,"0")}:${String(m%60).padStart(2,"0")}`;
 const timeToMin = t => { const [h,mm]=(t||"").split(":").map(Number); return (h||0)*60+(mm||0); };
 let _formBloques=[];
@@ -1002,7 +1018,7 @@ function renderBloquesForm(){
     <select data-i="${i}" data-k="dia">${[1,2,3,4,5,6].map(d=>`<option value="${d}" ${b.dia===d?"selected":""}>${DIAS[d]}</option>`).join("")}</select>
     <input type="time" data-i="${i}" data-k="inicio" value="${minToTime(b.inicio)}">
     <input type="time" data-i="${i}" data-k="fin" value="${minToTime(b.fin)}">
-    <input type="text" data-i="${i}" data-k="aula" placeholder="Aula" value="${escAttr(b.aula)}" style="width:78px">
+    <input type="text" data-i="${i}" data-k="aula" placeholder="Aula" maxlength="40" value="${escHTML(b.aula)}" style="width:78px">
     ${_formBloques.length>1?`<button class="quita-b" data-rm="${i}">✕</button>`:""}
   </div>`).join("");
   cont.querySelectorAll("select,input").forEach(el=>el.onchange=()=>{
@@ -1022,8 +1038,8 @@ function abrirModalManual(mid){
     <div class="sub">Se suma a tu horario semanal y participa en la detección de superposiciones. Elegí la materia equivalente de FRH para que cuente en tu avance.</div>
     <section><b>Materia (equivalente en FRH)</b><select id="mMateria" class="inp-form">${opts}</select></section>
     <section style="display:flex;gap:10px;flex-wrap:wrap">
-      <div style="flex:1;min-width:150px"><b>Regional</b><input id="mReg" class="inp-form" placeholder="FRBA, FRA, FRGP…" value="${edit?escAttr(edit.regional):""}"></div>
-      <div style="flex:1;min-width:150px"><b>Profesor (opcional)</b><input id="mProf" class="inp-form" value="${edit?escAttr(edit.profesor||""):""}"></div>
+      <div style="flex:1;min-width:150px"><b>Regional</b><input id="mReg" class="inp-form" maxlength="40" placeholder="FRBA, FRA, FRGP…" value="${edit?escHTML(edit.regional):""}"></div>
+      <div style="flex:1;min-width:150px"><b>Profesor (opcional)</b><input id="mProf" class="inp-form" maxlength="80" value="${edit?escHTML(edit.profesor||""):""}"></div>
     </section>
     <section><b>Días y horarios</b><div id="mBloques"></div>
       <button class="btn-mini" id="mAddBloque" style="margin-top:4px">+ agregar otro día</button></section>
@@ -1043,12 +1059,13 @@ function abrirModalManual(mid){
   };
   $("#mGuardar").onclick=()=>{
     const err=$("#mError"), fallar=t=>{err.textContent="⚠ "+t; err.style.display="block";};
-    const o=+$("#mMateria").value, materia=porOrden[o].nombre, regional=$("#mReg").value.trim();
+    const o=+$("#mMateria").value, materia=porOrden[o].nombre;
+    const regional=limpiar($("#mReg").value, LARGO.regional);
     if(!regional) return fallar("Indicá la regional (por ejemplo, FRBA).");
     if(!_formBloques.length) return fallar("Agregá al menos un día.");
     for(const b of _formBloques) if(!(b.fin>b.inicio)) return fallar("En cada día, la hora de fin debe ser posterior a la de inicio.");
-    const profesor=$("#mProf").value.trim();
-    const bloques=_formBloques.map(b=>({dia:b.dia,inicio:b.inicio,fin:b.fin,aula:(b.aula||"").trim()}));
+    const profesor=limpiar($("#mProf").value, LARGO.profesor);
+    const bloques=_formBloques.map(b=>({dia:b.dia,inicio:b.inicio,fin:b.fin,aula:limpiar(b.aula,LARGO.aula)}));
     if(edit){
       const oldO=porNombre[norm(edit.materia)], wasSel=ST.grilla[oldO]==="M"+mid;
       if(wasSel && oldO!==o) delete ST.grilla[oldO];
@@ -1175,7 +1192,7 @@ $("#btnOptimizar").onclick=()=>{
           <span class="chip chip-bloq">${op2.dias} día${op2.dias>1?"s":""} en la facu</span>
           ${op2.huecos?`<span class="chip chip-bloq">${Math.round(op2.huecos/60*10)/10} h libres entre clases</span>`:`<span class="chip chip-cursable">sin ventanas</span>`}
           <button class="btn-mini" data-aplicar="${i}" style="margin-left:auto">aplicar</button></div>
-        <div class="hab">${op2.combo.map(c=>`${porOrden[c.orden].nombre} <small>(${c.curso}: ${c.bloques.map(b=>DIAS[b.dia].slice(0,3)+" "+hm(b.inicio)).join(", ")})</small>`).join(" · ")}</div>
+        <div class="hab">${op2.combo.map(c=>`${escHTML(porOrden[c.orden].nombre)} <small>(${escHTML(c.curso)}: ${c.bloques.map(b=>DIAS[b.dia].slice(0,3)+" "+hm(b.inicio)).join(", ")})</small>`).join(" · ")}</div>
       </div>`).join("");
     cont.querySelectorAll("[data-aplicar]").forEach(b=>b.onclick=()=>{
       const el=opciones[+b.dataset.aplicar];
@@ -1203,10 +1220,12 @@ function parsearHorariosFRH(html){
     const carrera=at("data-carrera-nombre"), curso=(c["Curso"]||"").trim(), materia=(c["Nombre Materia"]||"").replace(/\s+/g," ").trim();
     const esMec=carrera==="Mecánica", esIng=/^(IN|I)[12]-M/.test(curso), esBas=BASICAS.has(nm(materia))&&/^[A-Z]{1,2}(-R)?$/.test(curso);
     if(!(esMec||esIng||esBas)) continue;
-    bloques.push({curso, plan:(c["Plan"]||"").trim(), materia, dictado:(c["Tipo Dictado"]||"").trim(),
-      dia:(c["Día"]||c["Dia"]||"").trim(), inicio:hh(c["H. Comienzo"]), fin:hh(c["H. Fin"]),
-      aula:(c["Aula"]||"").trim(), modalidad:at("data-modalidad")||"presencial",
-      docentes:["Titular","Adjunto","Asociado","Jtp"].map(k=>(c[k]||"").trim()).filter(x=>x)});
+    // el HTML pegado viene de afuera: se recorta todo antes de guardarlo
+    bloques.push({curso:limpiar(curso,LARGO.curso), plan:limpiar(c["Plan"],10), materia:limpiar(materia,LARGO.materia),
+      dictado:limpiar(c["Tipo Dictado"],4),
+      dia:limpiar(c["Día"]||c["Dia"],20), inicio:hh(c["H. Comienzo"]), fin:hh(c["H. Fin"]),
+      aula:limpiar(c["Aula"],LARGO.aula), modalidad:limpiar(at("data-modalidad"),20)||"presencial",
+      docentes:["Titular","Adjunto","Asociado","Jtp"].map(k=>limpiar(c[k],LARGO.docente)).filter(x=>x)});
   }
   const mat2023=new Set(bloques.filter(b=>b.plan==="2023").map(b=>nm(b.materia)));
   const cubSinR=new Set([...mat2023, ...bloques.filter(b=>(b.plan==="94"||b.plan==="95")&&!b.curso.endsWith("-R")).map(b=>nm(b.materia))]);
@@ -1613,11 +1632,11 @@ function burbujaHTML(e){
       <span class="cuenta">${c.n}${c.s?`<small>${c.s}</small>`:""}</span>
     </div>
     <div>
-      <span class="chip ${d<0?"chip-bloq":"chip-rendible"}">${TIPOS_EX[e.tipo]||"Examen"}${e.detalle?" · "+escAttr(e.detalle):""}</span>
+      <span class="chip ${d<0?"chip-bloq":"chip-rendible"}">${TIPOS_EX[e.tipo]||"Examen"}${e.detalle?" · "+escHTML(e.detalle):""}</span>
       ${e.nota!=null?`<span class="chip chip-cursable">nota ${e.nota}</span>`:""}
     </div>
     <div class="meta">📅 ${fmtFecha(e.fecha)}${e.hora?` · ${e.hora} hs`:""}</div>
-    ${e.notas?`<div class="nota-b">${escAttr(e.notas)}</div>`:""}
+    ${e.notas?`<div class="nota-b">${escHTML(e.notas)}</div>`:""}
     <div class="acc">
       <button class="btn-mini" data-edit-ex="${e.id}">editar</button>
       ${d<0?`<button class="btn-mini" data-nota-ex="${e.id}">${e.nota!=null?"cambiar nota":"poner nota"}</button>`:""}
@@ -1679,7 +1698,7 @@ function abrirModalExamen(id){
         <select id="exTipo" class="inp-form">${Object.entries(TIPOS_EX).map(([k,v])=>
           `<option value="${k}" ${e&&e.tipo===k?"selected":""}>${v}</option>`).join("")}</select></div>
       <div style="flex:1;min-width:150px"><b>Detalle (opcional)</b>
-        <input id="exDetalle" class="inp-form" placeholder="1.º parcial, unidad 3…" value="${e?escAttr(e.detalle||""):""}"></div>
+        <input id="exDetalle" class="inp-form" maxlength="60" placeholder="1.º parcial, unidad 3…" value="${e?escHTML(e.detalle||""):""}"></div>
     </section>
     <section style="display:flex;gap:10px;flex-wrap:wrap">
       <div style="flex:1;min-width:150px"><b>Fecha</b>
@@ -1688,8 +1707,8 @@ function abrirModalExamen(id){
         <input id="exHora" class="inp-form" type="time" value="${e?(e.hora||""):""}"></div>
     </section>
     <section><b>Aclaraciones</b>
-      <textarea id="exNotas" class="inp-form" style="height:88px;resize:vertical"
-        placeholder="Qué entra, qué llevar, en qué aula…">${e?escAttr(e.notas||""):""}</textarea></section>
+      <textarea id="exNotas" class="inp-form" maxlength="600" style="height:88px;resize:vertical"
+        placeholder="Qué entra, qué llevar, en qué aula…">${e?escHTML(e.notas||""):""}</textarea></section>
     <div id="exError" class="aviso" style="display:none"></div>
     <div style="display:flex;gap:8px;margin-top:14px;align-items:center">
       <button class="btn primario" id="exGuardar">Guardar</button>
@@ -1701,8 +1720,10 @@ function abrirModalExamen(id){
   $("#exGuardar").onclick=()=>{
     const err=$("#exError"), fecha=$("#exFecha").value;
     if(!fecha){ err.textContent="⚠ Elegí la fecha del examen."; err.style.display="block"; return; }
-    const datos={ o:+$("#exMateria").value, tipo:$("#exTipo").value, detalle:$("#exDetalle").value.trim(),
-                  fecha, hora:$("#exHora").value, notas:$("#exNotas").value.trim() };
+    const datos={ o:+$("#exMateria").value, tipo:$("#exTipo").value,
+                  detalle:limpiar($("#exDetalle").value, LARGO.detalle),
+                  fecha, hora:$("#exHora").value,
+                  notas:limpiar($("#exNotas").value, LARGO.notas, true) };
     if(e) Object.assign(e,datos);
     else { ST._eseq=(ST._eseq||0)+1; (ST.examenes=ST.examenes||[]).push({id:ST._eseq, ...datos}); }
     guardar(); cerrarModal(); vista="agenda";
@@ -1774,15 +1795,11 @@ $("#btnExportar").onclick=()=>{
   a.href="data:application/json;charset=utf-8,"+encodeURIComponent(JSON.stringify({...ST,exportado:new Date().toISOString()},null,1));
   a.click(); toast("Estado exportado. Guardalo donde quieras (Drive, WhatsApp…)");
 };
-$("#btnImportar").onclick=()=>$("#inpImportar").click();
-$("#inpImportar").onchange=e=>{
-  const f=e.target.files[0]; if(!f) return;
-  const r=new FileReader();
-  r.onload=()=>{ try{
-      const d=JSON.parse(r.result);
-      if (d.version!==1||typeof d.estados!=="object"||d.estados===null) throw 0;
-      /* Saneo campo por campo: un export editado a mano o truncado no debe poder
-         romper una vista (agenda ordena por fecha, simulador itera anios, etc.). */
+/* Única puerta de entrada para un estado que viene de afuera: archivo importado o
+   documento de la nube. Valida la forma y recorta cada texto; si algo no cumple,
+   se descarta en vez de confiar. Devuelve null si el objeto no es utilizable. */
+function sanearEstado(d){
+  if (!d || d.version!==1 || typeof d.estados!=="object" || d.estados===null) return null;
       const estados={}, notas={}, aplazos={};
       for (const [o,e] of Object.entries(d.estados||{})) if (porOrden[+o] && ESTADOS[e]) estados[+o]=e;
       for (const [o,n] of Object.entries(d.notas||{})) if (porOrden[+o] && Number.isInteger(n) && n>=1 && n<=10) notas[+o]=n;
@@ -1791,17 +1808,43 @@ $("#inpImportar").onchange=e=>{
       for (const [o,k] of Object.entries(d.grilla||{})) if (porOrden[+o] && typeof k==="string") grilla[+o]=k;
       const sim={ asumir: d.sim?.asumir!==false,
         anios: Array.isArray(d.sim?.anios) ? d.sim.anios.map(a=>({mats:(Array.isArray(a?.mats)?a.mats:[]).filter(o=>porOrden[o])})) : [] };
+      /* Un archivo importado puede venir de otra persona: además de validar la forma,
+         se recorta cada texto. Sumado al escapado de salida, un JSON con código
+         adentro no puede hacer nada. */
       const manuales=(Array.isArray(d.manuales)?d.manuales:[]).filter(m=>m && Number.isInteger(m.mid) && typeof m.materia==="string"
-        && Array.isArray(m.bloques) && m.bloques.every(b=>b && b.dia>=1 && b.dia<=6 && Number.isInteger(b.inicio) && Number.isInteger(b.fin) && b.fin>b.inicio));
+        && Array.isArray(m.bloques) && m.bloques.every(b=>b && b.dia>=1 && b.dia<=6 && Number.isInteger(b.inicio) && Number.isInteger(b.fin) && b.fin>b.inicio))
+        .map(m=>({...m, materia:limpiar(m.materia,LARGO.materia), regional:limpiar(m.regional,LARGO.regional),
+                  profesor:limpiar(m.profesor,LARGO.profesor),
+                  bloques:m.bloques.map(b=>({dia:b.dia,inicio:b.inicio,fin:b.fin,aula:limpiar(b.aula,LARGO.aula)}))}));
       const examenes=(Array.isArray(d.examenes)?d.examenes:[]).filter(x=>x && Number.isInteger(x.id)
-        && typeof x.fecha==="string" && /^\d{4}-\d{2}-\d{2}$/.test(x.fecha) && TIPOS_EX[x.tipo]);
-      const horarios=(d.horarios && Array.isArray(d.horarios.comisiones) && d.horarios.comisiones.length) ? d.horarios : null;
-      ST={version:1,estados,notas,aplazos,grilla,sim,manuales,horarios,examenes,
+        && typeof x.fecha==="string" && /^\d{4}-\d{2}-\d{2}$/.test(x.fecha) && TIPOS_EX[x.tipo])
+        .map(x=>({...x, detalle:limpiar(x.detalle,LARGO.detalle), notas:limpiar(x.notas,LARGO.notas,true),
+                  hora:limpiar(x.hora,5)}));
+      const horarios=(d.horarios && Array.isArray(d.horarios.comisiones) && d.horarios.comisiones.length)
+        ? {actualizado:limpiar(d.horarios.actualizado,40),
+           comisiones:d.horarios.comisiones.filter(c=>c&&Array.isArray(c.bloques)).map(c=>({...c,
+             curso:limpiar(c.curso,LARGO.curso), materia:limpiar(c.materia,LARGO.materia),
+             docentes:(Array.isArray(c.docentes)?c.docentes:[]).map(x=>limpiar(x,LARGO.docente)),
+             bloques:c.bloques.map(b=>({...b, aula:limpiar(b.aula,LARGO.aula)}))}))}
+        : null;
+  return {version:1, estados, notas, aplazos, grilla, sim, manuales, horarios, examenes,
+          actualizado: limpiar(d.actualizado, 40),
           _mseq:Math.max(0,d._mseq||0,...manuales.map(m=>m.mid)),
           _eseq:Math.max(0,d._eseq||0,...examenes.map(x=>x.id))};
-      COMISIONES = (ST.horarios&&Array.isArray(ST.horarios.comisiones)&&ST.horarios.comisiones.length)?construirComisiones(ST.horarios.comisiones):construirComisiones(COMISIONES_RAW.comisiones);
-      guardar(); render(); toast("Estado importado correctamente ✔");
-    }catch(_){ toast("El archivo no parece un export válido"); }
+}
+function aplicarComisionesDe(estado){
+  COMISIONES = (estado.horarios && Array.isArray(estado.horarios.comisiones) && estado.horarios.comisiones.length)
+    ? construirComisiones(estado.horarios.comisiones) : construirComisiones(COMISIONES_RAW.comisiones);
+}
+$("#btnImportar").onclick=()=>$("#inpImportar").click();
+$("#inpImportar").onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    let limpio=null;
+    try{ limpio=sanearEstado(JSON.parse(r.result)); }catch(_){}
+    if (!limpio) toast("El archivo no parece un export válido");
+    else { ST=limpio; aplicarComisionesDe(ST); guardar(); render(); toast("Estado importado correctamente ✔"); }
     e.target.value=""; };
   r.readAsText(f);
 };
@@ -1869,12 +1912,13 @@ function programarPush(){
 }
 function aplicarRemoto(d, aviso){
   let nuevo; try{ nuevo=JSON.parse(d.datos); }catch(e){ return false; }
-  if (!nuevo || nuevo.version!==1) return false;
+  // lo que baja de la nube pasa por el mismo saneo que un archivo importado
+  const limpio = sanearEstado(nuevo);
+  if (!limpio) return false;
   aplicandoRemoto=true;
   try{
-    ST={...ST, ...nuevo};
-    COMISIONES = (ST.horarios && Array.isArray(ST.horarios.comisiones) && ST.horarios.comisiones.length)
-      ? construirComisiones(ST.horarios.comisiones) : construirComisiones(COMISIONES_RAW.comisiones);
+    ST={...ST, ...limpio};
+    aplicarComisionesDe(ST);
     guardarLocal();                     // sin tocar la marca de tiempo ni reenviar
     render();
     ultimaSync=new Date();
@@ -1965,7 +2009,7 @@ function abrirModalSync(){
   if (usuario){
     m.innerHTML=`<button class="cerrar" onclick="cerrarModal()">✕</button>
       <h3>Sincronización activa</h3>
-      <div class="sub">Sesión iniciada como <b>${escAttr(usuario.email||"—")}</b></div>
+      <div class="sub">Sesión iniciada como <b>${escHTML(usuario.email||"—")}</b></div>
       <section><b>Estado</b>
         <div id="syncCuerpo" style="font-size:13px">Tus cambios se guardan solos en la nube y aparecen en tus otros dispositivos.
         ${ultimaSync?`<br>Última sincronización: ${ultimaSync.toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"})}`:""}</div></section>
@@ -1990,8 +2034,8 @@ function abrirModalSync(){
     <div id="syncCuerpo">
       <button class="btn primario" id="syncGoogle" style="width:100%;padding:11px">Continuar con Google</button>
       <div style="text-align:center;color:var(--gris);font-size:12px;font-weight:700;margin:12px 0">— o con tu correo —</div>
-      <input id="syncMail" class="inp-form" type="email" placeholder="tu@correo.com" autocomplete="username" style="margin-bottom:8px">
-      <input id="syncPass" class="inp-form" type="password" placeholder="Contraseña" autocomplete="current-password">
+      <input id="syncMail" class="inp-form" type="email" maxlength="254" placeholder="tu@correo.com" autocomplete="username" style="margin-bottom:8px">
+      <input id="syncPass" class="inp-form" type="password" maxlength="128" placeholder="Contraseña" autocomplete="current-password">
       <div id="syncError" class="aviso" style="display:none;margin-top:10px"></div>
       <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
         <button class="btn primario" id="syncEntrar">Entrar</button>
