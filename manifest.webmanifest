@@ -1,7 +1,7 @@
 {
-  "name": "Planificador Académico — Ingeniería Mecánica UTN Haedo",
+  "name": "Planificador Académico — UTN Facultad Regional Haedo",
   "short_name": "Planificador",
-  "description": "Seguimiento de correlatividades, horarios, finales y agenda de la carrera de Ingeniería Mecánica en la UTN Facultad Regional Haedo.",
+  "description": "Seguimiento de correlatividades, horarios, finales y agenda para las carreras de ingeniería de la UTN Facultad Regional Haedo.",
   "lang": "es-AR",
   "start_url": "./",
   "scope": "./",
