@@ -222,6 +222,12 @@ html[data-tema="oscuro"] .banner button{background:rgba(255,255,255,.1)}
 #pantallaLogin.abierta{display:flex}
 #pantallaCarrera{position:fixed;inset:0;z-index:290;display:none;background:var(--fondo)}
 #pantallaCarrera.abierta{display:flex}
+/* En Android la barra de direcciones se mete adentro de la altura del viewport, así que
+   el borde de abajo del panel queda tapado. dvh mide lo que de verdad se ve; los
+   navegadores que no lo entienden se quedan con inset:0, que ya andaba. */
+@supports (height:100dvh){
+  #pantallaLogin,#pantallaCarrera{height:100dvh}
+}
 /* El panel azul entra en diagonal sobre el claro, como la gráfica de la Facultad. */
 #pantallaCarrera .login-izq{flex:0 0 48%;clip-path:polygon(0 0,100% 0,72% 100%,0 100%);padding:46px 40px}
 #pantallaCarrera .login-der{margin-left:-8%;padding:24px 120px 24px 30px}
@@ -256,10 +262,14 @@ html[data-tema="oscuro"] .btn-continuar{background:var(--acento);color:#04222e}
 .login-izq .marca-agua path{fill:none;stroke:#cfe6f0;stroke-width:.9}
 .login-izq .lema{position:relative;color:#fff;font-size:24px;font-weight:400;line-height:1.35;letter-spacing:.2px}
 .login-izq .lema b{font-weight:800}
-.login-der{flex:1;position:relative;display:flex;align-items:center;justify-content:center;padding:28px;overflow:hidden}
+/* Centrado con margin:auto y NO con align-items:center. Con align-items, una tarjeta más
+   alta que la pantalla se recorta arriba y abajo y no hay forma de llegar al borde: el
+   botón «Continuar» quedaba inalcanzable en el celular y la app no se podía ni abrir.
+   Con margin:auto, cuando no sobra espacio los márgenes valen 0 y la tarjeta scrollea. */
+.login-der{flex:1;position:relative;display:flex;padding:28px;overflow-x:hidden;overflow-y:auto}
 .login-der .rayas{position:absolute;inset:0;pointer-events:none}
 .login-der .rayas i{position:absolute;height:15px;border-radius:2px;transform:skewX(-38deg)}
-.login-card{position:relative;width:100%;max-width:445px;background:var(--blanco);border:1px solid var(--borde);
+.login-card{position:relative;width:100%;max-width:445px;margin:auto;background:var(--blanco);border:1px solid var(--borde);
   border-radius:16px;padding:38px 40px;box-shadow:0 18px 50px rgba(0,41,58,.16)}
 html[data-tema="oscuro"] .login-card{box-shadow:0 18px 50px rgba(0,0,0,.5)}
 .login-card .logo-login{display:flex;justify-content:center;margin-bottom:24px}
@@ -295,6 +305,13 @@ html[data-tema="oscuro"] .campo input:focus{box-shadow:0 0 0 3px rgba(142,205,23
   .login-izq{display:none}
   .login-der{flex:1}
   .login-card{padding:30px 24px}
+  /* Estas dos las pone «#pantallaCarrera .login-der», que por especificidad le gana a una
+     regla de clase sola: hay que anularlas con el mismo peso o el teléfono arma la tarjeta
+     dentro de 225 px y la deja el doble de alta. */
+  #pantallaCarrera .login-der{margin-left:0;padding:18px 14px 26px}
+  #pantallaCarrera .login-card.carrera-card{padding:26px 20px 20px}
+  #pantallaCarrera .carrera-card h2{font-size:22px}
+  #pantallaCarrera .login-izq{display:none}
 }
 /* ---------- agenda de exámenes ---------- */
 .badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;margin-left:6px;
@@ -584,7 +601,7 @@ footer{margin-top:40px;text-align:center;color:var(--gris);font-size:11.5px;line
 <footer>
   Datos: <span id="pieFuente"></span> + horarios oficiales FRH (horarios.frh.utn.edu.ar).<br>
   Herramienta no oficial de ayuda a la planificación: confirmá siempre inscripciones y correlatividades en Autogestión.<br>
-  <span style="opacity:.75">Versión 2026.20260811.019133e6</span>
+  <span style="opacity:.75">Versión 2026.20260814.c8174fe7</span>
 </footer>
 <div id="pantallaCarrera">
   <div class="login-izq">
