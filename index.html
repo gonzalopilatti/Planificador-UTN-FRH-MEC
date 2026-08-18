@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Planificador Académico — __CARRERA__ · UTN Haedo</title>
+<title>Planificador Académico V2 · UTN Haedo</title>
 <link rel="manifest" href="./manifest.webmanifest">
 <meta name="theme-color" content="#00455C">
 <meta name="mobile-web-app-capable" content="yes">
@@ -175,6 +175,17 @@ h3{color:var(--petrol);font-size:15px;font-weight:700}
 .bloque{position:absolute;left:2px;right:2px;z-index:2;border-radius:6px;padding:3px 6px;font-size:10.5px;line-height:1.25;color:#fff;font-weight:700;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.18)}
 .bloque small{display:block;font-weight:600;opacity:.9;font-size:9.5px}
 .bloque.choque{outline:3px solid var(--rojo);outline-offset:-1px;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.14) 0 6px,transparent 6px 12px)}
+.bloque-ocupado{position:absolute;left:2px;right:2px;z-index:0;border-radius:6px;
+  background:repeating-linear-gradient(45deg,var(--track) 0 6px,transparent 6px 12px);
+  border:1px dashed var(--borde);opacity:.78;pointer-events:none;padding:3px 5px;
+  color:var(--muted);font-size:9.5px;font-weight:800;overflow:hidden}
+.periodo-grilla{padding:9px 13px;border-bottom:1px solid var(--borde);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.periodo-grilla>span{font-size:12px;font-weight:800;color:var(--gris);text-transform:uppercase;letter-spacing:.35px}
+.ocupado-item{display:grid;grid-template-columns:12px 1fr auto;gap:5px 8px;align-items:center;padding:9px 13px;border-bottom:1px solid var(--linea);font-size:12.5px}
+.ocupado-item .oc-color{width:11px;height:11px;border-radius:3px}
+.ocupado-item .oc-det{grid-column:2/4;color:var(--muted);font-size:11.5px}
+.color-op{width:25px;height:25px;border-radius:50%;border:3px solid transparent;cursor:pointer}
+.color-op.activa{outline:2px solid var(--petrol);outline-offset:2px}
 .res-choques{margin-top:12px}
 .res-choques .item{background:#ffe8ec;border:1px solid #ffb9c4;color:#a00018;font-size:13px;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-weight:600}
 .ok-choques{background:#eef8dc;border:1px solid #cfe8a2;color:var(--verde-txt);font-size:13px;border-radius:8px;padding:8px 12px;font-weight:700}
@@ -196,8 +207,15 @@ h3{color:var(--petrol);font-size:15px;font-weight:700}
 .tile .mini-borde{height:4px;border-radius:99px;margin-top:8px}
 .fila-lista{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--linea);font-size:13.5px}
 .fila-lista .nom{font-weight:700;color:var(--petrol);margin-right:auto}
+.ruta-resumen{padding:16px}
+.ruta-resumen .numero{font-size:28px;color:var(--petrol);font-weight:800}
+.ruta-camino{display:flex;align-items:stretch;gap:7px;flex-wrap:wrap;margin-top:12px}
+.ruta-paso{border:1px solid var(--borde);background:var(--fondo);color:var(--petrol);border-radius:9px;padding:8px 10px;text-align:left;font-weight:700;font-size:12.5px}
+.ruta-paso small{display:block;color:var(--gris);font-weight:600;margin-top:2px}
+.sim-op.demora{background:#fff4dc;border:1px solid #f2d692}
+html[data-tema="oscuro"] .sim-op.demora{background:#33290d;border-color:#5a4715}
 /* ---------- notas ---------- */
-.nota-input{width:70px;padding:6px 8px;border:1px solid var(--borde);border-radius:7px;font-family:inherit;font-size:14px}
+.nota-input{width:70px;padding:6px 8px;border:1px solid var(--borde);border-radius:7px;font-family:inherit;font-size:14px;background:var(--blanco);color:var(--texto)}
 /* ---------- mesas ---------- */
 .mesa{border-bottom:1px solid var(--linea);padding:11px 14px}
 .mesa .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -356,6 +374,23 @@ html[data-tema="oscuro"] .chip.pri-urgente{background:#421a22;color:#ff97a8;bord
 .item-row input[type=checkbox]{flex:none;accent-color:var(--verde)}
 .burbuja .acc{display:flex;gap:6px;margin-top:auto;padding-top:2px}
 .vacio{padding:22px;text-align:center;color:var(--gris);font-weight:600;background:var(--blanco);border:1px dashed var(--borde);border-radius:12px}
+/* ---------- vista Hoy ---------- */
+.hoy-cab{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:15px}
+.hoy-cab h2{margin:0}.hoy-cab .fecha{color:var(--muted);font-weight:600}
+.hoy-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr);gap:14px;align-items:start}
+.hoy-col{display:grid;gap:14px}.hoy-seccion{padding:14px}
+.hoy-seccion h3{margin-bottom:10px}.hoy-ahora{border-left:6px solid var(--cyan);padding:14px;border-radius:10px;background:var(--blanco);box-shadow:var(--sombra)}
+.hoy-ahora .mat{font-size:18px;font-weight:800;color:var(--petrol)}
+.hoy-ahora .meta{font-size:12.5px;color:var(--muted);font-weight:600;margin-top:4px}
+.hoy-progreso{height:7px;background:var(--track);border-radius:99px;overflow:hidden;margin-top:11px}.hoy-progreso i{display:block;height:100%;background:var(--cyan)}
+.hoy-bloque{display:grid;grid-template-columns:58px 12px 1fr;gap:8px;align-items:start;padding:8px 0;border-bottom:1px solid var(--linea);font-size:12.5px}
+.hoy-bloque.terminada{opacity:.55}.hoy-bloque .hora{font-weight:800;color:var(--gris)}.hoy-bloque .nom{font-weight:700;color:var(--petrol)}
+.hoy-hueco{margin:3px 0 3px 78px;color:var(--gris);font-size:11.5px;font-weight:700}
+.hoy-evento,.hoy-ventana,.hoy-pendiente{padding:9px 0;border-bottom:1px solid var(--linea);font-size:12.5px}
+.hoy-evento{cursor:pointer}.hoy-evento:hover .nom{text-decoration:underline}.hoy-evento .nom{font-weight:700;color:var(--petrol)}
+.hoy-evento .meta,.hoy-ventana .meta{color:var(--muted);font-size:11.5px;margin-top:2px}.hoy-pendiente .acciones{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:7px}
+.hoy-pendiente input{width:76px;padding:5px 7px;border:1px solid var(--borde);border-radius:6px;background:var(--blanco);color:var(--texto)}
+@media(max-width:820px){.hoy-grid{grid-template-columns:1fr}}
 /* ---------- calendario de la agenda ----------
    Tres canales y no cinco: en una celda de 40 px hay que meter exámenes, mesas,
    inscripciones, feriados e hitos, y si cada uno tuviera su color el mes sería una sopa.
@@ -470,7 +505,8 @@ footer{margin-top:40px;text-align:center;color:var(--gris);font-size:11.5px;line
   </div>
   <div class="franja"><i></i><i></i><i></i><i></i><i></i></div>
   <nav><div class="nav-int">
-    <button data-vista="materias" class="activa">Materias</button>
+    <button data-vista="hoy" class="activa">Hoy</button>
+    <button data-vista="materias">Materias</button>
     <button data-vista="grilla">Armar horario</button>
     <button data-vista="agenda">Agenda<span id="badgeAgenda" class="badge" hidden></span></button>
     <button data-vista="mapa">Mapa de correlativas</button>
@@ -480,7 +516,14 @@ footer{margin-top:40px;text-align:center;color:var(--gris);font-size:11.5px;line
 </header>
 <main>
   <div id="bannerInsc"></div>
-  <div id="vista-materias">
+  <div id="vista-hoy">
+    <div id="hoyCab"></div>
+    <div class="hoy-grid">
+      <div class="hoy-col"><div id="hoyAhora"></div><div id="hoyDespues"></div></div>
+      <div class="hoy-col"><div id="hoySemana"></div><div id="hoyVentanas"></div><div id="hoyPendientes"></div></div>
+    </div>
+  </div>
+  <div id="vista-materias" hidden>
     <div class="filtros">
       <input type="search" id="buscador" placeholder="Buscar materia…" maxlength="60">
       <div class="seg" id="segFiltro">
@@ -512,6 +555,10 @@ footer{margin-top:40px;text-align:center;color:var(--gris);font-size:11.5px;line
           <div class="cab"><h3>Materias de otra regional</h3></div>
           <div id="listaExternas"></div>
         </div>
+        <div class="panel" id="panelOcupado" style="margin-top:14px">
+          <div class="cab"><h3>Mi tiempo ocupado</h3><button class="btn-mini" id="btnOcupado">+ agregar</button></div>
+          <div id="listaOcupado"></div>
+        </div>
       </div>
       <div>
         <div class="panel">
@@ -521,6 +568,10 @@ footer{margin-top:40px;text-align:center;color:var(--gris);font-size:11.5px;line
             <button class="btn" id="btnPng">🖼 Imagen</button>
             <button class="btn" id="btnIcs">📅 Calendario (.ics)</button>
           </div>
+          <div class="periodo-grilla"><span>Ver</span><div class="seg" id="segPeriodo">
+            <button data-p="auto" class="activa">En curso</button><button data-p="1">1.º cuat.</button>
+            <button data-p="2">2.º cuat.</button><button data-p="todo">Todo</button>
+          </div></div>
           <div class="grilla-scroll"><div class="grilla" id="laGrilla"></div></div>
         </div>
         <div class="res-choques" id="resChoques"></div>
@@ -583,6 +634,10 @@ footer{margin-top:40px;text-align:center;color:var(--gris);font-size:11.5px;line
   <div id="vista-avance" hidden>
     <h2>Mi avance</h2>
     <div class="tiles" id="tilesAvance"></div>
+    <div class="panel" id="panelRuta" style="margin-bottom:16px">
+      <div class="cab"><h3>Ruta crítica hasta el egreso</h3><small style="color:var(--gris);font-weight:600">piso teórico, no promesa de fecha</small></div>
+      <div id="rutaCritica"></div>
+    </div>
     <div class="panel" style="margin-bottom:16px">
       <div class="cab"><h3>Qué te conviene hacer ahora</h3>
         <small style="color:var(--gris);font-weight:600">ordenado por cuántas materias te destraba</small></div>
@@ -601,7 +656,7 @@ footer{margin-top:40px;text-align:center;color:var(--gris);font-size:11.5px;line
 <footer>
   Datos: <span id="pieFuente"></span> + horarios oficiales FRH (horarios.frh.utn.edu.ar).<br>
   Herramienta no oficial de ayuda a la planificación: confirmá siempre inscripciones y correlatividades en Autogestión.<br>
-  <span style="opacity:.75">Versión 2026.20260814.c8174fe7</span>
+  <span style="opacity:.75">Versión 2026.20260818.15d0e6bf</span>
 </footer>
 <div id="pantallaCarrera">
   <div class="login-izq">
@@ -688,6 +743,169 @@ footer{margin-top:40px;text-align:center;color:var(--gris);font-size:11.5px;line
 
 <script>
 "use strict";
+/* Motor académico puro compartido por la app V2 y sus pruebas.
+   No lee ni modifica localStorage ni el estado global de la interfaz. */
+(function (raiz, fabrica) {
+  const api = fabrica();
+  if (typeof module === "object" && module.exports) module.exports = api;
+  else Object.assign(raiz, api);
+})(typeof globalThis !== "undefined" ? globalThis : this, function () {
+  "use strict";
+
+  const estadoEnMotor = (o, E) => E[o] || E[String(o)] || "sin";
+  const regularOAprobada = e => e === "regular" || e === "aprobada";
+
+  function crearMotorAcademico(config) {
+    const materias = config.materias || [];
+    const porOrden = Object.fromEntries(materias.map(m => [m.o, m]));
+    const corr = {};
+    for (const [o, c] of Object.entries(config.correlativas || {})) {
+      corr[+o] = {c: Array.isArray(c.c) ? c.c : [], a: Array.isArray(c.a) ? c.a : []};
+    }
+    const integradora = config.integradoraFinal ?? null;
+    const exigeElectivas = config.integradoraExigeElectivas === true;
+    const electivasHs = Number(config.electivasHs) || 0;
+    const horasElectiva = typeof config.horasElectiva === "function"
+      ? config.horasElectiva
+      : m => Number(m.hs) || 0;
+    const estadosBase = config.estados || {};
+
+    const aprobadaCon = (o, E) => estadoEnMotor(o, E) === "aprobada";
+    const regularCon = (o, E) => regularOAprobada(estadoEnMotor(o, E));
+    const horasElectivasAprobadas = E => materias
+      .filter(m => m.electiva && aprobadaCon(m.o, E))
+      .reduce((t, m) => t + horasElectiva(m), 0);
+
+    function cursableCon(o, E) {
+      E = E || estadosBase;
+      if (!["sin", "desaprobada"].includes(estadoEnMotor(o, E))) return false;
+      const c = corr[o] || {c: [], a: []};
+      return c.c.every(x => regularCon(x, E)) && c.a.every(x => aprobadaCon(x, E));
+    }
+
+    function rendibleCon(o, E) {
+      E = E || estadosBase;
+      if (estadoEnMotor(o, E) !== "regular") return false;
+      if (o === integradora) {
+        const obligatoriasOk = materias.every(m => m.electiva || m.o === integradora || aprobadaCon(m.o, E));
+        const electivasOk = !exigeElectivas || !electivasHs || horasElectivasAprobadas(E) >= electivasHs;
+        return obligatoriasOk && electivasOk;
+      }
+      const c = corr[o] || {c: [], a: []};
+      return [...new Set([...c.c, ...c.a])].every(x => aprobadaCon(x, E));
+    }
+
+    function descendientes(o) {
+      const vistos = new Set();
+      const visitar = actual => {
+        for (const m of materias) {
+          const c = corr[m.o] || {c: [], a: []};
+          if ((c.c.includes(actual) || c.a.includes(actual)) && !vistos.has(m.o)) {
+            vistos.add(m.o);
+            visitar(m.o);
+          }
+        }
+      };
+      visitar(o);
+      vistos.delete(o);
+      return vistos;
+    }
+
+    function electivasNecesarias(E, memo, pila, profundidad) {
+      if (!exigeElectivas || !electivasHs) return [];
+      let faltan = Math.max(0, electivasHs - horasElectivasAprobadas(E));
+      if (!faltan) return [];
+      const candidatas = materias.filter(m => m.electiva && !aprobadaCon(m.o, E))
+        .map(m => ({m, p: profundidad(m.o, E, memo, pila)}))
+        .filter(x => Number.isFinite(x.p))
+        .sort((a, b) => a.p - b.p || horasElectiva(b.m) - horasElectiva(a.m));
+      const elegidas = [];
+      for (const x of candidatas) {
+        elegidas.push(x.m.o);
+        faltan -= horasElectiva(x.m);
+        if (faltan <= 0) break;
+      }
+      return faltan <= 0 ? elegidas : candidatas.map(x => x.m.o);
+    }
+
+    function profundidad(o, E, memo, pila, ciclos) {
+      E = E || estadosBase;
+      memo = memo || new Map();
+      pila = pila || new Set();
+      ciclos = ciclos || new Set();
+      if (aprobadaCon(o, E)) return -1;
+      if (memo.has(o)) return memo.get(o);
+      if (pila.has(o)) {
+        pila.forEach(x => ciclos.add(x)); ciclos.add(o);
+        return Infinity;
+      }
+      pila.add(o);
+      let requisitos = [];
+      if (o === integradora) {
+        requisitos = materias.filter(m => !m.electiva && m.o !== integradora && !aprobadaCon(m.o, E)).map(m => m.o);
+        requisitos.push(...electivasNecesarias(E, memo, pila, (x, Ee, mm, pp) => profundidad(x, Ee, mm, pp, ciclos)));
+      } else {
+        const c = corr[o] || {c: [], a: []};
+        requisitos = [
+          ...c.c.filter(x => !regularCon(x, E)),
+          ...c.a.filter(x => !aprobadaCon(x, E))
+        ];
+      }
+      let p = 0;
+      for (const req of new Set(requisitos)) {
+        const rp = profundidad(req, E, memo, pila, ciclos);
+        if (!Number.isFinite(rp)) { p = Infinity; break; }
+        p = Math.max(p, rp + 1);
+      }
+      pila.delete(o);
+      memo.set(o, p);
+      return p;
+    }
+
+    function requisitosPendientes(o, E, memo, ciclos) {
+      if (o === integradora) {
+        const r = materias.filter(m => !m.electiva && m.o !== integradora && !aprobadaCon(m.o, E)).map(m => m.o);
+        r.push(...electivasNecesarias(E, memo, new Set(), (x, Ee, mm, pp) => profundidad(x, Ee, mm, pp, ciclos)));
+        return [...new Set(r)];
+      }
+      const c = corr[o] || {c: [], a: []};
+      return [...new Set([
+        ...c.c.filter(x => !regularCon(x, E)),
+        ...c.a.filter(x => !aprobadaCon(x, E))
+      ])];
+    }
+
+    function analizarRutaCritica(E) {
+      E = E || estadosBase;
+      const memo = new Map(), ciclos = new Set();
+      const pendientes = materias.filter(m => !m.electiva && !aprobadaCon(m.o, E));
+      if (!pendientes.length) return {escalones: 0, camino: [], profundidades: memo, ciclos: []};
+      let final = null, max = -1;
+      for (const m of pendientes) {
+        const p = profundidad(m.o, E, memo, new Set(), ciclos);
+        if (p > max) { max = p; final = m.o; }
+      }
+      if (!Number.isFinite(max)) return {escalones: Infinity, camino: [], profundidades: memo, ciclos: [...ciclos]};
+      const camino = final == null ? [] : [final];
+      let actual = final;
+      while (actual != null && (memo.get(actual) ?? -1) > 0) {
+        const p = memo.get(actual);
+        const reqs = requisitosPendientes(actual, E, memo, ciclos);
+        const previo = reqs.find(r => memo.get(r) === p - 1);
+        if (previo == null) break;
+        camino.unshift(previo);
+        actual = previo;
+      }
+      return {escalones: max + 1, camino, profundidades: memo, ciclos: [...ciclos]};
+    }
+
+    return {cursableCon, rendibleCon, descendientes, profundidad, analizarRutaCritica,
+            horasElectivasAprobadas, estadoEn: estadoEnMotor};
+  }
+
+  return {crearMotorAcademico, estadoEnMotor};
+});
+
 /* ================= DATOS (generados por construir_app.py) ================= */
 /* Las carreras de la Facultad, cada una con su descriptor, su catálogo y sus horarios:
    { slug: {carrera, catalogo, comisiones} }.
@@ -708,7 +926,7 @@ const CICLO = "2026";
 
    Solo cubre los años que trae el PDF. Cuando el ciclo en curso queda afuera, la app no
    avisa: muestra el mes vacío. Hay que regenerarlo cada diciembre. */
-const CALENDARIO = {"fuente": "calendario - UTN Haedo.pdf", "generado": "2026-08-11", "anios": [2026, 2027], "feriados": [{"fecha": "2026-02-16", "nombre": "Carnaval"}, {"fecha": "2026-02-17", "nombre": "Carnaval"}, {"fecha": "2026-03-23", "nombre": "Feriado no laborable con fines turísticos"}, {"fecha": "2026-03-24", "nombre": "Día Nacional de la Memoria por la verdad y la justicia"}, {"fecha": "2026-04-02", "nombre": "Día del veterano y de los caídos en la guerra de Malvinas"}, {"fecha": "2026-04-02", "nombre": "Festividad cristiana: Jueves Santo"}, {"fecha": "2026-04-03", "nombre": "Festividad cristiana: Viernes Santo"}, {"fecha": "2026-04-04", "nombre": "Festividad cristiana: Sábado Santo"}, {"fecha": "2026-05-01", "nombre": "Día del trabajador"}, {"fecha": "2026-05-02", "nombre": "Día del docente tecnológico"}, {"fecha": "2026-05-25", "nombre": "Día de la Revolución de Mayo"}, {"fecha": "2026-06-15", "nombre": "Paso a la inmortalidad del General Martín Miguel Güemes"}, {"fecha": "2026-06-20", "nombre": "Paso a la inmortalidad del General D. Manuel Belgrano"}, {"fecha": "2026-07-09", "nombre": "Día de la independencia"}, {"fecha": "2026-07-10", "nombre": "Feriado no laborable con fines turísticos"}, {"fecha": "2026-08-17", "nombre": "Paso a la Inmortalidad del General D. José de San Martín"}, {"fecha": "2026-08-19", "nombre": "Día de la Universidad Tecnológica Nacional"}, {"fecha": "2026-09-21", "nombre": "Día del estudiante"}, {"fecha": "2026-10-12", "nombre": "Día del respeto a la diversidad cultural"}, {"fecha": "2026-11-23", "nombre": "Día de la soberanía nacional"}, {"fecha": "2026-11-26", "nombre": "Día del trabajador no docente (sólo para el personal nodocente)"}, {"fecha": "2026-12-07", "nombre": "Feriado no laborable con fines turísticos"}, {"fecha": "2026-12-08", "nombre": "Inmaculada Concepción de la Virgen María"}, {"fecha": "2026-12-25", "nombre": "Navidad"}, {"fecha": "2027-01-01", "nombre": "Año Nuevo"}, {"fecha": "2027-02-08", "nombre": "Carnaval"}, {"fecha": "2027-02-09", "nombre": "Carnaval"}, {"fecha": "2027-03-24", "nombre": "Día Nacional de la Memoria por la verdad y la justicia"}], "hitos": [{"fecha": "2026-03-30", "nombre": "Inicio de clases para el ciclo 2026 (1° a 5° año)"}, {"fecha": "2026-07-18", "nombre": "Finalización de clases, 1º cuatrimestre (1º a 5º año)"}, {"fecha": "2026-08-10", "nombre": "Continuación de clases para asignaturas anuales (2º cuatrimestre)"}, {"fecha": "2026-08-10", "nombre": "Inicio de clases para asignaturas cuatrimestrales"}, {"fecha": "2026-11-28", "nombre": "Finalización de clases para asignaturas anuales"}, {"fecha": "2026-11-28", "nombre": "Finalización de clases para asignaturas cuatrimestrales"}, {"fecha": "2027-03-29", "nombre": "Inicio de clases para el ciclo 2027"}], "ventanas": [{"tipo": "inscripcion", "nombre": "Inscripción a exámenes por autogestión", "desde": "2026-02-09", "hasta": "2026-03-06"}, {"tipo": "recuperatorios", "nombre": "Recuperatorio de parciales", "desde": "2026-02-18", "hasta": "2026-03-03"}, {"tipo": "finales", "nombre": "Exámenes finales (3 llamados para cada asignatura)", "desde": "2026-02-18", "hasta": "2026-03-10", "llamados": 3}, {"tipo": "reinscripcion", "nombre": "Reinscripción (2° a 5° año)", "desde": "2026-03-06", "hasta": "2026-03-21"}, {"tipo": "reinscripcion", "nombre": "Reinscripción (1 año)", "desde": "2026-03-19", "hasta": "2026-03-25"}, {"tipo": "inscripcion", "nombre": "Inscripción a exámenes por autogestión", "desde": "2026-04-20", "hasta": "2026-04-25"}, {"tipo": "finales", "nombre": "Exámenes finales un (1) llamado para cada asignatura (sin suspensión de clases)", "desde": "2026-05-04", "hasta": "2026-05-09", "llamados": 1}, {"tipo": "receso", "nombre": "Receso académico", "desde": "2026-07-20", "hasta": "2026-07-25"}, {"tipo": "inscripcion", "nombre": "Inscripción a exámenes por autogestión", "desde": "2026-07-20", "hasta": "2026-08-05"}, {"tipo": "finales", "nombre": "Exámenes finales dos (2) llamados para cada asignatura", "desde": "2026-07-27", "hasta": "2026-08-08", "llamados": 2}, {"tipo": "reinscripcion", "nombre": "Reinscripción (sólo para asignaturas cuatrimestrales)", "desde": "2026-07-27", "hasta": "2026-08-08"}, {"tipo": "inscripcion", "nombre": "Inscripción a exámenes por autogestión", "desde": "2026-08-31", "hasta": "2026-09-05"}, {"tipo": "finales", "nombre": "Exámenes finales (1 llamado para cada asignatura sin suspensión de clases)", "desde": "2026-09-14", "hasta": "2026-09-19", "llamados": 1}, {"tipo": "inscripcion", "nombre": "Inscripción a exámenes por autogestión", "desde": "2026-11-23", "hasta": "2026-12-16"}, {"tipo": "finales", "nombre": "Exámenes finales tres (3) llamados para cada asignatura", "desde": "2026-11-30", "hasta": "2026-12-22", "llamados": 3}, {"tipo": "inscripcion", "nombre": "Inscripción a exámenes por autogestión", "desde": "2027-02-09", "hasta": "2027-03-06"}, {"tipo": "recuperatorios", "nombre": "Recuperatorio de parciales", "desde": "2027-02-16", "hasta": "2027-02-28"}, {"tipo": "finales", "nombre": "Exámenes finales tres (3) llamados para cada asignatura", "desde": "2027-02-16", "hasta": "2027-03-10", "llamados": 3}, {"tipo": "reinscripcion", "nombre": "Reinscripción anual y cuatrimestral", "desde": "2027-03-08", "hasta": "2027-03-20"}, {"tipo": "reinscripcion", "nombre": "Reinscripción 1° nivel (recursantes)", "desde": "2027-03-22", "hasta": "2027-03-27"}]};
+const CALENDARIO = {"fuente": "calendario - UTN Haedo.pdf", "generado": "2026-08-11", "anios": [2026, 2027], "feriados": [{"fecha": "2026-02-16", "nombre": "Carnaval"}, {"fecha": "2026-02-17", "nombre": "Carnaval"}, {"fecha": "2026-03-23", "nombre": "Feriado no laborable con fines turísticos"}, {"fecha": "2026-03-24", "nombre": "Día Nacional de la Memoria por la verdad y la justicia"}, {"fecha": "2026-04-02", "nombre": "Día del veterano y de los caídos en la guerra de Malvinas"}, {"fecha": "2026-04-02", "nombre": "Festividad cristiana: Jueves Santo"}, {"fecha": "2026-04-03", "nombre": "Festividad cristiana: Viernes Santo"}, {"fecha": "2026-04-04", "nombre": "Festividad cristiana: Sábado Santo"}, {"fecha": "2026-05-01", "nombre": "Día del trabajador"}, {"fecha": "2026-05-02", "nombre": "Día del docente tecnológico"}, {"fecha": "2026-05-25", "nombre": "Día de la Revolución de Mayo"}, {"fecha": "2026-06-15", "nombre": "Paso a la inmortalidad del General Martín Miguel Güemes"}, {"fecha": "2026-06-20", "nombre": "Paso a la inmortalidad del General D. Manuel Belgrano"}, {"fecha": "2026-07-09", "nombre": "Día de la independencia"}, {"fecha": "2026-07-10", "nombre": "Feriado no laborable con fines turísticos"}, {"fecha": "2026-08-17", "nombre": "Paso a la Inmortalidad del General D. José de San Martín"}, {"fecha": "2026-08-19", "nombre": "Día de la Universidad Tecnológica Nacional"}, {"fecha": "2026-09-21", "nombre": "Día del estudiante"}, {"fecha": "2026-10-12", "nombre": "Día del respeto a la diversidad cultural"}, {"fecha": "2026-11-23", "nombre": "Día de la soberanía nacional"}, {"fecha": "2026-11-26", "nombre": "Día del trabajador no docente (sólo para el personal nodocente)"}, {"fecha": "2026-12-07", "nombre": "Feriado no laborable con fines turísticos"}, {"fecha": "2026-12-08", "nombre": "Inmaculada Concepción de la Virgen María"}, {"fecha": "2026-12-25", "nombre": "Navidad"}, {"fecha": "2027-01-01", "nombre": "Año Nuevo"}, {"fecha": "2027-02-08", "nombre": "Carnaval"}, {"fecha": "2027-02-09", "nombre": "Carnaval"}, {"fecha": "2027-03-24", "nombre": "Día Nacional de la Memoria por la verdad y la justicia"}], "hitos": [{"fecha": "2026-03-30", "nombre": "Inicio de clases para el ciclo 2026 (1° a 5° año)"}, {"fecha": "2026-07-18", "nombre": "Finalización de clases, 1º cuatrimestre (1º a 5º año)"}, {"fecha": "2026-08-10", "nombre": "Continuación de clases para asignaturas anuales (2º cuatrimestre)"}, {"fecha": "2026-08-10", "nombre": "Inicio de clases para asignaturas cuatrimestrales"}, {"fecha": "2026-11-28", "nombre": "Finalización de clases para asignaturas anuales"}, {"fecha": "2026-11-28", "nombre": "Finalización de clases para asignaturas cuatrimestrales"}, {"fecha": "2027-03-29", "nombre": "Inicio de clases para el ciclo 2027"}], "ventanas": [{"tipo": "inscripcion", "nombre": "Inscripción a exámenes por autogestión", "desde": "2026-02-09", "hasta": "2026-03-06"}, {"tipo": "recuperatorios", "nombre": "Recuperatorio de parciales", "desde": "2026-02-18", "hasta": "2026-03-03"}, {"tipo": "finales", "nombre": "Exámenes finales (3 llamados para cada asignatura)", "desde": "2026-02-18", "hasta": "2026-03-10", "llamados": 3}, {"tipo": "reinscripcion", "nombre": "Reinscripción (2° a 5° año)", "desde": "2026-03-06", "hasta": "2026-03-21"}, {"tipo": "reinscripcion", "nombre": "Reinscripción (1 año)", "desde": "2026-03-19", "hasta": "2026-03-25"}, {"tipo": "inscripcion", "nombre": "Inscripción a exámenes por autogestión", "desde": "2026-04-20", "hasta": "2026-04-25"}, {"tipo": "finales", "nombre": "Exámenes finales un (1) llamado para cada asignatura (sin suspensión de clases)", "desde": "2026-05-04", "hasta": "2026-05-09", "llamados": 1}, {"tipo": "receso", "nombre": "Receso académico", "desde": "2026-07-20", "hasta": "2026-07-25"}, {"tipo": "inscripcion", "nombre": "Inscripción a exámenes por autogestión", "desde": "2026-07-20", "hasta": "2026-08-05"}, {"tipo": "finales", "nombre": "Exámenes finales dos (2) llamados para cada asignatura", "desde": "2026-07-27", "hasta": "2026-08-08", "llamados": 2}, {"tipo": "reinscripcion", "nombre": "Reinscripción (sólo para asignaturas cuatrimestrales)", "desde": "2026-07-27", "hasta": "2026-08-08"}, {"tipo": "inscripcion", "nombre": "Inscripción a exámenes por autogestión", "desde": "2026-08-31", "hasta": "2026-09-05"}, {"tipo": "finales", "nombre": "Exámenes finales (1 llamado para cada asignatura sin suspensión de clases)", "desde": "2026-09-14", "hasta": "2026-09-19", "llamados": 1}, {"tipo": "inscripcion", "nombre": "Inscripción a exámenes por autogestión", "desde": "2026-11-23", "hasta": "2026-12-16"}, {"tipo": "finales", "nombre": "Exámenes finales tres (3) llamados para cada asignatura", "desde": "2026-11-30", "hasta": "2026-12-22", "llamados": 3}, {"tipo": "inscripcion", "nombre": "Inscripción a exámenes por autogestión", "desde": "2027-02-09", "hasta": "2027-03-06"}, {"tipo": "recuperatorios", "nombre": "Recuperatorio de parciales", "desde": "2027-02-16", "hasta": "2027-02-28"}, {"tipo": "finales", "nombre": "Exámenes finales tres (3) llamados para cada asignatura", "desde": "2027-02-16", "hasta": "2027-03-10", "llamados": 3}, {"tipo": "reinscripcion", "nombre": "Reinscripción anual y cuatrimestral", "desde": "2027-03-08", "hasta": "2027-03-20"}, {"tipo": "reinscripcion", "nombre": "Reinscripción 1° nivel (recursantes)", "desde": "2027-03-22", "hasta": "2027-03-27"}], "periodos": {"cicloDesde": "2026-03-30", "cuat1Hasta": "2026-07-18", "cuat2Desde": "2026-08-10", "cicloHasta": "2026-11-28"}};
 
 /* ================= ÍNDICES ================= */
 const norm = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g,"")
@@ -763,7 +981,7 @@ function bindCarrera(slug){
   /* La clave lleva el slug. Cada carrera guarda en la suya, así que cambiar de carrera
      nunca pisa el progreso de la otra — y quien ya venía usando el archivo suelto de su
      carrera encuentra sus datos intactos, porque la clave es exactamente la de siempre. */
-  CLAVE = "planificador-"+slug+"-frh-v1";
+  CLAVE = "planificador-v2-"+slug+"-frh-v1";
 }
 // Comisiones manuales (materias cursadas en otra regional), definidas por el usuario.
 function manualesComs(){
@@ -786,16 +1004,21 @@ const ESTADOS = {
 };
 
 /* ================= ESTADO PERSISTIDO ================= */
-const estadoVacio = () => ({version:1, estados:{}, notas:{}, aplazos:{}, grilla:{}, sim:{asumir:true, anios:[]}, manuales:[], horarios:null, examenes:[], _mseq:0, _eseq:0});
+const estadoVacio = () => ({version:1, estados:{}, notas:{}, aplazos:{}, grilla:{}, sim:{asumir:true, anios:[]},
+  manuales:[], ocupado:[], cursada:{}, horarios:null, examenes:[], _mseq:0, _eseq:0, _oseq:0});
 let ST = estadoVacio();
 /* Arranca siempre de cero: al cambiar de carrera hay que descartar lo anterior antes de
    leer lo nuevo, porque los números de orden de una carrera no significan nada en la
    otra y lo que no se pisara quedaría mezclado. */
 function cargar(){ ST = estadoVacio();
-  try{ const raw=localStorage.getItem(CLAVE); if(raw){ const d=JSON.parse(raw); if(d&&d.version===1){ ST={...ST,...d};
-  if(!Array.isArray(ST.manuales)) ST.manuales=[]; if(!ST.notas) ST.notas={}; if(!ST.aplazos) ST.aplazos={};
-  if(!Array.isArray(ST.examenes)) ST.examenes=[];
+  try{
+    // La primera apertura copia el estado estable, pero desde ahí V1 y V2 quedan aisladas:
+    // volver a V1 no puede borrar ocupado, reglas ni resultados nuevos.
+    const legado="planificador-"+CARRERA.slug+"-frh-v1";
+    const raw=localStorage.getItem(CLAVE)||localStorage.getItem(legado);
+    if(raw){ const d=JSON.parse(raw),limpio=sanearEstado(d); if(limpio){ ST={...ST,...limpio};
   if(ST.horarios&&Array.isArray(ST.horarios.comisiones)&&ST.horarios.comisiones.length) COMISIONES=construirComisiones(ST.horarios.comisiones);
+  if(!localStorage.getItem(CLAVE)) localStorage.setItem(CLAVE,JSON.stringify(ST));
 } } }catch(e){} }
 function guardarLocal(){ try{ localStorage.setItem(CLAVE,JSON.stringify(ST)); }catch(e){} }
 function guardar(){
@@ -861,13 +1084,16 @@ const electivasHs = () => MATERIAS.filter(m=>m.electiva&&aprobada(m.o)).reduce((
 /* ================= NAVEGACIÓN ================= */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
-let vista="materias";
+const VISTAS = ["hoy","materias","grilla","agenda","mapa","simulador","avance"];
+let vista="hoy";
 $$(".nav-int button").forEach(b=>b.onclick=()=>{ irAVista(b.dataset.vista); render(); });
 function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("ver"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("ver"),2600); }
 function irAVista(v){
+  if(!VISTAS.includes(v)) return;
+  if(v!=="hoy"&&typeof _tHoy!=="undefined"&&_tHoy){clearInterval(_tHoy);_tHoy=null;}
   vista=v;
   $$(".nav-int button").forEach(x=>x.classList.toggle("activa",x.dataset.vista===v));
-  ["materias","grilla","agenda","mapa","simulador","avance"].forEach(x=>$("#vista-"+x).hidden=x!==v);
+  VISTAS.forEach(x=>$("#vista-"+x).hidden=x!==v);
 }
 
 /* ================= CARRERA ACTIVA ================= */
@@ -904,7 +1130,7 @@ function usarCarrera(slug){
   calDiaElegido = null;
   calAncla = (()=>{ const d=new Date(); d.setDate(1); d.setHours(0,0,0,0); return d; })();
   aplicarTextosCarrera();
-  irAVista("materias");
+  irAVista("hoy");
   if (typeof reconectarSync === "function") reconectarSync();
   render();
 }
@@ -984,6 +1210,16 @@ function pasaFiltro(m){
   if (filtro==="pendientes") return !aprobada(m.o);
   return true;
 }
+function instanciasDe(o){return (ST.examenes||[]).filter(e=>e.o===o).sort((a,b)=>a.fecha.localeCompare(b.fecha));}
+function cronologiaBreve(o){
+  const evs=instanciasDe(o);if(!evs.length)return "";
+  return evs.slice(-3).map(e=>`${escHTML(e.detalle||TIPOS_EX[e.tipo]||"Instancia")}${e.nota!=null?` ${e.nota}`:e.resultado==="ausente"?" ausente":""} (${new Date(e.fecha+"T00:00").toLocaleDateString("es-AR",{day:"numeric",month:"numeric"})})`).join(" · ");
+}
+function alertaDesaprobado(o){
+  const evs=instanciasDe(o),bajos=evs.filter(e=>e.nota!=null&&e.nota<4);if(!bajos.length)return null;
+  const hayRecu=evs.some(e=>e.tipo==="recuperatorio"&&e.fecha>=hoyISO());
+  return hayRecu?null:`${bajos.length} instancia${bajos.length>1?"s":""} desaprobada${bajos.length>1?"s":""} sin recuperatorio anotado`;
+}
 function renderMaterias(){
   const cont=$("#contMaterias"); cont.innerHTML="";
   const grupos=NIVELES.map(n=>({tit:`Nivel ${romano(n)}`,ms:MATERIAS.filter(m=>!m.electiva&&m.nivel===n)}));
@@ -1007,8 +1243,10 @@ function renderMaterias(){
       const e=est(m.o);
       const card=document.createElement("div");
       card.className="card"+((["sin","desaprobada"].includes(e)&&!puedeCursar(m.o))?" bloqueada":"");
+      const cr=e==="cursando"?cronologiaBreve(m.o):"",al=alertaDesaprobado(m.o);
       card.innerHTML=`<div class="tit"><span class="orden">${m.electiva?"E":m.o}</span><span class="nom">${m.nombre}</span></div>
-        <div class="fila-chips"><span class="pill ${ESTADOS[e].cls}">${ESTADOS[e].txt}</span>${chipEstadoDerivado(m)}</div>`;
+        <div class="fila-chips"><span class="pill ${ESTADOS[e].cls}">${ESTADOS[e].txt}</span>${chipEstadoDerivado(m)}</div>
+        ${cr?`<small style="color:var(--muted)">${cr}</small>`:""}${al?`<small style="color:var(--rojo);font-weight:700">⚠ ${escHTML(al)}</small>`:""}`;
       card.onclick=()=>abrirModal(m.o);
       grid.appendChild(card);
     }
@@ -1162,6 +1400,7 @@ function abrirModal(o){
   const d=destraba(o);
   const coms=comsDe(o);
   const esp = CATALOGO.reglasEspeciales[String(o)];
+  const evs=instanciasDe(o),cur=ST.cursada?.[o]||{},alerta=alertaDesaprobado(o);
   $("#modal").innerHTML=`
     <button class="cerrar" onclick="cerrarModal()">✕</button>
     <h3>${m.nombre}</h3>
@@ -1172,7 +1411,15 @@ function abrirModal(o){
       <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
         <label style="font-size:13px;font-weight:600">Nota del final <input class="nota-input" id="mNota" type="number" min="4" max="10" step="1" placeholder="—" value="${ST.notas[o]!=null?ST.notas[o]:''}"></label>
         <label style="font-size:13px;font-weight:600">Aplazos previos <input class="nota-input" id="mAplazos" type="number" min="0" max="20" step="1" placeholder="0" value="${ST.aplazos[o]?ST.aplazos[o]:''}"></label>
-      </div></section>`:""}
+       </div></section>`:""}
+    <section><b>Regla de la cursada (en tus palabras)</b>
+      <textarea id="mRegla" class="inp-form" maxlength="400" style="height:70px;resize:vertical" placeholder="Ej.: 3 parciales, promoción con 7 de promedio…">${escHTML(cur.regla||"")}</textarea>
+      ${e==="regular"?`<label style="display:block;margin-top:7px;font-size:12.5px;font-weight:600">Regularizada desde <input id="mFechaRegular" class="inp-form" type="date" style="width:170px;display:inline-block" value="${cur.fechaRegular||""}"></label>`:""}</section>
+    ${alerta?`<div class="res-choques"><div class="item">⚠ ${escHTML(alerta)}</div></div>`:""}
+    ${evs.length?`<section><b>Instancias de cursada</b><div>${evs.map(x=>`<div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;padding:5px 0;border-bottom:1px solid var(--linea);font-size:12.5px">
+      <span style="flex:1;min-width:190px"><b>${escHTML(x.detalle||TIPOS_EX[x.tipo])}</b> · ${new Date(x.fecha+"T00:00").toLocaleDateString("es-AR")}</span>
+      <input class="nota-input" data-inst-nota="${x.id}" type="number" min="0" max="10" step="0.1" placeholder="nota" value="${x.nota!=null?x.nota:""}">
+      ${x.resultado&&x.resultado!=="rendido"?`<span class="chip chip-bloq">${x.resultado}</span>`:""}</div>`).join("")}</div></section>`:""}
     ${esp?`<div class="aviso">⚠ ${esp}</div>`:""}
     <section><b>Para cursar necesitás</b><div class="lista-req">${
       (c.c.length||c.a.length) ? [
@@ -1200,6 +1447,11 @@ function abrirModal(o){
     if (["sin","desaprobada"].includes(est(o)) && (nuevo==="cursando") && !puedeCursar(o) && !m.electiva){
       if(!confirm("Según las correlativas todavía no podrías cursarla. ¿Marcarla igual?")) return;
     }
+    if(nuevo==="regular"&&e!=="regular"){
+      const sugerida=hoyISO(),fecha=prompt("¿Desde qué fecha está regularizada? (AAAA-MM-DD)",sugerida);
+      if(fecha!==null){ST.cursada[o]=ST.cursada[o]||{};ST.cursada[o].fechaRegular=/^\d{4}-\d{2}-\d{2}$/.test(fecha)?fecha:sugerida;}
+    }
+    if(["sin","desaprobada","cursando"].includes(nuevo)&&ST.cursada[o])delete ST.cursada[o].fechaRegular;
     if (nuevo==="sin") delete ST.estados[o]; else ST.estados[o]=nuevo;
     if (!["cursando"].includes(nuevo)) delete ST.grilla[o];
     if (nuevo!=="aprobada") delete ST.notas[o];   // la nota solo aplica a materias aprobadas
@@ -1217,6 +1469,14 @@ function abrirModal(o){
     else ST.aplazos[o]=Math.min(20,v);
     guardar(); render();
   };
+  const regla=$("#mRegla");if(regla)regla.onchange=()=>{const txt=limpiar(regla.value,400,true);
+    ST.cursada[o]=ST.cursada[o]||{};if(txt)ST.cursada[o].regla=txt;else delete ST.cursada[o].regla;guardar();render();};
+  const fr=$("#mFechaRegular");if(fr)fr.onchange=()=>{ST.cursada[o]=ST.cursada[o]||{};
+    ST.cursada[o].fechaRegular=/^\d{4}-\d{2}-\d{2}$/.test(fr.value)?fr.value:null;guardar();};
+  $$("#modal [data-inst-nota]").forEach(inp=>inp.onchange=()=>{const x=ST.examenes.find(z=>z.id===+inp.dataset.instNota),n=Number(inp.value);
+    if(!x)return;if(inp.value===""){delete x.nota;if(x.resultado==="rendido")delete x.resultado;}
+    else if(Number.isFinite(n)&&n>=0&&n<=10){x.nota=Math.round(n*100)/100;x.resultado="rendido";}
+    else return toast("Ingresá una nota entre 0 y 10");guardar();abrirModal(o);render();});
   $("#velo").classList.add("abierto");
 }
 function cerrarModal(){ $("#velo").classList.remove("abierto"); }
@@ -1262,6 +1522,38 @@ function comisionesElegidas(){
 }
 const PALETA=["#00455C","#B047B3","#e07b00","#0d8a6a","#157FEB","#c22f4d","#6a45c9","#4a7a12","#a06a00","#008aa8","#8a2fae","#375e79"];
 const colorMateria = o => PALETA[(MATERIAS.findIndex(m=>m.o===o))%PALETA.length];
+const hoyISO = () => { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
+/* El constructor transforma los hitos del PDF en fechas explícitas; si alguna falta,
+   no se filtra para evitar ocultar clases por un cambio de redacción del calendario. */
+function cuatriEn(f){
+  const p=CALENDARIO.periodos||{};
+  if(!p.cicloDesde||!p.cicloHasta||f<p.cicloDesde||f>p.cicloHasta) return null;
+  if(p.cuat1Hasta&&f<=p.cuat1Hasta) return "1";
+  if(p.cuat2Desde&&f>=p.cuat2Desde) return "2";
+  return null;
+}
+function dictaEn(c,f){
+  if(!c.dictado||c.dictado==="A") return true;
+  const q=cuatriEn(f); return q===null ? true : c.dictado===q;
+}
+let periodoGrilla="auto";
+function visibleEnPeriodo(c){
+  if(periodoGrilla==="todo") return true;
+  const q=periodoGrilla==="auto"?cuatriEn(hoyISO()):periodoGrilla;
+  return q==null || !c.dictado || c.dictado==="A" || c.dictado===q;
+}
+function periodosCompatibles(a,b){
+  const da=a.dictado||"A", db=b.dictado||"A";
+  return da==="A"||db==="A"||da===db;
+}
+const PALETA_OCUPADO=["#7D9FAB","#B047B3","#e07b00","#0d8a6a","#c22f4d","#6a45c9"];
+function chocaConOcupado(bloqueClase,oc,incluirViaje=true){
+  const v=incluirViaje?(oc.viaje||0):0;
+  return (oc.bloques||[]).some(b=>b.dia===bloqueClase.dia && (b.inicio-v)<bloqueClase.fin && bloqueClase.inicio<(b.fin+v));
+}
+const chocaDuro=c=>(ST.ocupado||[]).filter(x=>x.duro).some(oc=>c.bloques.some(b=>chocaConOcupado(b,oc)));
+const contarPisadasBlandas=combo=>combo.reduce((t,c)=>t+(ST.ocupado||[]).filter(x=>!x.duro)
+  .reduce((n,oc)=>n+(c.bloques.some(b=>chocaConOcupado(b,oc))?1:0),0),0);
 
 const G_INI=7*60+30, G_FIN=23*60+30; // 7:30 a 23:30 (rango base)
 /* El rango real se estira si alguna comisión (típicamente de otra regional) queda
@@ -1272,21 +1564,26 @@ function rangoGrilla(coms){
     ini=Math.min(ini, Math.floor(b.inicio/60)*60);
     fin=Math.max(fin, Math.ceil(b.fin/60)*60);
   }
+  for(const oc of (ST.ocupado||[])) for(const b of oc.bloques){
+    ini=Math.min(ini,Math.floor(b.inicio/60)*60); fin=Math.max(fin,Math.ceil(b.fin/60)*60);
+  }
   return {ini, fin};
 }
 function detectarChoques(coms){
   const ch=[];
   for (let i=0;i<coms.length;i++) for (let j=i+1;j<coms.length;j++)
     for (const a of coms[i].bloques) for (const b of coms[j].bloques)
-      if (a.dia===b.dia && a.inicio<b.fin && b.inicio<a.fin)
+      if (periodosCompatibles(coms[i],coms[j]) && a.dia===b.dia && a.inicio<b.fin && b.inicio<a.fin)
         ch.push({a:coms[i],b:coms[j],dia:a.dia,ba:a,bb:b});
   return ch;
 }
 function renderGrilla(){
   renderGrillaLista();
   renderExternas();
+  renderOcupado();
   infoHorarios();
-  const coms=comisionesElegidas();
+  $$("#segPeriodo [data-p]").forEach(b=>b.classList.toggle("activa",b.dataset.p===periodoGrilla));
+  const coms=comisionesElegidas().filter(visibleEnPeriodo);
   const choques=detectarChoques(coms);
   const enChoque=new Set(); choques.forEach(c=>{enChoque.add(claveCom(c.a)+c.ba.dia+c.ba.inicio);enChoque.add(claveCom(c.b)+c.bb.dia+c.bb.inicio);});
   const {ini:GI,fin:GF}=rangoGrilla(coms);
@@ -1294,6 +1591,14 @@ function renderGrilla(){
   g.insertAdjacentHTML("beforeend",`<div class="g-col-cab">Hora</div>`+[1,2,3,4,5,6].map(d=>`<div class="g-col-cab">${DIAS[d]}</div>`).join(""));
   for (let t=GI;t<GF;t+=60){
     g.insertAdjacentHTML("beforeend",`<div class="g-hora" style="height:45px">${hm(t)}</div>`+[1,2,3,4,5,6].map(d=>`<div class="g-celda" data-d="${d}" data-t="${t}"></div>`).join(""));
+  }
+  for(const oc of (ST.ocupado||[])) for(const b of oc.bloques){
+    const celda=g.querySelector(`.g-celda[data-d="${b.dia}"][data-t="${Math.floor((b.inicio-GI)/60)*60+GI}"]`);
+    if(!celda) continue;
+    const div=document.createElement("div"), off=(b.inicio-GI)%60, dur=b.fin-b.inicio;
+    div.className="bloque-ocupado"; div.style.top=(off*.75)+"px"; div.style.height=(dur*.75-2)+"px";
+    div.style.borderColor=oc.color; div.title=`${oc.titulo}${oc.viaje?` · ${oc.viaje} min de viaje`:""}`;
+    div.textContent=oc.titulo; celda.appendChild(div);
   }
   for (const c of coms) for (const b of c.bloques){
     const celda=g.querySelector(`.g-celda[data-d="${b.dia}"][data-t="${Math.floor((b.inicio-GI)/60)*60+GI}"]`);
@@ -1311,10 +1616,19 @@ function renderGrilla(){
   const hs=coms.reduce((t,c)=>t+porOrden[c.orden].hs,0);
   $("#cargaSemanal").textContent=coms.length?`${coms.length} materias · ${hs} hs cátedra/semana`:"";
   const rc=$("#resChoques");
-  rc.innerHTML = !coms.length ? "" : choques.length
-    ? choques.map(c=>`<div class="item">⚠ ${porOrden[c.a.orden].nombre} (${c.a.curso}) se superpone con ${porOrden[c.b.orden].nombre} (${c.b.curso}) el ${DIAS[c.dia].toLowerCase()} ${hm(Math.max(c.ba.inicio,c.bb.inicio))}–${hm(Math.min(c.ba.fin,c.bb.fin))}</div>`).join("")
-    : `<div class="ok-choques">✔ Sin superposiciones de horario.</div>`;
+  const ocupados=[];
+  for(const c of coms) for(const b of c.bloques) for(const oc of (ST.ocupado||[])){
+    if(!chocaConOcupado(b,oc)) continue;
+    const directo=chocaConOcupado(b,oc,false);
+    const ob=(oc.bloques||[]).find(x=>x.dia===b.dia&&(x.inicio-(oc.viaje||0))<b.fin&&b.inicio<(x.fin+(oc.viaje||0)));
+    const solape=ob?`${hm(Math.max(b.inicio,ob.inicio))}–${hm(Math.min(b.fin,ob.fin))}`:"";
+    const margen=ob?(b.inicio>=ob.fin?b.inicio-ob.fin:ob.inicio>=b.fin?ob.inicio-b.fin:0):0;
+    ocupados.push(`<div class="item">⚠ ${escHTML(porOrden[c.orden].nombre)} (${escHTML(c.curso)}) ${directo?`se pisa con ${escHTML(oc.titulo)}${solape?` ${solape}`:""}`:`te deja ${margen} min para llegar desde/hacia ${escHTML(oc.titulo)} (necesitás ${oc.viaje||0})`} el ${DIAS[b.dia].toLowerCase()}</div>`);
+  }
+  const avisos=choques.map(c=>`<div class="item">⚠ ${porOrden[c.a.orden].nombre} (${c.a.curso}) se superpone con ${porOrden[c.b.orden].nombre} (${c.b.curso}) el ${DIAS[c.dia].toLowerCase()} ${hm(Math.max(c.ba.inicio,c.bb.inicio))}–${hm(Math.min(c.ba.fin,c.bb.fin))}</div>`).concat(ocupados);
+  rc.innerHTML = !coms.length ? "" : avisos.length ? avisos.join("") : `<div class="ok-choques">✔ Sin superposiciones de horario.</div>`;
 }
+$("#segPeriodo").onclick=e=>{ const b=e.target.closest("[data-p]"); if(!b)return; periodoGrilla=b.dataset.p; renderGrilla(); };
 
 /* ---- materias de otra regional (comisiones manuales) ---- */
 function renderExternas(){
@@ -1345,6 +1659,54 @@ function renderExternas(){
     ST.manuales=ST.manuales.filter(x=>x.mid!==mid); guardar(); render();
   });
 }
+/* ---- tiempo ocupado fuera de la Facultad ---- */
+function renderOcupado(){
+  const cont=$("#listaOcupado"), lista=ST.ocupado||[];
+  cont.innerHTML=lista.length?lista.map(oc=>`<div class="ocupado-item">
+    <i class="oc-color" style="background:${oc.color}"></i><b>${escHTML(oc.titulo)}</b>
+    <span><span class="chip ${oc.duro?"chip-bloq":"chip-cursable"}">${oc.duro?"duro":"blando"}</span>
+      <button class="btn-mini" data-oc-edit="${oc.id}">editar</button><button class="btn-mini" data-oc-del="${oc.id}">eliminar</button></span>
+    <div class="oc-det">${oc.bloques.map(b=>`${DIAS[b.dia].slice(0,3)} ${hm(b.inicio)}–${hm(b.fin)}`).join(" · ")}${oc.viaje?` · +${oc.viaje} min viaje`:""}</div>
+  </div>`).join(""):`<p style="padding:12px;color:var(--gris);font-size:12px;font-weight:600">Agregá trabajo, gimnasio u otros compromisos para detectar choques reales.</p>`;
+  cont.querySelectorAll("[data-oc-edit]").forEach(b=>b.onclick=()=>abrirModalOcupado(+b.dataset.ocEdit));
+  cont.querySelectorAll("[data-oc-del]").forEach(b=>b.onclick=()=>{
+    ST.ocupado=ST.ocupado.filter(x=>x.id!==+b.dataset.ocDel); guardar(); renderGrilla();
+  });
+}
+let _ocBloques=[], _ocColor=PALETA_OCUPADO[0];
+function abrirModalOcupado(id){
+  const edit=(ST.ocupado||[]).find(x=>x.id===id);
+  if(!edit&&(ST.ocupado||[]).length>=8) return toast("Podés cargar hasta 8 bloques de tiempo ocupado");
+  _ocBloques=edit?edit.bloques.map(b=>({...b})):[{dia:1,inicio:9*60,fin:18*60}];
+  _ocColor=edit?edit.color:PALETA_OCUPADO[0];
+  $("#modal").innerHTML=`<button class="cerrar" onclick="cerrarModal()">✕</button>
+    <h3>${edit?"Editar":"Agregar"} tiempo ocupado</h3>
+    <div class="sub">Los bloques duros descartan comisiones; los blandos solo bajan su prioridad en el optimizador.</div>
+    <section><b>Título</b><input id="ocTitulo" class="inp-form" maxlength="40" placeholder="Trabajo, gimnasio…" value="${edit?escHTML(edit.titulo):""}"></section>
+    <section><b>Color</b><div style="display:flex;gap:10px">${PALETA_OCUPADO.map(c=>`<button type="button" class="color-op ${c===_ocColor?"activa":""}" data-color="${c}" style="background:${c}" title="Elegir color"></button>`).join("")}</div></section>
+    <section style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+      <label style="font-weight:700;font-size:13px"><input id="ocDuro" type="checkbox" ${!edit||edit.duro?"checked":""}> Restricción dura</label>
+      <label style="font-weight:700;font-size:13px">Viaje <input id="ocViaje" class="nota-input" type="number" min="0" max="180" step="5" value="${edit?edit.viaje||0:0}"> min</label>
+    </section>
+    <section><b>Días y horarios</b><div id="ocBloques"></div><button class="btn-mini" id="ocAdd" style="margin-top:4px">+ agregar otro día</button></section>
+    <div id="ocError" class="aviso" style="display:none"></div>
+    <div style="display:flex;gap:8px;margin-top:16px"><button class="btn primario" id="ocGuardar">Guardar</button><button class="btn" onclick="cerrarModal()">Cancelar</button></div>`;
+  const editor=editorBloques("ocBloques",_ocBloques,{conAula:false,maxBloques:12,inicioInicial:9*60,finInicial:18*60,diaInicial:1});
+  $("#ocAdd").onclick=()=>{ if(!editor.agregar()) toast("Hasta 12 bloques por actividad"); };
+  $$("[data-color]").forEach(b=>b.onclick=()=>{_ocColor=b.dataset.color;$$("[data-color]").forEach(x=>x.classList.toggle("activa",x===b));});
+  $("#ocGuardar").onclick=()=>{
+    const err=$("#ocError"), fallar=t=>{err.textContent="⚠ "+t;err.style.display="block";};
+    const titulo=limpiar($("#ocTitulo").value,40); if(!titulo)return fallar("Escribí un título.");
+    const eb=editor.validar(); if(eb)return fallar(eb);
+    const viaje=Math.max(0,Math.min(180,parseInt($("#ocViaje").value,10)||0));
+    const datos={titulo,color:PALETA_OCUPADO.includes(_ocColor)?_ocColor:PALETA_OCUPADO[0],duro:$("#ocDuro").checked,viaje,
+      bloques:_ocBloques.map(b=>({dia:b.dia,inicio:b.inicio,fin:b.fin}))};
+    if(edit)Object.assign(edit,datos);else{ST._oseq=(ST._oseq||0)+1;ST.ocupado.push({id:ST._oseq,...datos});}
+    guardar();cerrarModal();renderGrilla();toast(edit?"Tiempo ocupado actualizado":"Tiempo ocupado agregado");
+  };
+  $("#velo").classList.add("abierto");
+}
+$("#btnOcupado").onclick=()=>abrirModalOcupado();
 /* ---------------- Defensa contra inyección de código ----------------
    Dos barreras independientes:
    1) escHTML: TODO dato que no venga del catálogo se escapa antes de ir al HTML.
@@ -1364,22 +1726,44 @@ function limpiar(s, max, multilinea){
 }
 const minToTime = m => `${String(Math.floor(m/60)).padStart(2,"0")}:${String(m%60).padStart(2,"0")}`;
 const timeToMin = t => { const [h,mm]=(t||"").split(":").map(Number); return (h||0)*60+(mm||0); };
-let _formBloques=[];
-function renderBloquesForm(){
-  const cont=$("#mBloques"); if(!cont) return;
-  cont.innerHTML=_formBloques.map((b,i)=>`<div class="bloque-row">
+/* Editor reusable de días y horas. Muta el array recibido y valida límites comunes. */
+function editorBloques(contId,bloques,opts){
+  opts=opts||{}; const max=opts.maxBloques||12;
+  const render=()=>{
+    const cont=$("#"+contId); if(!cont) return;
+    cont.innerHTML=bloques.map((b,i)=>`<div class="bloque-row">
     <select data-i="${i}" data-k="dia">${[1,2,3,4,5,6].map(d=>`<option value="${d}" ${b.dia===d?"selected":""}>${DIAS[d]}</option>`).join("")}</select>
     <input type="time" data-i="${i}" data-k="inicio" value="${minToTime(b.inicio)}">
     <input type="time" data-i="${i}" data-k="fin" value="${minToTime(b.fin)}">
-    <input type="text" data-i="${i}" data-k="aula" placeholder="Aula" maxlength="40" value="${escHTML(b.aula)}" style="width:78px">
-    ${_formBloques.length>1?`<button class="quita-b" data-rm="${i}">✕</button>`:""}
+    ${opts.conAula?`<input type="text" data-i="${i}" data-k="aula" placeholder="Aula" maxlength="40" value="${escHTML(b.aula||"")}" style="width:78px">`:""}
+    ${bloques.length>1?`<button class="quita-b" data-rm="${i}">✕</button>`:""}
   </div>`).join("");
-  cont.querySelectorAll("select,input").forEach(el=>el.onchange=()=>{
-    const i=+el.dataset.i,k=el.dataset.k;
-    _formBloques[i][k]=(k==="dia")?+el.value:(k==="aula")?el.value:timeToMin(el.value);
-  });
-  cont.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{ _formBloques.splice(+b.dataset.rm,1); renderBloquesForm(); });
+    cont.querySelectorAll("select,input").forEach(el=>el.onchange=()=>{
+      const i=+el.dataset.i,k=el.dataset.k;
+      bloques[i][k]=(k==="dia")?+el.value:(k==="aula")?el.value:timeToMin(el.value);
+    });
+    cont.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{ bloques.splice(+b.dataset.rm,1); render(); });
+  };
+  const agregar=()=>{ if(bloques.length>=max) return false;
+    bloques.push({dia:opts.diaInicial||4,inicio:opts.inicioInicial||18*60+30,fin:opts.finInicial||22*60+30,aula:""}); render(); return true; };
+  const validar=()=>{
+    if(!bloques.length) return "Agregá al menos un día.";
+    if(bloques.length>max) return `Podés cargar hasta ${max} bloques.`;
+    for(const b of bloques){
+      if(!Number.isInteger(b.dia)||b.dia<1||b.dia>6) return "Elegí un día válido.";
+      if(!Number.isInteger(b.inicio)||!Number.isInteger(b.fin)||b.inicio<0||b.fin>1440||b.fin<=b.inicio)
+        return "En cada día, la hora de fin debe ser posterior a la de inicio.";
+    }
+    return null;
+  };
+  render(); return {render,agregar,validar,bloques};
 }
+function huecosDelDia(bloques){
+  const bs=bloques.slice().sort((a,b)=>a.inicio-b.inicio); let h=0;
+  for(let i=1;i<bs.length;i++) h+=Math.max(0,bs[i].inicio-bs[i-1].fin);
+  return h;
+}
+let _formBloques=[];
 function abrirModalManual(mid){
   const edit=(ST.manuales||[]).find(m=>m.mid===mid);
   _formBloques = edit ? edit.bloques.map(b=>({...b})) : [{dia:4,inicio:18*60+30,fin:22*60+30,aula:""}];
@@ -1402,8 +1786,8 @@ function abrirModalManual(mid){
       <button class="btn" onclick="cerrarModal()">Cancelar</button>
       ${edit?`<button class="btn peligro" id="mEliminar" style="margin-left:auto">Eliminar</button>`:""}
     </div>`;
-  renderBloquesForm();
-  $("#mAddBloque").onclick=()=>{ _formBloques.push({dia:4,inicio:18*60+30,fin:22*60+30,aula:""}); renderBloquesForm(); };
+  const editor=editorBloques("mBloques",_formBloques,{conAula:true,maxBloques:12});
+  $("#mAddBloque").onclick=()=>{ if(!editor.agregar()) toast("Hasta 12 bloques por materia"); };
   const bEl=$("#mEliminar");
   if(bEl) bEl.onclick=()=>{
     const o=porNombre[norm(edit.materia)];
@@ -1415,8 +1799,7 @@ function abrirModalManual(mid){
     const o=+$("#mMateria").value, materia=porOrden[o].nombre;
     const regional=limpiar($("#mReg").value, LARGO.regional);
     if(!regional) return fallar("Indicá la regional (por ejemplo, FRBA).");
-    if(!_formBloques.length) return fallar("Agregá al menos un día.");
-    for(const b of _formBloques) if(!(b.fin>b.inicio)) return fallar("En cada día, la hora de fin debe ser posterior a la de inicio.");
+    const errorBloques=editor.validar(); if(errorBloques) return fallar(errorBloques);
     const profesor=limpiar($("#mProf").value, LARGO.profesor);
     const bloques=_formBloques.map(b=>({dia:b.dia,inicio:b.inicio,fin:b.fin,aula:limpiar(b.aula,LARGO.aula)}));
     if(edit){
@@ -1448,53 +1831,85 @@ function turnoDe(c){
 function comPasaFiltro(c,op){
   if (op.turnos.size && !op.turnos.has(turnoDe(c))) return false;
   if (op.diasLibres.size && c.bloques.some(b=>op.diasLibres.has(b.dia))) return false;
+  if (op.respetarOcupado && chocaDuro(c)) return false;
+  if (op.noAntesDe && c.bloques.some(b=>b.inicio<op.noAntesDe)) return false;
+  if (op.noDespuesDe && c.bloques.some(b=>b.fin>op.noDespuesDe)) return false;
+  if (op.soloCuatri && !dictaEn(c,hoyISO())) return false;
   return true;
 }
 function chocanComs(a,b){
+  if(!periodosCompatibles(a,b)) return false;
   for (const x of a.bloques) for (const y of b.bloques)
     if (x.dia===y.dia && x.inicio<y.fin && y.inicio<x.fin) return true;
   return false;
 }
-function puntuarCombo(combo){
+const PESOS={materia:100,destrabe:35,cascada:4,fijadaFaltante:-10000,diaEnFacu:-25,
+  horaHueco:-18,salidaTarde:-12,entradaTemp:-8,ocupadoBlando:-40};
+const PRESETS={destrabar:{destrabe:60},dias:{diaEnFacu:-60},huecos:{horaHueco:-40}};
+function puntuarCombo(combo,ctx){
   const porDia={}; const dias=new Set();
   combo.forEach(c=>c.bloques.forEach(b=>{ dias.add(b.dia); (porDia[b.dia]=porDia[b.dia]||[]).push(b); }));
-  let huecos=0;
+  let huecos=0,tarde=0,temprano=0;
   for (const d in porDia){ const bs=porDia[d].slice().sort((a,b)=>a.inicio-b.inicio);
-    for (let i=1;i<bs.length;i++) huecos+=Math.max(0,bs[i].inicio-bs[i-1].fin); }
-  return {cant:combo.length, dias:dias.size, huecos, hs:combo.reduce((t,c)=>t+porOrden[c.orden].hs,0)};
+    huecos+=huecosDelDia(bs); tarde+=Math.max(0,bs[bs.length-1].fin-22*60)/60;
+    temprano+=Math.max(0,9*60-bs[0].inicio)/60; }
+  const destrabe=combo.reduce((t,c)=>t+ctx.impacto[c.orden].destrabe,0);
+  const cascada=combo.reduce((t,c)=>t+ctx.impacto[c.orden].cascada,0);
+  const blandos=contarPisadasBlandas(combo);
+  const faltan=ctx.fijadas.filter(o=>!combo.some(c=>c.orden===o)).length;
+  const w=ctx.pesos;
+  const score=w.materia*combo.length+w.destrabe*destrabe+w.cascada*cascada+w.diaEnFacu*dias.size
+    +w.horaHueco*(huecos/60)+w.salidaTarde*tarde+w.entradaTemp*temprano
+    +w.ocupadoBlando*blandos+w.fijadaFaltante*faltan;
+  return {score,cant:combo.length,dias:dias.size,huecos,destrabe,cascada,blandos,
+    hs:combo.reduce((t,c)=>t+porOrden[c.orden].hs,0)};
+}
+function construirCtx(ordenes,op){
+  const impacto={};
+  for(const o of ordenes){const i=impactoDe(o);impacto[o]={destrabe:i.abreC.length+i.abreR.length,cascada:i.cascada};}
+  return {impacto,fijadas:[...op.fijadas],pesos:Object.assign({},PESOS,PRESETS[op.preset]||{})};
+}
+function cotaSuperior(sel,i,listas,ctx){
+  let cota=puntuarCombo(sel,ctx).score;
+  // Las fijadas que todavía no fueron visitadas no son realmente "faltantes": el DFS
+  // no permite saltearlas. Neutralizar esa penalización mantiene la cota admisible.
+  const faltan=ctx.fijadas.filter(o=>!sel.some(c=>c.orden===o)).length;
+  cota-=ctx.pesos.fijadaFaltante*faltan;
+  for(let j=i;j<listas.length;j++){const o=listas[j].o;if(!listas[j].coms.length)continue;
+    cota+=ctx.pesos.materia+ctx.pesos.destrabe*ctx.impacto[o].destrabe+ctx.pesos.cascada*ctx.impacto[o].cascada;}
+  return cota;
 }
 function optimizarHorario(ordenes, op){
-  const listas=ordenes.map(o=>({o, coms:comsDe(o).filter(c=>comPasaFiltro(c,op))}))
-                      .sort((a,b)=>a.coms.length-b.coms.length);
-  const res=[]; const sel=[]; let mejorCant=0, nodos=0; const TOPE=400000;
+  const ctx=construirCtx(ordenes,op);
+  const listas=ordenes.map(o=>({o,fija:op.fijadas.has(o),coms:comsDe(o).filter(c=>comPasaFiltro(c,op))}))
+    .sort((a,b)=>(b.fija-a.fija)||(a.coms.length-b.coms.length));
+  const imposible=listas.find(l=>l.fija&&!l.coms.length);
+  if(imposible)return {opciones:[],truncado:false,nodos:0,error:`No hay comisión de ${porOrden[imposible.o].nombre} que cumpla los filtros.`};
+  const TOP=12,TOPE=400000,top=[],vistos=new Set();let nodos=0,truncado=false;
+  const registrar=combo=>{const k=combo.map(c=>claveCom(c)).sort().join("~");if(vistos.has(k))return;
+    const p=puntuarCombo(combo,ctx);if(top.length>=TOP&&p.score<=top[top.length-1].score)return;
+    vistos.add(k);top.push({combo:combo.slice(),...p});top.sort((a,b)=>b.score-a.score);if(top.length>TOP)top.pop();};
+  // Una solución greedy temprana le da a la poda un piso útil desde el primer nodo.
+  const semilla=[];let hsSemilla=0,semillaValida=true;
+  for(const l of listas){const c=l.coms.find(x=>(!op.maxHs||hsSemilla+porOrden[x.orden].hs<=op.maxHs)&&!semilla.some(y=>chocanComs(x,y)));
+    if(c){semilla.push(c);hsSemilla+=porOrden[c.orden].hs;}else if(l.fija){semillaValida=false;break;}}
+  if(semillaValida&&semilla.length)registrar(semilla);
+  const sel=[];
   function dfs(i,hs){
-    if (nodos++>TOPE) return;
-    if (sel.length + (listas.length-i) < mejorCant) return;          // poda
-    if (i===listas.length){
-      if (sel.length && sel.length>=mejorCant){
-        mejorCant=sel.length;
-        res.push({combo:sel.slice(), ...puntuarCombo(sel)});
-        if (res.length>600) res.splice(0,200);
-      }
-      return;
-    }
+    if(nodos++>TOPE){truncado=true;return;}
+    if(top.length>=TOP&&cotaSuperior(sel,i,listas,ctx)<=top[top.length-1].score)return;
+    if(i===listas.length){if(sel.length)registrar(sel);return;}
     for (const c of listas[i].coms){
       const h=porOrden[c.orden].hs;
       if (op.maxHs && hs+h>op.maxHs) continue;
       if (sel.some(x=>chocanComs(x,c))) continue;
       sel.push(c); dfs(i+1,hs+h); sel.pop();
+      if(truncado)return;
     }
-    dfs(i+1,hs);                                                      // saltear esta materia
+    if(!listas[i].fija)dfs(i+1,hs);
   }
   dfs(0,0);
-  res.sort((a,b)=>b.cant-a.cant || a.dias-b.dias || a.huecos-b.huecos);
-  const vistos=new Set(), out=[];
-  for (const r of res){
-    const k=r.combo.map(c=>claveCom(c)).sort().join("~");
-    if (vistos.has(k)) continue; vistos.add(k); out.push(r);
-    if (out.length>=8) break;
-  }
-  return {opciones:out, truncado:nodos>TOPE};
+  return {opciones:top,truncado,nodos};
 }
 $("#btnOptimizar").onclick=()=>{
   const cursables=materiasParaGrilla();
@@ -1503,12 +1918,21 @@ $("#btnOptimizar").onclick=()=>{
   $("#modal").innerHTML=`
     <button class="cerrar" onclick="cerrarModal()">✕</button>
     <h3>Armar horario automáticamente</h3>
-    <div class="sub">La app prueba todas las combinaciones de comisiones y te propone las que no tienen superposiciones, priorizando cursar la mayor cantidad de materias.</div>
+    <div class="sub">Compara combinaciones sin choques y pondera avance académico, días, ventanas, horarios y tus restricciones.</div>
     <section><b>Materias a considerar</b>
       <div style="max-height:170px;overflow:auto;border:1px solid var(--borde);border-radius:8px;padding:6px 10px">
-        ${cursables.map(m=>`<label class="sim-op"><input type="checkbox" class="opMat" value="${m.o}" checked>
-          <span>${m.nombre} <small style="color:var(--gris)">· ${comsDe(m.o).length} comisión${comsDe(m.o).length>1?"es":""}</small></span></label>`).join("")}
+        ${cursables.map(m=>`<div class="sim-op"><input type="checkbox" class="opMat" value="${m.o}" checked>
+          <span style="flex:1">${m.nombre} <small style="color:var(--gris)">· ${comsDe(m.o).length} comisión${comsDe(m.o).length>1?"es":""}</small></span>
+          <label title="Todas las propuestas deben incluirla" style="white-space:nowrap"><input type="checkbox" class="opFija" value="${m.o}"> 📌 obligatoria</label></div>`).join("")}
       </div></section>
+    <section><b>Preferencias</b><div style="display:flex;gap:14px;flex-wrap:wrap;align-items:end">
+      <label style="font-size:13px;font-weight:600">Entrar no antes de<br><input id="opDesde" class="inp-form" type="time" style="width:130px"></label>
+      <label style="font-size:13px;font-weight:600">Salir no después de<br><input id="opHasta" class="inp-form" type="time" style="width:130px"></label>
+      <label style="font-size:13px;font-weight:600"><input id="opOcupado" type="checkbox" ${(ST.ocupado||[]).length?"checked":""}> Respetar mi tiempo ocupado</label>
+      <label style="font-size:13px;font-weight:600"><input id="opCuatri" type="checkbox" checked> Solo cuatrimestre en curso</label>
+    </div><div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:9px">
+      ${[["destrabar","Destrabar materias"],["dias","Menos días"],["huecos","Menos huecos"]].map(([k,t],i)=>`<label style="font-size:13px;font-weight:600"><input type="radio" name="opPreset" value="${k}" ${i===0?"checked":""}> ${t}</label>`).join("")}
+    </div></section>
     <section style="display:flex;gap:16px;flex-wrap:wrap">
       <div><b>Turnos</b><div style="display:flex;gap:10px">
         ${[["M","Mañana"],["T","Tarde"],["N","Noche"]].map(([k,t])=>`<label style="font-size:13px;font-weight:600"><input type="checkbox" class="opTurno" value="${k}"> ${t}</label>`).join("")}
@@ -1532,18 +1956,25 @@ $("#btnOptimizar").onclick=()=>{
     err.style.display="none";
     const op={ turnos:new Set([...document.querySelectorAll(".opTurno:checked")].map(i=>i.value)),
                diasLibres:new Set([...document.querySelectorAll(".opDia:checked")].map(i=>+i.value)),
-               maxHs:parseInt($("#opMaxHs").value,10)||0 };
-    const {opciones}=optimizarHorario(ordenes,op);
+               maxHs:parseInt($("#opMaxHs").value,10)||0,
+               fijadas:new Set([...document.querySelectorAll(".opFija:checked")].map(i=>+i.value)),
+               noAntesDe:timeToMin($("#opDesde").value), noDespuesDe:timeToMin($("#opHasta").value),
+               respetarOcupado:$("#opOcupado").checked, soloCuatri:$("#opCuatri").checked,
+               preset:document.querySelector('[name="opPreset"]:checked')?.value||"destrabar" };
+    for(const o of op.fijadas)if(!ordenes.includes(o)){err.textContent="⚠ Una materia fijada también debe estar seleccionada.";err.style.display="block";return;}
+    const {opciones,truncado,nodos,error}=optimizarHorario(ordenes,op);
     const cont=$("#optRes");
-    if(!opciones.length){ cont.innerHTML=`<div class="aviso">Con esos filtros no encontré ninguna combinación. Probá liberar días, turnos o subir el tope de horas.</div>`; return; }
-    const maxCant=opciones[0].cant;
-    cont.innerHTML=`<b style="font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--gris)">
-      ${opciones.length} opción${opciones.length>1?"es":""} sin superposiciones · hasta ${maxCant} materia${maxCant>1?"s":""}</b>`
+    if(!opciones.length){ cont.innerHTML=`<div class="aviso">${escHTML(error||"Con esos filtros no encontré ninguna combinación. Probá liberar días, turnos o subir el tope de horas.")}</div>`; return; }
+    cont.innerHTML=(truncado?`<div class="aviso" style="margin-bottom:9px">La búsqueda era muy grande y se cortó tras ${nodos.toLocaleString("es-AR")} alternativas: puede haber combinaciones mejores. Probá deseleccionar alguna materia.</div>`:"")
+      +`<b style="font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--gris)">
+      ${opciones.length} propuesta${opciones.length>1?"s":""} ordenadas por tus preferencias</b>`
       + opciones.map((op2,i)=>`<div class="mesa">
         <div class="top"><b>Opción ${i+1}</b>
           <span class="cd">${op2.cant} materias · ${op2.hs} hs</span>
           <span class="chip chip-bloq">${op2.dias} día${op2.dias>1?"s":""} en la facu</span>
           ${op2.huecos?`<span class="chip chip-bloq">${Math.round(op2.huecos/60*10)/10} h libres entre clases</span>`:`<span class="chip chip-cursable">sin ventanas</span>`}
+          ${op2.destrabe?`<span class="chip chip-cursable">destraba ${op2.destrabe}</span>`:""}
+          ${op2.blandos?`<span class="chip pri-alta">⚠ ${op2.blandos} choque${op2.blandos>1?"s":""} blando${op2.blandos>1?"s":""}</span>`:""}
           <button class="btn-mini" data-aplicar="${i}" style="margin-left:auto">aplicar</button></div>
         <div class="hab">${op2.combo.map(c=>`${escHTML(porOrden[c.orden].nombre)} <small>(${escHTML(c.curso)}: ${c.bloques.map(b=>DIAS[b.dia].slice(0,3)+" "+hm(b.inicio)).join(", ")})</small>`).join(" · ")}</div>
       </div>`).join("");
@@ -1737,6 +2168,7 @@ function renderSim(){
   // quedaba oculta (el listado no la muestra) pero seguía sumando en el contador.
   ST.sim.anios.forEach(a=>a.mats=a.mats.filter(o=>!aprobada(o)));
   const {resultado,apr}=validarSim();
+  const rutaBase=motorActual(ST.estados).analizarRutaCritica(ST.estados);
   const base=estadosSim();
   const asignadas=new Set(ST.sim.anios.flatMap(a=>a.mats));
   ST.sim.anios.forEach((anio,ix)=>{
@@ -1752,10 +2184,11 @@ function renderSim(){
       const sel=anio.mats.includes(m.o);
       const errores=sel?resultado[ix][m.o]:null;
       const op=document.createElement("label");
-      op.className="sim-op"+(errores?" invalida":"");
+      const p=rutaBase.profundidades.get(m.o),demora=sel&&Number.isFinite(p)&&ix>p;
+      op.className="sim-op"+(errores?" invalida":"")+(demora?" demora":"");
       op.innerHTML=`<input type="checkbox" ${sel?"checked":""}>
         <span><span class="nom-sim">${m.electiva?"⭐ ":""}${m.nombre}</span>
-        ${errores?`<span class="err">Falta: ${errores.join(", ")}</span>`:""}</span>`;
+        ${errores?`<span class="err">Falta: ${errores.join(", ")}</span>`:""}${demora?`<span class="err" style="color:#9a6a00">Podrías cursarla antes según sus correlativas.</span>`:""}</span>`;
       op.querySelector("input").onchange=ev=>{
         if (ev.target.checked) anio.mats.push(m.o);
         else anio.mats=anio.mats.filter(x=>x!==m.o);
@@ -1779,7 +2212,8 @@ function renderSim(){
     msg=`<b style="color:var(--verde-txt)">🎓 Con este plan terminás de cursar y aprobar todo en ${ultimo}.</b>`
       + (cierre?`<br><small>Restan ${cierre} rendida (exige todo aprobado) y la Práctica Profesional Supervisada para el título.</small>`:"");
   } else msg=`Con lo asignado te quedarían <b>${faltanMat} obligatorias</b>${faltanElec?` y <b>${faltanElec} hs de electivas</b>`:""} sin aprobar. Agregá años o materias.`;
-  $("#simRes").innerHTML=msg;
+  const minimo=Number.isFinite(rutaBase.escalones)?`${rutaBase.escalones} escalón${rutaBase.escalones!==1?"es":""}`:"error en correlativas";
+  $("#simRes").innerHTML=`<b>Tu plan: ${ST.sim.anios.length} año${ST.sim.anios.length!==1?"s":""} · Mínimo teórico: ${minimo}</b><br><br>${msg}`;
 }
 $("#btnAgregarAnio").onclick=()=>{ ST.sim.anios.push({mats:[]}); guardar(); renderSim(); };
 $("#chkAsumir").onchange=e=>{ ST.sim.asumir=e.target.checked; guardar(); renderSim(); };
@@ -1808,6 +2242,7 @@ function renderAvance(){
     <div class="tile"><b>${nReg}</b><span>finales pendientes</span><div class="mini-borde" style="background:var(--ambar)"></div></div>
     <div class="tile"><b>${nCur}</b><span>cursando ahora</span><div class="mini-borde" style="background:var(--cyan)"></div></div>
     ${ELECTIVAS_HS?`<div class="tile"><b>${electivasHs()}/${ELECTIVAS_HS}</b><span>hs de electivas</span><div class="mini-borde" style="background:linear-gradient(90deg,var(--magenta) ${100*electivasHs()/ELECTIVAS_HS}%,var(--track) 0)"></div></div>`:""}`;
+  renderRutaCritica();
   renderMesas();
   $("#listaRendibles").innerHTML = rendibles.length
     ? rendibles.map(m=>{const d=destraba(m.o);return `<div class="fila-lista"><span class="nom">${m.nombre}</span>
@@ -2071,8 +2506,10 @@ function renderAgenda(){
     const e=ST.examenes.find(x=>x.id===+b.dataset.notaEx);
     const v=prompt("¿Qué nota te sacaste? (dejalo vacío para borrarla)", e.nota!=null?e.nota:"");
     if(v===null) return;
-    const n=parseInt(v,10);
-    if(v.trim()==="") delete e.nota; else if(!isNaN(n)&&n>=1&&n<=10) e.nota=n; else return toast("Poné un número del 1 al 10");
+    const n=Number(v);
+    if(v.trim()===""){delete e.nota;if(e.resultado==="rendido")delete e.resultado;}
+    else if(Number.isFinite(n)&&n>=0&&n<=10){e.nota=Math.round(n*100)/100;e.resultado="rendido";}
+    else return toast("Poné un número entre 0 y 10");
     guardar(); render();
   });
   actualizarBadge();
@@ -2111,6 +2548,98 @@ const examenesDe = f => (ST.examenes||[]).filter(e=>e&&e.fecha===f);
 const esMuerto = f => feriadosDe(f).length>0 || ventanasDe(f).some(v=>v.tipo==="receso");
 const hayAlgo = f => examenesDe(f).length>0 || feriadosDe(f).length>0
                   || hitosDe(f).length>0 || ventanasDe(f).length>0;
+const diaModelo=d=>{const n=d.getDay();return n===0?7:n;};
+const lugarClase=(c,b)=>c.manual?(c.regional||"otra regional")+(b.aula?" · Aula "+b.aula:"")
+  :(b.aula&&b.aula!=="Virtual"?"Aula "+b.aula:c.modalidad==="virtual"?"Virtual":"");
+const duracionHumana=min=>min<60?`${Math.max(0,Math.round(min))} min`:`${Math.floor(min/60)} h${min%60?` ${min%60} min`:""}`;
+const pendientesDeCarga=()=> (ST.examenes||[]).filter(e=>e.fecha<hoyISO()&&e.nota==null&&!e.resultado)
+  .sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,3);
+function guardarResultadoExamen(id,accion){
+  const e=(ST.examenes||[]).find(x=>x.id===id);if(!e)return;
+  if(accion==="nota"){
+    const input=$(`[data-hoy-nota="${id}"]`),v=Number(input?.value);
+    if(!input||input.value===""||!Number.isFinite(v)||v<0||v>10)return toast("Ingresá una nota entre 0 y 10");
+    e.nota=Math.round(v*100)/100;e.resultado="rendido";
+  }else{delete e.nota;e.resultado=accion;}
+  guardar();render();
+}
+
+function motorActual(E){
+  return crearMotorAcademico({materias:MATERIAS,correlativas:CATALOGO.correlativas,
+    integradoraFinal:INTEGRADORA,integradoraExigeElectivas:CATALOGO.integradoraExigeElectivas,
+    electivasHs:ELECTIVAS_HS,estados:E||ST.estados,horasElectiva:hsElectiva});
+}
+function renderRutaCritica(){
+  const cont=$("#rutaCritica");if(!cont)return;
+  const base=motorActual(ST.estados).analizarRutaCritica(ST.estados);
+  if(base.escalones===0){cont.innerHTML=`<div class="ruta-resumen"><span class="numero">🎓</span><b> No quedan materias obligatorias pendientes.</b></div>`;return;}
+  if(!Number.isFinite(base.escalones)){
+    cont.innerHTML=`<div class="ruta-resumen"><div class="aviso">⚠ Hay un ciclo en las correlativas del catálogo${base.ciclos.length?`: ${escHTML(nombres(base.ciclos))}`:""}. La ruta crítica no puede calcularse hasta corregir los datos.</div></div>`;return;
+  }
+  const sensibles=[];
+  for(const m of MATERIAS){if(m.electiva||aprobada(m.o))continue;const E={...ST.estados,[m.o]:"aprobada"};
+    const con=motorActual(E).analizarRutaCritica(E);if(Number.isFinite(con.escalones)&&con.escalones<base.escalones)sensibles.push({o:m.o,ahorro:base.escalones-con.escalones});}
+  sensibles.sort((a,b)=>b.ahorro-a.ahorro||impactoDe(b.o).cascada-impactoDe(a.o).cascada);
+  const cuello=sensibles[0],cascada=cuello?impactoDe(cuello.o).cascada:0;
+  cont.innerHTML=`<div class="ruta-resumen"><div><span class="numero">${base.escalones}</span> <b>escalón${base.escalones!==1?"es":""} de cursada como mínimo</b></div>
+    <p style="color:var(--muted);font-size:12.5px;margin-top:3px">Es un piso teórico según correlativas; no contempla oferta futura ni horarios.</p>
+    <div class="ruta-camino">${base.camino.map((o,i)=>`<button class="ruta-paso" data-ruta-o="${o}">${escHTML(porOrden[o]?.nombre||o)}<small>${i===0?"la podés abordar primero":i===base.camino.length-1?"al final":"luego"}</small></button>${i<base.camino.length-1?`<span style="align-self:center;color:var(--gris)">→</span>`:""}`).join("")}</div>
+    ${cuello?`<div class="aviso" style="margin-top:12px"><b>Cuello de botella:</b> ${escHTML(porOrden[cuello.o].nombre)}${cascada?` está antes de ${cascada} materias`:""}. Aprobarla reduce el mínimo en ${cuello.ahorro} escalón${cuello.ahorro!==1?"es":""}.</div>`:""}</div>`;
+  cont.querySelectorAll("[data-ruta-o]").forEach(b=>b.onclick=()=>abrirModal(+b.dataset.rutaO));
+}
+let _tHoy=null;
+function renderHoy(){
+  clearInterval(_tHoy);_tHoy=null;
+  const ahoraD=new Date(),f=hoyISO(),dia=diaModelo(ahoraD),ahora=ahoraD.getHours()*60+ahoraD.getMinutes();
+  const fechaLarga=ahoraD.toLocaleDateString("es-AR",{weekday:"long",day:"numeric",month:"long"});
+  $("#hoyCab").innerHTML=`<div class="hoy-cab"><h2>Hoy</h2><span class="fecha">${fechaLarga.charAt(0).toUpperCase()+fechaLarga.slice(1)}</span></div>`;
+  const muerto=esMuerto(f),p=CALENDARIO.periodos||{},sinCiclo=p.cicloDesde&&p.cicloHasta&&cuatriEn(f)===null;
+  const motivo=feriadosDe(f)[0]?.nombre||ventanasDe(f).find(v=>v.tipo==="receso")?.nombre;
+  let clases=[];
+  if(!muerto&&!sinCiclo&&dia<=6)clases=comisionesElegidas().filter(c=>dictaEn(c,f))
+    .flatMap(c=>c.bloques.filter(b=>b.dia===dia).map(b=>({c,b}))).sort((x,y)=>x.b.inicio-y.b.inicio);
+  if(muerto){
+    $("#hoyAhora").innerHTML=`<div class="aviso"><b>Hoy no hay clases.</b> ${escHTML(motivo||"Día no lectivo")}</div>`;
+    $("#hoyDespues").innerHTML="";
+  }else if(dia===7){
+    $("#hoyAhora").innerHTML=`<div class="vacio">Hoy es domingo: no hay cursada en el horario semanal.</div>`;$("#hoyDespues").innerHTML="";
+  }else if(sinCiclo){
+    const prox=(CALENDARIO.hitos||[]).filter(h=>h.fecha>f&&/clases/i.test(h.nombre)).sort((a,b)=>a.fecha.localeCompare(b.fecha))[0];
+    $("#hoyAhora").innerHTML=`<div class="vacio">No hay clases${prox?` hasta el ${fmtF(new Date(prox.fecha+"T00:00"))}`:" en este período"}.</div>`;$("#hoyDespues").innerHTML="";
+  }else if(!Object.keys(ST.grilla||{}).length){
+    $("#hoyAhora").innerHTML=`<div class="vacio">Todavía no armaste tu horario.<br><button class="btn primario" id="hoyArmar" style="margin-top:10px">Armar horario</button></div>`;
+    $("#hoyArmar").onclick=()=>{irAVista("grilla");render();};$("#hoyDespues").innerHTML="";
+  }else{
+    const actual=clases.find(x=>x.b.inicio<=ahora&&ahora<x.b.fin),prox=clases.find(x=>x.b.inicio>ahora);
+    const foco=actual||prox;
+    $("#hoyAhora").innerHTML=foco?`<div class="hoy-ahora" style="border-left-color:${colorMateria(foco.c.orden)}">
+      <small style="font-weight:800;color:var(--gris)">${actual?"EN CURSO":`PRÓXIMA · empieza en ${duracionHumana(foco.b.inicio-ahora)}`}</small>
+      <div class="mat">${escHTML(porOrden[foco.c.orden].nombre)}</div><div class="meta">${hm(foco.b.inicio)}–${hm(foco.b.fin)} · ${escHTML(foco.c.curso)}${lugarClase(foco.c,foco.b)?" · "+escHTML(lugarClase(foco.c,foco.b)):""}</div>
+      ${actual?`<div class="hoy-progreso"><i style="width:${Math.max(0,Math.min(100,(ahora-foco.b.inicio)*100/(foco.b.fin-foco.b.inicio)))}%"></i></div>`:""}</div>`
+      :`<div class="vacio">${clases.length?"Terminaste por hoy.":"Hoy no tenés clases en tu horario."}</div>`;
+    let filas="",prev=null;
+    for(const x of clases){if(prev&&x.b.inicio-prev.fin>=30)filas+=`<div class="hoy-hueco">⌁ ${duracionHumana(x.b.inicio-prev.fin)} libre</div>`;
+      filas+=`<div class="hoy-bloque ${x.b.fin<=ahora?"terminada":""}"><span class="hora">${hm(x.b.inicio)}</span><i class="punto" style="background:${colorMateria(x.c.orden)}"></i><span><span class="nom">${escHTML(porOrden[x.c.orden].nombre)}</span><br><small>${escHTML(x.c.curso)}${lugarClase(x.c,x.b)?" · "+escHTML(lugarClase(x.c,x.b)):""}</small></span></div>`;prev=x.b;}
+    $("#hoyDespues").innerHTML=filas?`<div class="panel hoy-seccion"><h3>Tu día</h3>${filas}</div>`:"";
+  }
+  const semana=(ST.examenes||[]).filter(e=>{const d=diasHasta(e.fecha);return d>=0&&d<=7;})
+    .sort((a,b)=>a.fecha.localeCompare(b.fecha)||PESO_PRI[priDe(a)]-PESO_PRI[priDe(b)]);
+  $("#hoySemana").innerHTML=`<div class="panel hoy-seccion"><h3>Próximos 7 días</h3>${semana.length?semana.map(e=>{
+    const m=e.o!=null&&porOrden[e.o]?porOrden[e.o].nombre:"Sin materia",ck=items(e).length?` · ${hechos(e)}/${items(e).length} pasos`:"",regla=ST.cursada?.[e.o]?.regla;
+    return `<div class="hoy-evento" data-hoy-ex="${e.id}"><span class="nom">${escHTML(m)}</span> <span class="chip chip-rendible">${TIPOS_EX[e.tipo]}</span><div class="meta">${fmtFecha(e.fecha)}${e.hora?` · ${e.hora} hs`:""}${ck}</div>${regla?`<div class="meta">Regla: ${escHTML(regla)}</div>`:""}</div>`;}).join(""):`<p style="color:var(--gris);font-size:12.5px">Sin exámenes ni entregas en los próximos 7 días.</p>`}</div>`;
+  $$("[data-hoy-ex]").forEach(x=>x.onclick=()=>abrirModalExamen(+x.dataset.hoyEx));
+  const vs=(CALENDARIO.ventanas||[]).filter(v=>v.tipo!=="receso"),activas=vs.filter(v=>enVentana(v,f)),abren=vs.filter(v=>{const d=diasHasta(v.desde);return d>0&&d<=7;});
+  const vhtml=activas.map(v=>{const d=diasHasta(v.hasta);return `<div class="hoy-ventana ${d<=2?"aviso":""}"><b>${escHTML(TIPO_VENTANA[v.tipo]||v.nombre)}</b><div class="meta">cierra ${d===0?"hoy":`en ${d} días`}</div></div>`;})
+    .concat(abren.map(v=>`<div class="hoy-ventana"><b>${escHTML(TIPO_VENTANA[v.tipo]||v.nombre)}</b><div class="meta">abre ${fmtFecha(v.desde)}</div></div>`));
+  $("#hoyVentanas").innerHTML=vhtml.length?`<div class="panel hoy-seccion"><h3>Calendario académico</h3>${vhtml.join("")}</div>`:"";
+  const pendientes=pendientesDeCarga(),total=(ST.examenes||[]).filter(e=>e.fecha<f&&e.nota==null&&!e.resultado).length;
+  $("#hoyPendientes").innerHTML=pendientes.length?`<div class="panel hoy-seccion"><h3>Pendiente de carga</h3>${pendientes.map(e=>`<div class="hoy-pendiente">
+    <b>${escHTML(TIPOS_EX[e.tipo])} de ${escHTML(porOrden[e.o]?.nombre||"Sin materia")}</b><div class="meta">fue el ${new Date(e.fecha+"T00:00").toLocaleDateString("es-AR")}</div>
+    <div class="acciones"><input data-hoy-nota="${e.id}" type="number" min="0" max="10" step="0.1" placeholder="nota"><button class="btn-mini" data-hoy-res="nota" data-id="${e.id}">guardar</button><button class="btn-mini" data-hoy-res="ausente" data-id="${e.id}">estuve ausente</button><button class="btn-mini" data-hoy-res="omitido" data-id="${e.id}">omitir</button></div></div>`).join("")}${total>3?`<button class="btn-mini" id="hoyMasPend">y ${total-3} más</button>`:""}</div>`:"";
+  $$("[data-hoy-res]").forEach(b=>b.onclick=()=>guardarResultadoExamen(+b.dataset.id,b.dataset.hoyRes));
+  const mas=$("#hoyMasPend");if(mas)mas.onclick=()=>{irAVista("agenda");render();};
+  if(vista==="hoy")_tHoy=setInterval(()=>{if(vista==="hoy")renderHoy();else{clearInterval(_tHoy);_tHoy=null;}},60000);
+}
 const examenesDelMes = () => (ST.examenes||[]).filter(e=>e&&typeof e.fecha==="string"
   && +e.fecha.slice(0,4)===calAncla.getFullYear() && +e.fecha.slice(5,7)===calAncla.getMonth()+1).length;
 
@@ -2261,6 +2790,11 @@ function abrirModalExamen(id, fechaSugerida){
       <div style="flex:1;min-width:120px"><b>Hora (opcional)</b>
         <input id="exHora" class="inp-form" type="time" value="${e?(e.hora||""):""}"></div>
     </section>
+    <section style="display:flex;gap:10px;flex-wrap:wrap">
+      <div style="flex:1;min-width:130px"><b>Nota (opcional)</b><input id="exNota" class="inp-form" type="number" min="0" max="10" step="0.1" placeholder="0–10" value="${e&&e.nota!=null?e.nota:""}"></div>
+      <div style="flex:1;min-width:180px"><b>Resultado</b><select id="exResultado" class="inp-form">
+        ${[["","Pendiente"],["rendido","Rendido"],["ausente","Ausente"],["omitido","Omitir carga"]].map(([k,t])=>`<option value="${k}" ${e&&(e.resultado||"")===k?"selected":""}>${t}</option>`).join("")}</select></div>
+    </section>
     <section><b>Importancia</b>
       <select id="exPrioridad" class="inp-form">${Object.entries(PRIORIDADES).map(([k,v])=>
         `<option value="${k}" ${priDe(e||{})===k?"selected":""}>${v}</option>`).join("")}</select>
@@ -2295,17 +2829,19 @@ function abrirModalExamen(id, fechaSugerida){
     // los pasos vacíos se descartan solos: agregar uno y no escribirlo no es un error
     const checklist=_formItems.map(i=>({t:limpiar(i.t, LARGO.item), ok:!!i.ok}))
                               .filter(i=>i.t).slice(0, MAX_ITEMS);
+    const notaTxt=$("#exNota").value,nota=notaTxt===""?null:Number(notaTxt);
+    if(notaTxt!==""&&(!Number.isFinite(nota)||nota<0||nota>10)){err.textContent="⚠ La nota debe estar entre 0 y 10.";err.style.display="block";return;}
+    const resultado=notaTxt!==""?"rendido":($("#exResultado").value||null);
     const datos={ o:+$("#exMateria").value, tipo:$("#exTipo").value,
-                  detalle:limpiar($("#exDetalle").value, LARGO.detalle),
-                  fecha, hora:$("#exHora").value,
+                   detalle:limpiar($("#exDetalle").value, LARGO.detalle),
+                   fecha, hora:$("#exHora").value,
+                   nota:notaTxt===""?null:Math.round(nota*100)/100, resultado,
                   prioridad:PRIORIDADES[$("#exPrioridad").value]?$("#exPrioridad").value:"media",
                   checklist,
                   notas:limpiar($("#exNotas").value, LARGO.notas, true) };
     if(e) Object.assign(e,datos);
     else { ST._eseq=(ST._eseq||0)+1; (ST.examenes=ST.examenes||[]).push({id:ST._eseq, ...datos}); }
-    guardar(); cerrarModal(); vista="agenda";
-    $$(".nav-int button").forEach(x=>x.classList.toggle("activa",x.dataset.vista==="agenda"));
-    ["materias","grilla","agenda","mapa","simulador","avance"].forEach(v=>$("#vista-"+v).hidden=v!=="agenda");
+    guardar(); cerrarModal(); irAVista("agenda");
     render();
     toast(e?"Examen actualizado":"Examen agregado a tu agenda");
   };
@@ -2398,9 +2934,13 @@ function sanearEstado(d){
                   profesor:limpiar(m.profesor,LARGO.profesor),
                   bloques:m.bloques.map(b=>({dia:b.dia,inicio:b.inicio,fin:b.fin,aula:limpiar(b.aula,LARGO.aula)}))}));
       const examenes=(Array.isArray(d.examenes)?d.examenes:[]).filter(x=>x && Number.isInteger(x.id)
-        && typeof x.fecha==="string" && /^\d{4}-\d{2}-\d{2}$/.test(x.fecha) && TIPOS_EX[x.tipo])
-        .map(x=>({...x, detalle:limpiar(x.detalle,LARGO.detalle), notas:limpiar(x.notas,LARGO.notas,true),
+        && typeof x.fecha==="string" && /^\d{4}-\d{2}-\d{2}$/.test(x.fecha) && TIPOS_EX[x.tipo]
+        && Number.isInteger(+x.o) && porOrden[+x.o])
+        .map(x=>({id:x.id,o:+x.o,tipo:x.tipo,fecha:x.fecha,
+                  detalle:limpiar(x.detalle,LARGO.detalle), notas:limpiar(x.notas,LARGO.notas,true),
                   hora:limpiar(x.hora,5),
+                  nota:(typeof x.nota==="number"&&Number.isFinite(x.nota)&&x.nota>=0&&x.nota<=10)?Math.round(x.nota*100)/100:null,
+                  resultado:["rendido","ausente","omitido"].includes(x.resultado)?x.resultado:null,
                   // una prioridad inventada se cae a "media" en vez de romper el orden
                   prioridad:PRIORIDADES[x.prioridad]?x.prioridad:"media",
                   checklist:(Array.isArray(x.checklist)?x.checklist:[])
@@ -2413,10 +2953,19 @@ function sanearEstado(d){
              docentes:(Array.isArray(c.docentes)?c.docentes:[]).map(x=>limpiar(x,LARGO.docente)),
              bloques:c.bloques.map(b=>({...b, aula:limpiar(b.aula,LARGO.aula)}))}))}
         : null;
-  return {version:1, estados, notas, aplazos, grilla, sim, manuales, horarios, examenes,
+      const ocupado=(Array.isArray(d.ocupado)?d.ocupado:[]).filter(x=>x&&Number.isInteger(x.id)&&Array.isArray(x.bloques)&&x.bloques.length
+        &&x.bloques.slice(0,12).every(b=>b&&Number.isInteger(b.dia)&&b.dia>=1&&b.dia<=6&&Number.isInteger(b.inicio)&&Number.isInteger(b.fin)&&b.inicio>=0&&b.fin<=1440&&b.fin>b.inicio))
+        .slice(0,8).map(x=>({id:x.id,titulo:limpiar(x.titulo,40)||"Ocupado",color:PALETA_OCUPADO.includes(x.color)?x.color:PALETA_OCUPADO[0],
+          duro:x.duro!==false,viaje:Number.isInteger(x.viaje)&&x.viaje>=0&&x.viaje<=180?x.viaje:0,
+          bloques:x.bloques.slice(0,12).map(b=>({dia:b.dia,inicio:b.inicio,fin:b.fin}))}));
+      const cursada={};
+      for(const [o,c] of Object.entries(d.cursada||{})){if(!porOrden[+o]||!c||typeof c!=="object")continue;
+        cursada[+o]={regla:limpiar(c.regla,400,true),fechaRegular:/^\d{4}-\d{2}-\d{2}$/.test(c.fechaRegular||"")?c.fechaRegular:null};}
+  return {version:1, estados, notas, aplazos, grilla, sim, manuales, ocupado, cursada, horarios, examenes,
           actualizado: limpiar(d.actualizado, 40),
-          _mseq:Math.max(0,d._mseq||0,...manuales.map(m=>m.mid)),
-          _eseq:Math.max(0,d._eseq||0,...examenes.map(x=>x.id))};
+           _mseq:Math.max(0,d._mseq||0,...manuales.map(m=>m.mid)),
+           _eseq:Math.max(0,d._eseq||0,...examenes.map(x=>x.id)),
+           _oseq:Math.max(0,d._oseq||0,...ocupado.map(x=>x.id))};
 }
 function aplicarComisionesDe(estado){
   COMISIONES = (estado.horarios && Array.isArray(estado.horarios.comisiones) && estado.horarios.comisiones.length)
@@ -2765,6 +3314,7 @@ if (syncPosible()){
 function render(){
   renderBanner();
   actualizarBadge();
+  if (vista==="hoy") renderHoy();
   if (vista==="materias") renderMaterias();
   if (vista==="grilla") renderGrilla();
   if (vista==="agenda") renderAgenda();
